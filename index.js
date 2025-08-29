@@ -2,6 +2,42 @@
 document.addEventListener('DOMContentLoaded', function() {
     
     // ================================
+    // HERO SECTION HEIGHT MATCHING
+    // ================================
+    
+    function matchHeroHeights() {
+        const heroText = document.querySelector('.hero-text');
+        const heroImageContainer = document.querySelector('.hero-image-container');
+        
+        if (heroText && heroImageContainer && window.innerWidth > 768) {
+            // Reset heights first
+            heroImageContainer.style.height = 'auto';
+            
+            // Get the natural height of the text section
+            const textHeight = heroText.offsetHeight;
+            
+            // Set the image container to match
+            heroImageContainer.style.height = textHeight + 'px';
+            heroImageContainer.style.minHeight = Math.max(textHeight, 500) + 'px';
+            
+            // Ensure images scale proportionally
+            const heroImages = heroImageContainer.querySelectorAll('.hero-image');
+            heroImages.forEach(img => {
+                img.style.height = Math.min(textHeight * 0.85, 600) + 'px';
+            });
+        } else if (heroImageContainer && window.innerWidth <= 768) {
+            // Reset for mobile
+            heroImageContainer.style.height = '300px';
+            heroImageContainer.style.minHeight = 'auto';
+            
+            const heroImages = heroImageContainer.querySelectorAll('.hero-image');
+            heroImages.forEach(img => {
+                img.style.height = '100%';
+            });
+        }
+    }
+    
+    // ================================
     // MOBILE NAVIGATION FUNCTIONALITY
     // ================================
     
@@ -155,6 +191,9 @@ document.addEventListener('DOMContentLoaded', function() {
     function handleViewportChanges() {
         const vh = window.innerHeight * 0.01;
         document.documentElement.style.setProperty('--vh', `${vh}px`);
+        
+        // Match hero heights on viewport change
+        matchHeroHeights();
     }
     
     handleViewportChanges();
@@ -162,7 +201,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Handle orientation changes on mobile
     window.addEventListener('orientationchange', function() {
-        setTimeout(handleViewportChanges, 500);
+        setTimeout(() => {
+            handleViewportChanges();
+            matchHeroHeights();
+        }, 500);
         // Close mobile menu on orientation change
         if (mobileMenu && mobileMenu.classList.contains('active')) {
             closeMobileMenu();
@@ -213,6 +255,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 hero.style.minHeight = '100vh';
             }
         }
+        
+        // Update hero heights
+        matchHeroHeights();
     }
     
     adjustContentSizing();
@@ -518,6 +563,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Adjust content sizing
         adjustContentSizing();
+        
+        // Update hero heights
+        matchHeroHeights();
     }
     
     // Debounce function for resize events
@@ -540,6 +588,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const optimizedResize = debounce(() => {
         detectDevice();
         handleViewportChanges();
+        matchHeroHeights();
         
         // Close mobile menu on resize to desktop
         if (window.innerWidth > 768 && mobileMenu && mobileMenu.classList.contains('active')) {
@@ -591,13 +640,13 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const scrolled = window.pageYOffset;
         const hero = document.querySelector('.hero');
-        const carSilhouette = document.querySelector('.car-silhouette');
+        const heroImages = document.querySelectorAll('.hero-image');
         
         if (hero && scrolled < window.innerHeight) {
-            const rate = scrolled * -0.5;
-            if (carSilhouette) {
-                carSilhouette.style.transform = `translateY(${rate}px)`;
-            }
+            const rate = scrolled * -0.1;
+            heroImages.forEach((img, index) => {
+                img.style.transform = `translateY(${rate * (index + 1) * 0.3}px)`;
+            });
         }
     }
     
@@ -708,6 +757,38 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // ================================
+    // HERO IMAGE LOADING OPTIMIZATION
+    // ================================
+    
+    // Ensure hero images are loaded and positioned correctly
+    function optimizeHeroImages() {
+        const heroImages = document.querySelectorAll('.hero-image');
+        let loadedImages = 0;
+        
+        heroImages.forEach((img, index) => {
+            if (img.complete) {
+                loadedImages++;
+            } else {
+                img.addEventListener('load', function() {
+                    loadedImages++;
+                    if (loadedImages === heroImages.length) {
+                        // All images loaded, adjust heights
+                        setTimeout(matchHeroHeights, 100);
+                    }
+                });
+            }
+        });
+        
+        // If all images are already loaded
+        if (loadedImages === heroImages.length) {
+            setTimeout(matchHeroHeights, 100);
+        }
+    }
+    
+    // Initialize hero image optimization
+    optimizeHeroImages();
+    
+    // ================================
     // CONSOLE LOG FOR DEBUGGING
     // ================================
     
@@ -717,6 +798,7 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('✨ Touch Gestures Enabled');
     console.log('🎯 All Interactive Elements Ready');
     console.log('🚀 Performance Optimizations Applied');
+    console.log('📐 Hero Height Matching Enabled');
     
     // Feature detection logging
     console.log('Feature Support:');
@@ -735,5 +817,14 @@ document.addEventListener('DOMContentLoaded', function() {
     // Optional: Remove loading states or show content
     setTimeout(() => {
         document.body.classList.add('fully-loaded');
-    }, 100);
+        // Final height adjustment after everything is loaded
+        matchHeroHeights();
+    }, 300);
+    
+    // Additional load event listener for final adjustments
+    window.addEventListener('load', function() {
+        setTimeout(() => {
+            matchHeroHeights();
+        }, 500);
+    });
 });
