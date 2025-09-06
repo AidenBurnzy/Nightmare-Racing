@@ -1,4 +1,4 @@
-// Nightmare Racing - Enhanced Responsive JavaScript
+// Nightmare Racing - Enhanced Responsive JavaScript with Slow Smooth Scrolling
 document.addEventListener('DOMContentLoaded', function() {
     
     // ================================
@@ -510,32 +510,64 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // ================================
-    // SMOOTH SCROLLING NAVIGATION
+    // SMOOTH SCROLLING NAVIGATION - SLOW & CINEMATIC
     // ================================
     
     function smoothScroll(target) {
         const element = document.querySelector(target);
         if (element) {
-            const navbarHeight = document.querySelector('.navbar').offsetHeight || 70;
-            const offsetTop = element.offsetTop - navbarHeight;
+            const navbarHeight = document.querySelector('.navbar')?.offsetHeight || 70;
+            const offsetTop = element.offsetTop - navbarHeight - 20;
             
-            window.scrollTo({
-                top: offsetTop,
-                behavior: 'smooth'
-            });
+            // Always use custom animation for consistent slow scrolling
+            animateScrollTo(offsetTop, 1500); // 1.5 seconds for slow, cinematic effect
         }
     }
     
-    // Add smooth scrolling to all navigation links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
-            e.preventDefault();
-            const target = this.getAttribute('href');
-            if (target && target !== '#') {
-                smoothScroll(target);
+    // Custom smooth scroll animation with slow, cinematic movement
+    function animateScrollTo(to, duration) {
+        const start = window.pageYOffset;
+        const change = to - start;
+        const startTime = performance.now();
+        
+        function animateScroll(currentTime) {
+            const elapsedTime = currentTime - startTime;
+            const progress = Math.min(elapsedTime / duration, 1);
+            
+            // Enhanced easing function for smoother, more cinematic movement
+            const easeInOutCubic = progress < 0.5
+                ? 4 * progress * progress * progress
+                : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+            
+            window.scrollTo(0, start + change * easeInOutCubic);
+            
+            if (progress < 1) {
+                requestAnimationFrame(animateScroll);
             }
+        }
+        
+        requestAnimationFrame(animateScroll);
+    }
+    
+    // Setup smooth scrolling for navigation links
+    function setupSmoothScrolling() {
+        // Add smooth scrolling to all navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = this.getAttribute('href');
+                if (target && target !== '#') {
+                    console.log('Smooth scrolling to:', target); // Debug log
+                    smoothScroll(target);
+                    
+                    // Close mobile menu if open
+                    if (mobileMenu && mobileMenu.classList.contains('active')) {
+                        closeMobileMenu();
+                    }
+                }
+            });
         });
-    });
+    }
     
     // ================================
     // NAVBAR SCROLL BEHAVIOR
@@ -751,7 +783,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (buttonText.includes('service')) {
                     smoothScroll('#contact');
                 } else if (buttonText.includes('parts')) {
-                    smoothScroll('#parts');
+                    // Redirect to external parts website
+                    window.open('https://nmrauto.com', '_blank');
                 }
             });
         });
@@ -879,6 +912,7 @@ document.addEventListener('DOMContentLoaded', function() {
         createMobileMenu();
         
         // Setup all functionality
+        setupSmoothScrolling(); // Setup slow smooth scrolling
         setupFormHandling();
         setupScrollAnimations();
         setupTouchFeedback();
