@@ -1,0 +1,155 @@
+/* Services Section */
+.services {
+    padding: var(--section-padding);
+    background: var(--secondary-black);
+    min-height: 100vh;
+}
+
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+/* Services Grid Responsive Breakpoints */
+@media (min-width: 1200px) {
+    .services-grid {
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 1.5rem;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1199px) {
+    .services-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 1.5rem;
+    }
+}
+
+@media (min-width: 480px) and (max-width: 767px) {
+    .services-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 479px) {
+    .services-grid {
+        grid-template-columns: 1fr !important;
+        gap: 1rem;
+    }
+}
+
+.service-card {
+    background: var(--secondary-black);
+    padding: 2.5rem 2rem;
+    border-radius: 15px;
+    text-align: center;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+    position: relative;
+    overflow: hidden;
+    height: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* Service card background images */
+.service-card:nth-child(1) {
+    background-image: url('https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=600&h=400&fit=crop&crop=center');
+}
+
+.service-card:nth-child(2) {
+    background-image: url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=400&fit=crop&crop=center');
+}
+
+.service-card:nth-child(3) {
+    background-image: url('https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=600&h=400&fit=crop&crop=center');
+}
+
+.service-card:nth-child(4) {
+    background-image: url('https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=600&h=400&fit=crop&crop=center');
+}
+
+.service-card:nth-child(5) {
+    background-image: url('https://images.unsplash.com/photo-1487754180451-c456f719a1fc?w=600&h=400&fit=crop&crop=center');
+}
+
+.service-card:nth-child(6) {
+    background-image: url('https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=600&h=400&fit=crop&crop=center');
+}
+
+.service-card:nth-child(7) {
+    background-image: url('https://images.unsplash.com/photo-1581368135153-a506cf13b1e1?w=600&h=400&fit=crop&crop=center');
+}
+
+.service-card:nth-child(8) {
+    background-image: url('https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&h=400&fit=crop&crop=center');
+}
+
+.service-card:nth-child(9) {
+    background-image: url('https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=600&h=400&fit=crop&crop=center');
+}
+
+.service-card:nth-child(10) {
+    background-image: url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=400&fit=crop&crop=center');
+}
+
+.service-card:nth-child(11) {
+    background-image: url('https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=600&h=400&fit=crop&crop=center');
+}
+
+.service-card:nth-child(12) {
+    background-image: url('https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=600&h=400&fit=crop&crop=center');
+}
+
+.service-card::before {
+    display: none;
+}
+
+.service-card::after {
+    display: none;
+}
+
+.service-card:hover {
+    transform: translateY(-10px);
+    border-color: var(--accent-red);
+    box-shadow: 0 15px 40px rgba(229, 0, 0, 0.3);
+}
+
+.service-card > * {
+    position: relative;
+    z-index: 4;
+}
+
+.service-icon {
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+    color: var(--pure-white);
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8), 0 0 12px rgba(0, 0, 0, 0.6);
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.7));
+}
+
+.service-card h3 {
+    font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+    margin-bottom: 1rem;
+    color: var(--pure-white);
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.9), 0 0 12px rgba(0, 0, 0, 0.7);
+    font-weight: 700;
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.8));
+}
+
+.service-card .service-icon {
+    margin-bottom: auto;
+}
+
+/* Mobile responsive adjustments for services */
+@media (max-width: 480px) {
+    .service-card {
+        padding: 2rem 1.5rem;
+    }
+}
