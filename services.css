@@ -9,6 +9,7 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 2rem;
+    align-items: stretch; /* Ensure all cards have equal height in each row */
 }
 
 /* Services Grid Responsive Breakpoints */
@@ -41,18 +42,19 @@
 }
 
 .service-card {
-    background: var(--secondary-black);
-    padding: 2.5rem 2rem;
+    padding: 2rem 1.5rem;
     border-radius: 15px;
     text-align: center;
     transition: all 0.3s ease;
-    border: 1px solid transparent;
+    border: 6px solid black;
     position: relative;
     overflow: hidden;
-    height: 300px;
+    min-height: 280px; /* Changed from fixed height to min-height */
+    height: auto; /* Allow height to grow with content */
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
+    justify-content: center; /* Changed to center for better text positioning */
+    align-items: center;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -60,96 +62,125 @@
 
 /* Service card background images */
 .service-card:nth-child(1) {
-    background-image: url('https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=600&h=400&fit=crop&crop=center');
+    background-image: url('pictures/servicesImage/si1.png');
 }
 
 .service-card:nth-child(2) {
-    background-image: url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=400&fit=crop&crop=center');
+    background-image: url('pictures/servicesImage/si2.png');
 }
 
 .service-card:nth-child(3) {
-    background-image: url('https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=600&h=400&fit=crop&crop=center');
+    background-image: url('pictures/servicesImage/si3.png');
 }
 
 .service-card:nth-child(4) {
-    background-image: url('https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=600&h=400&fit=crop&crop=center');
+    background-image: url('pictures/servicesImage/si4.png');
 }
 
 .service-card:nth-child(5) {
-    background-image: url('https://images.unsplash.com/photo-1487754180451-c456f719a1fc?w=600&h=400&fit=crop&crop=center');
+    background-image: url('pictures/servicesImage/si5.png');
 }
 
 .service-card:nth-child(6) {
-    background-image: url('https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=600&h=400&fit=crop&crop=center');
+    background-image: url('pictures/servicesImage/si6.png');
 }
 
 .service-card:nth-child(7) {
-    background-image: url('https://images.unsplash.com/photo-1581368135153-a506cf13b1e1?w=600&h=400&fit=crop&crop=center');
+    background-image: url('pictures/servicesImage/si7.png');
 }
 
 .service-card:nth-child(8) {
-    background-image: url('https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&h=400&fit=crop&crop=center');
+    background-image: url('pictures/servicesImage/si8.png');
 }
 
 .service-card:nth-child(9) {
-    background-image: url('https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=600&h=400&fit=crop&crop=center');
+    background-image: url('pictures/servicesImage/si9.png');
 }
 
 .service-card:nth-child(10) {
-    background-image: url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=400&fit=crop&crop=center');
+    background-image: url('pictures/servicesImage/si10.png');
 }
 
 .service-card:nth-child(11) {
-    background-image: url('https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=600&h=400&fit=crop&crop=center');
+    background-image: url('pictures/servicesImage/si11.png');
 }
 
 .service-card:nth-child(12) {
-    background-image: url('https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=600&h=400&fit=crop&crop=center');
-}
-
-.service-card::before {
-    display: none;
+    background-image: url('pictures/servicesImage/si12.png');
 }
 
 .service-card::after {
     display: none;
 }
 
-.service-card:hover {
-    transform: translateY(-10px);
-    border-color: var(--accent-red);
-    box-shadow: 0 15px 40px rgba(229, 0, 0, 0.3);
-}
+
 
 .service-card > * {
     position: relative;
-    z-index: 4;
+    z-index: 2; /* Above the overlay */
 }
 
 .service-icon {
-    font-size: 3.5rem;
+    font-size: clamp(2.5rem, 4vw, 3.5rem); /* More responsive icon sizing */
     margin-bottom: 1rem;
     color: var(--pure-white);
-    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8), 0 0 12px rgba(0, 0, 0, 0.6);
-    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.7));
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.9), 0 0 16px rgba(0, 0, 0, 0.8);
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.9));
 }
 
 .service-card h3 {
-    font-size: clamp(1.1rem, 2.5vw, 1.4rem);
-    margin-bottom: 1rem;
+    font-size: clamp(1rem, 2.2vw, 1.3rem); /* Better responsive sizing */
+    line-height: 1.3; /* Improved line height for better readability */
+    margin: 0; /* Remove default margins */
+    padding: 0 0.5rem; /* Add horizontal padding to prevent edge cropping */
     color: var(--pure-white);
-    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.9), 0 0 12px rgba(0, 0, 0, 0.7);
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.95), 0 0 16px rgba(0, 0, 0, 0.9);
     font-weight: 700;
-    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.8));
-}
-
-.service-card .service-icon {
-    margin-bottom: auto;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.9));
+    word-wrap: break-word; /* Ensure long words wrap */
+    hyphens: auto; /* Enable hyphenation */
+    max-width: 100%; /* Ensure text doesn't exceed card width */
 }
 
 /* Mobile responsive adjustments for services */
+@media (max-width: 768px) {
+    .service-card {
+        padding: 1.8rem 1.2rem;
+        min-height: 240px;
+    }
+    
+    .service-card h3 {
+        font-size: clamp(0.95rem, 3vw, 1.2rem);
+        padding: 0 0.3rem;
+    }
+    
+    .service-icon {
+        font-size: clamp(2.2rem, 5vw, 3rem);
+        margin-bottom: 0.8rem;
+    }
+}
+
 @media (max-width: 480px) {
     .service-card {
-        padding: 2rem 1.5rem;
+        padding: 1.5rem 1rem;
+        min-height: 220px;
+    }
+    
+    .service-card h3 {
+        font-size: clamp(0.9rem, 3.5vw, 1.1rem);
+        line-height: 1.2;
+    }
+    
+    .service-icon {
+        font-size: clamp(2rem, 6vw, 2.8rem);
+        margin-bottom: 0.6rem;
+    }
+}
+
+/* Ensure very long service names still fit */
+@media (max-width: 320px) {
+    .service-card h3 {
+        font-size: 0.85rem;
+        line-height: 1.1;
     }
 }

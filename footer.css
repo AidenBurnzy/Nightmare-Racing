@@ -1,0 +1,123 @@
+/* Footer */
+.footer {
+    background: var(--secondary-black);
+    padding: 3rem 0 1rem;
+    border-top: 1px solid var(--dark-gray);
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 3rem;
+    margin-bottom: 2rem;
+}
+
+.footer-section h3 {
+    margin-bottom: 1rem;
+    font-size: clamp(1.2rem, 3vw, 1.5rem);
+}
+
+.footer-section h4 {
+    margin-bottom: 1rem;
+    color: var(--accent-red);
+    font-family: var(--font-secondary);
+    font-size: clamp(1rem, 2.5vw, 1.2rem);
+}
+
+.footer-section p {
+    color: var(--medium-gray);
+    max-width: 300px;
+    font-size: clamp(0.9rem, 2vw, 1rem);
+}
+
+.footer-section ul {
+    list-style: none;
+}
+
+.footer-section ul li {
+    margin-bottom: 0.5rem;
+}
+
+.footer-section ul li a {
+    color: var(--medium-gray);
+    text-decoration: none;
+    transition: color 0.3s ease;
+    font-size: clamp(0.9rem, 2vw, 1rem);
+}
+
+.footer-section ul li a:hover {
+    color: var(--accent-red);
+}
+
+.social-links {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.social-links a {
+    color: var(--medium-gray);
+    text-decoration: none;
+    transition: color 0.3s ease;
+    font-size: clamp(0.9rem, 2vw, 1rem);
+}
+
+.social-links a:hover {
+    color: var(--accent-red);
+}
+
+.footer-bottom {
+    text-align: center;
+    padding-top: 2rem;
+    border-top: 1px solid var(--dark-gray);
+    color: var(--medium-gray);
+    font-size: clamp(0.8rem, 1.5vw, 0.9rem);
+}
+
+/* Footer Responsive Styles */
+
+/* Mobile Landscape (641px - 768px) */
+@media (min-width: 641px) and (max-width: 768px) {
+    .footer-content {
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+    }
+}
+
+/* Mobile Portrait (481px - 640px) */
+@media (min-width: 481px) and (max-width: 640px) {
+    .footer-content {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 2rem;
+    }
+    
+    .footer-section p {
+        text-align: center;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .social-links {
+        justify-content: center;
+    }
+}
+
+/* Small Mobile (320px - 480px) */
+@media (max-width: 480px) {
+    .footer-content {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 2rem;
+    }
+    
+    .footer-section p {
+        text-align: center;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .social-links {
+        justify-content: center;
+    }
+}
