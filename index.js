@@ -1,3 +1,26 @@
+// Hide video background when .cars or .contact are in view
+function checkSectionInView() {
+    const carsSection = document.querySelector('.cars');
+    const contactSection = document.querySelector('.contact');
+    const body = document.body;
+    let hide = false;
+    [carsSection, contactSection].forEach(section => {
+        if (section) {
+            const rect = section.getBoundingClientRect();
+            if (rect.top < window.innerHeight && rect.bottom > 0) {
+                hide = true;
+            }
+        }
+    });
+    if (hide) {
+        body.classList.add('hide-bg-video');
+    } else {
+        body.classList.remove('hide-bg-video');
+    }
+}
+window.addEventListener('scroll', checkSectionInView);
+window.addEventListener('resize', checkSectionInView);
+document.addEventListener('DOMContentLoaded', checkSectionInView);
 // Nightmare Racing - Enhanced Responsive JavaScript with Slow Smooth Scrolling
 document.addEventListener('DOMContentLoaded', function() {
     
