@@ -49,6 +49,21 @@
     color: var(--accent-red);
 }
 
+/* Contact info links (phone and email) styling */
+.contact-info a {
+    color: var(--medium-gray) !important;
+    text-decoration: none !important;
+    transition: color 0.3s ease;
+}
+
+.contact-info a:hover {
+    color: var(--accent-red) !important;
+}
+
+.contact-info a:visited {
+    color: var(--medium-gray) !important;
+}
+
 .social-links {
     display: flex;
     gap: 1rem;
