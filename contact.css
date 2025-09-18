@@ -1,4 +1,3 @@
-
 .contact {
     position: relative !important;
 }
@@ -146,11 +145,14 @@
         gap: 2rem;
         display: flex;
         flex-direction: column;
+        align-items: center;
     }
     
     .contact-info {
         order: 1;
         text-align: center;
+        width: 100%;
+        max-width: 500px;
     }
     
     .contact-info h2,
@@ -161,12 +163,9 @@
     .contact-form {
         order: 2;
         padding: 2rem;
-    }
-    
-    .contact-form {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+        width: 100%;
+        max-width: 500px;
+        margin: 0 auto;
     }
     
     .contact-form .form-group {
@@ -174,7 +173,6 @@
         flex-direction: column;
         align-items: center;
         width: 100%;
-        max-width: 400px;
     }
 
     .contact-form .form-group input,
@@ -185,18 +183,28 @@
     }
     
     .contact-form .btn-full {
-        max-width: 400px;
+        max-width: 100%;
         width: 100%;
     }
     
     .contact-details {
         order: 3;
         text-align: center;
+        width: 100%;
+        max-width: 500px;
     }
     
     .contact-item {
-        justify-content: center;
+        flex-direction: column;
+        align-items: center;
         text-align: center;
+        gap: 0.5rem;
+    }
+    
+    .contact-icon {
+        margin-top: 0;
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
     }
 }
 
@@ -207,11 +215,14 @@
         gap: 2rem;
         display: flex;
         flex-direction: column;
+        align-items: center;
     }
     
     .contact-info {
         order: 1;
         text-align: center;
+        width: 100%;
+        max-width: 400px;
     }
     
     .contact-info h2,
@@ -222,29 +233,48 @@
     .contact-form {
         order: 2;
         padding: 1.5rem;
+        width: 100%;
+        max-width: 400px;
+        margin: 0 auto;
     }
     
     .contact-form .form-group {
         display: flex;
         flex-direction: column;
         align-items: center;
+        width: 100%;
     }
 
     .contact-form .form-group input,
     .contact-form .form-group select,
     .contact-form .form-group textarea {
-        max-width: 100%;
+        width: 100%;
         text-align: center;
+    }
+    
+    .contact-form .btn-full {
+        max-width: 100%;
+        width: 100%;
     }
     
     .contact-details {
         order: 3;
         text-align: center;
+        width: 100%;
+        max-width: 400px;
     }
     
     .contact-item {
-        justify-content: center;
+        flex-direction: column;
+        align-items: center;
         text-align: center;
+        gap: 0.5rem;
+    }
+    
+    .contact-icon {
+        margin-top: 0;
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
     }
 }
 
@@ -252,11 +282,33 @@
 @media (max-width: 319px) {
     .contact-form {
         padding: 1rem;
+        max-width: 300px;
+    }
+    
+    .contact-info {
+        max-width: 300px;
+    }
+    
+    .contact-details {
+        max-width: 300px;
     }
     
     .contact-form .form-group {
         display: flex;
         flex-direction: column;
         align-items: center;
+    }
+    
+    .contact-item {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 0.5rem;
+    }
+    
+    .contact-icon {
+        margin-top: 0;
+        font-size: 1.8rem;
+        margin-bottom: 0.5rem;
     }
 }
