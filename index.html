@@ -23,8 +23,8 @@
 </head>
 
 <body>
-    <video autoplay muted loop id="bg-video"
-        style="position: fixed; right: 0; bottom: 0; min-width: 100vw; min-height: 100vh; z-index: -1; object-fit: cover;">
+    <video autoplay muted loop playsinline preload="auto" id="bg-video"
+        style="position: fixed; right: 0; bottom: 0; min-width: 100vw; min-height: 100vh; z-index: -1; object-fit: cover; pointer-events: none;">
         <source src="copy_325E5DB6-78F1-4FA9-81D8-131BF3EF4DBB.mov" type="video/mp4">
         Your browser does not support the video tag.
     </video>
@@ -120,6 +120,22 @@
             }
         }
 
+        // Force video autoplay for mobile
+        function forceVideoPlay() {
+            const bgVideo = document.getElementById('bg-video');
+            if (bgVideo) {
+                bgVideo.muted = true;
+                bgVideo.play().catch(err => {
+                    console.log('Video autoplay failed:', err);
+                    // Fallback: try to play on user interaction
+                    document.addEventListener('touchstart', function playOnTouch() {
+                        bgVideo.play();
+                        document.removeEventListener('touchstart', playOnTouch);
+                    }, { once: true });
+                });
+            }
+        }
+
         // Load all sections
         document.addEventListener('DOMContentLoaded', async () => {
             await loadSection('hero-section', 'hero.html');
@@ -128,7 +144,15 @@
             await loadSection('parts-section', 'parts.html');
             await loadSection('contact-section', 'contact.html');
             await loadSection('footer-section', 'footer.html');
+            
+            // Force video play after content loads
+            setTimeout(forceVideoPlay, 100);
         });
+
+        // Additional video play attempts
+        window.addEventListener('load', forceVideoPlay);
+        document.addEventListener('click', forceVideoPlay, { once: true });
+        document.addEventListener('touchstart', forceVideoPlay, { once: true });
     </script>
     <script src="index.js"></script>
 </body>

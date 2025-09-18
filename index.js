@@ -21,6 +21,51 @@ function checkSectionInView() {
 window.addEventListener('scroll', checkSectionInView);
 window.addEventListener('resize', checkSectionInView);
 document.addEventListener('DOMContentLoaded', checkSectionInView);
+
+// Enhanced Video Autoplay Handler for Mobile
+function ensureVideoAutoplay() {
+    const bgVideo = document.getElementById('bg-video');
+    const heroVideo = document.querySelector('.hero-video');
+    const videos = [bgVideo, heroVideo].filter(video => video);
+    
+    videos.forEach(video => {
+        if (video) {
+            // Set required attributes for mobile autoplay
+            video.muted = true;
+            video.setAttribute('muted', '');
+            video.setAttribute('playsinline', '');
+            video.setAttribute('webkit-playsinline', '');
+            video.setAttribute('preload', 'auto');
+            video.style.pointerEvents = 'none';
+            
+            // Force play
+            const playPromise = video.play();
+            
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    console.log('Video autoplay started successfully');
+                }).catch(error => {
+                    console.log('Video autoplay failed, will try on user interaction:', error);
+                    
+                    // Fallback: play on any user interaction
+                    const playOnInteraction = () => {
+                        video.play().then(() => {
+                            console.log('Video started after user interaction');
+                        }).catch(err => {
+                            console.log('Video still failed to play:', err);
+                        });
+                    };
+                    
+                    // Multiple event listeners for different interaction types
+                    ['click', 'touchstart', 'touchend', 'scroll'].forEach(eventType => {
+                        document.addEventListener(eventType, playOnInteraction, { once: true });
+                    });
+                });
+            }
+        }
+    });
+}
+
 // Nightmare Racing - Enhanced Responsive JavaScript with Slow Smooth Scrolling
 document.addEventListener('DOMContentLoaded', function() {
     
@@ -1005,6 +1050,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Delay to allow for orientation change completion
         setTimeout(() => {
             handleViewportChanges();
+            // Ensure videos play after orientation change
+            ensureVideoAutoplay();
         }, 500);
     }
     
@@ -1038,6 +1085,7 @@ document.addEventListener('DOMContentLoaded', function() {
         window.addEventListener('load', function() {
             setTimeout(() => {
                 handleViewportChanges();
+                ensureVideoAutoplay();
                 isInitialized = true;
             }, 300);
         });
@@ -1064,6 +1112,9 @@ document.addEventListener('DOMContentLoaded', function() {
         setupInteractiveElements();
         setupKeyboardNavigation();
         setupEventListeners();
+        
+        // Initialize video autoplay
+        setTimeout(ensureVideoAutoplay, 100);
         
         // Mark as initialized
         document.body.classList.add('js-loaded');
