@@ -345,10 +345,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     <li><a href="#cars">Our Cars</a></li>
                     <li><a href="#parts">Parts & Merch</a></li>
                     <li><a href="#contact">Contact</a></li>
+                    <li class="mobile-sign-in">
+                        <a href="https://nmrauto.com/" target="_blank" rel="noopener noreferrer">
+                            <svg class="profile-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="currentColor"/>
+                            </svg>
+                            Sign In to Shop
+                        </a>
+                    </li>
                 </ul>
                 <div class="mobile-menu-footer">
-                    <p>📞 (555) 123-RACE</p>
-                    <p>📧 info@nightmareracing.com</p>
+                    <p>📞 616-329-1939</p>
+                    <p>📧 nightmareracing1@gmail.com</p>
                 </div>
             </div>
         `;
@@ -378,10 +386,14 @@ document.addEventListener('DOMContentLoaded', function() {
             mobileNavLinks.forEach(link => {
                 link.addEventListener('click', (e) => {
                     const href = link.getAttribute('href');
+                    // Close menu for internal navigation links only
                     if (href && href.startsWith('#')) {
                         e.preventDefault();
                         closeMobileMenu();
                         setTimeout(() => smoothScroll(href), 300);
+                    } else if (href && href.startsWith('https://nmrauto.com')) {
+                        // For external shop links, just close the menu
+                        closeMobileMenu();
                     }
                 });
             });
@@ -677,9 +689,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // Close menu when clicking on navigation links (except sign-in link)
     mobileNavLinks.forEach(link => {
         link.addEventListener('click', (e) => {
-            // Don't close menu for external links (sign-in button)
-            if (!link.href.startsWith('http') || link.href.includes('#')) {
+            const href = link.getAttribute('href');
+            // Close menu for internal navigation links
+            if (href && href.startsWith('#')) {
                 closeMobileMenu();
+            } else if (href && href.startsWith('https://nmrauto.com')) {
+                // For external shop links, close the menu after a brief delay
+                setTimeout(() => closeMobileMenu(), 200);
             }
         });
     });
