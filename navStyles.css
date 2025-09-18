@@ -308,40 +308,46 @@
 
 /* Mobile Sign In Button */
 .mobile-sign-in {
-    margin-top: 1rem !important;
-    padding-top: 1rem;
+    margin-top: 1.5rem !important;
+    padding-top: 1.5rem;
     border-top: 2px solid var(--dark-gray);
 }
 
 .mobile-sign-in a {
     display: flex !important;
     align-items: center;
-    gap: 10px;
-    background: linear-gradient(135deg, var(--accent-red), #dc143c);
+    justify-content: center;
+    gap: 12px;
+    background: linear-gradient(135deg, var(--accent-red), #dc143c) !important;
     color: var(--pure-white) !important;
-    border-radius: 25px;
-    padding: 12px 20px !important;
+    border-radius: 30px !important;
+    padding: 16px 24px !important;
     border-bottom: none !important;
     text-transform: uppercase;
-    font-weight: 600;
-    letter-spacing: 0.5px;
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: 0.8px;
     transition: all 0.3s ease;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
+    text-decoration: none;
+    box-shadow: 0 4px 15px rgba(229, 0, 0, 0.4);
 }
 
 .mobile-sign-in a:hover {
-    background: linear-gradient(135deg, #dc143c, var(--accent-red));
-    transform: translateY(-1px);
-    padding-left: 20px !important;
+    background: linear-gradient(135deg, #dc143c, var(--accent-red)) !important;
+    transform: translateY(-2px);
+    padding-left: 24px !important;
+    box-shadow: 0 6px 20px rgba(229, 0, 0, 0.6);
 }
 
 .mobile-sign-in a::before {
-    display: none;
+    display: none !important;
 }
 
 .mobile-sign-in .profile-icon {
-    width: 20px;
-    height: 20px;
+    width: 22px;
+    height: 22px;
+    fill: currentColor;
 }
 
 .mobile-menu-footer {
@@ -446,7 +452,7 @@
 @media (max-width: 900px) {
     .nav-menu,
     .nav-actions {
-        display: none;
+        display: none !important;
     }
     
     .hamburger {
@@ -540,6 +546,11 @@
         padding: 0.8rem 0;
     }
     
+    .mobile-sign-in a {
+        font-size: 0.9rem;
+        padding: 14px 20px !important;
+    }
+    
     .mobile-menu-footer p {
         font-size: 0.85rem;
     }
@@ -563,6 +574,11 @@
     .mobile-nav-links a {
         font-size: 0.9rem;
     }
+    
+    .mobile-sign-in a {
+        font-size: 0.85rem;
+        padding: 12px 18px !important;
+    }
 }
 
 /* Landscape orientation adjustments */
@@ -579,6 +595,16 @@
     .mobile-nav-links a {
         padding: 0.6rem 0;
         font-size: 0.95rem;
+    }
+    
+    .mobile-sign-in {
+        margin-top: 1rem !important;
+        padding-top: 1rem;
+    }
+    
+    .mobile-sign-in a {
+        padding: 12px 20px !important;
+        margin-bottom: 1rem;
     }
     
     .mobile-menu-footer {
@@ -709,5 +735,12 @@ html {
         min-height: 44px;
         display: flex;
         align-items: center;
+    }
+    
+    .mobile-sign-in a {
+        min-height: 48px;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
     }
 }
