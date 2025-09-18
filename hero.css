@@ -33,6 +33,30 @@ body {
     opacity: 0.8 !important;
 }
 
+/* Mobile video adjustments for hero section */
+@media (max-width: 768px) {
+    .hero-video {
+        object-fit: contain !important;
+        width: 100% !important;
+        height: 100% !important;
+        left: 50% !important;
+        top: 50% !important;
+        transform: translate(-50%, -50%) scale(0.8) !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-video {
+        transform: translate(-50%, -50%) scale(0.7) !important;
+    }
+}
+
+@media (max-width: 320px) {
+    .hero-video {
+        transform: translate(-50%, -50%) scale(0.6) !important;
+    }
+}
+
 /* Video Fallback */
 .video-fallback {
     position: absolute !important;
