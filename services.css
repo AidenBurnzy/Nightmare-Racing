@@ -61,24 +61,8 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+    background: #000000; /* Solid black background */
 }
-
-/* Keep existing background images */
-.service-card:nth-child(1) { background-image: url('pictures/servicesImage/si1.png'); }
-.service-card:nth-child(2) { background-image: url('pictures/servicesImage/si2.png'); }
-.service-card:nth-child(3) { background-image: url('pictures/servicesImage/si3.png'); }
-.service-card:nth-child(4) { background-image: url('pictures/servicesImage/si4.png'); }
-.service-card:nth-child(5) { background-image: url('pictures/servicesImage/si5.png'); }
-.service-card:nth-child(6) { background-image: url('pictures/servicesImage/si6.png'); }
-.service-card:nth-child(7) { background-image: url('pictures/servicesImage/si7.png'); }
-.service-card:nth-child(8) { background-image: url('pictures/servicesImage/si8.png'); }
-.service-card:nth-child(9) { background-image: url('pictures/servicesImage/si9.png'); }
-.service-card:nth-child(10) { background-image: url('pictures/servicesImage/si10.png'); }
-.service-card:nth-child(11) { background-image: url('pictures/servicesImage/si11.png'); }
-.service-card:nth-child(12) { background-image: url('pictures/servicesImage/si12.png'); }
 
 .service-card::after {
     display: none;
