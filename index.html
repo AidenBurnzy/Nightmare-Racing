@@ -14,6 +14,7 @@
     <!-- CSS Files -->
     <link rel="stylesheet" href="indexStyles.css">
     <link rel="stylesheet" href="navStyles.css">
+    <link rel="stylesheet" href="testimonials.css">
     <link rel="stylesheet" href="hero.css">
     <link rel="stylesheet" href="services.css">
     <link rel="stylesheet" href="cars.css">
@@ -25,7 +26,7 @@
 <body>
     <video autoplay muted loop playsinline preload="auto" id="bg-video"
         style="position: fixed; right: 0; bottom: 0; min-width: 100vw; min-height: 100vh; z-index: -1; object-fit: cover; pointer-events: none;">
-        <source src="copy_325E5DB6-78F1-4FA9-81D8-131BF3EF4DBB.mov" type="video/mp4">
+        <source src="bg-video.mp4" type="video/mp4">
         Your browser does not support the video tag.
     </video>
     
@@ -101,6 +102,7 @@
 
     <!-- Include Section Files -->
     <div id="hero-section"></div>
+    <div id="testimonials-section"></div>
     <div id="services-section"></div>
     <div id="cars-section"></div>
     <div id="parts-section"></div>
@@ -140,11 +142,11 @@
         document.addEventListener('DOMContentLoaded', async () => {
             await loadSection('hero-section', 'hero.html');
             await loadSection('services-section', 'services.html');
+            await loadSection('testimonials-section', 'testimonials.html');
             await loadSection('cars-section', 'cars.html');
             await loadSection('parts-section', 'parts.html');
             await loadSection('contact-section', 'contact.html');
             await loadSection('footer-section', 'footer.html');
-            
             // Force video play after content loads
             setTimeout(forceVideoPlay, 100);
         });

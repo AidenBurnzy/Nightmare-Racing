@@ -18,7 +18,7 @@ body {
     position: relative !important;
     overflow: hidden !important;
     padding-top: 70px !important;
-    background: linear-gradient(135deg, rgba(10, 10, 10, 0.4), rgba(26, 26, 26, 0.3)) !important;
+    background: rgba(0, 0, 0, 0.315) !important;
 }
 
 /* Video Background */
