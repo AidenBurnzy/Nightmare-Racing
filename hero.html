@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nightmare Racing</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <section id="home" class="hero">
+        <!-- Video Background -->
+        <video class="hero-video" autoplay muted loop playsinline preload="metadata">
+            <source src="videos/hero-background.mp4" type="video/mp4">
+            <source src="videos/hero-background.webm" type="video/webm">
+            <!-- Fallback for browsers that don't support video -->
+            <div class="video-fallback"></div>
+        </video>
+        
+        <div class="hero-content">
+            <div class="hero-text">
+                <img src="pictures/backgroundLogo.png" alt="Nightmare Racing Logo" class="hero-logo">
+                <div class="hero-buttons">
+                    <button class="btn btn-primary">Book Service</button>
+                    <a href="https://nmrauto.com/collections" class="btn btn-secondary">Shop Parts</a>
+                </div>
+            </div>
+            
+            <!-- Desktop Images (hidden on mobile) -->
+            <div class="hero-image-container">
+                <img src="pictures/mainPageImage1.png" alt="High-performance sports car" class="hero-image">
+                <img src="pictures/mainPageImage2.png" alt="High-performance sports car" class="hero-image">
+                <img src="pictures/mainPageImage3.png" alt="High-performance sports car" class="hero-image">
+            </div>
+        </div>
+    </section>
+</body>
+</html>

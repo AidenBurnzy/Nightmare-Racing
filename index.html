@@ -7,18 +7,37 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    
+    <!-- CSS Files -->
     <link rel="stylesheet" href="indexStyles.css">
     <link rel="stylesheet" href="navStyles.css">
+    <link rel="stylesheet" href="testimonials.css">
+    <link rel="stylesheet" href="hero.css">
+    <link rel="stylesheet" href="services.css">
+    <link rel="stylesheet" href="cars.css">
+    <link rel="stylesheet" href="parts.css">
+    <link rel="stylesheet" href="contact.css">
+    <link rel="stylesheet" href="footer.css">
 </head>
+
 <body>
+    <video autoplay muted loop playsinline preload="auto" id="bg-video"
+        style="position: fixed; right: 0; bottom: 0; min-width: 100vw; min-height: 100vh; z-index: -1; object-fit: cover; pointer-events: none;">
+        <source src="bg-video.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    
     <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-logo">
-    <img src="pictures/logoImage1.png" alt="Nightmare Racing Logo">
-    <h2>NIGHTMARE<span class="text-accent">RACING</span></h2>
-        </div>
+                <img src="pictures/logoImage1.png" alt="Nightmare Racing Logo">
+                <h2>NIGHTMARE<span class="text-accent">RACING</span></h2>
+            </div>
+            
             <ul class="nav-menu">
                 <li><a href="#home">Home</a></li>
                 <li><a href="#services">Services</a></li>
@@ -26,6 +45,17 @@
                 <li><a href="#parts">Parts & Merch</a></li>
                 <li><a href="#contact">Contact</a></li>
             </ul>
+            
+            <div class="nav-actions">
+                <a href="https://nmrauto.com/" 
+                   class="sign-in-btn">
+                    <svg class="profile-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="currentColor"/>
+                    </svg>
+                    <span>Sign In to Shop</span>
+                </a>
+            </div>
+            
             <div class="hamburger">
                 <span></span>
                 <span></span>
@@ -34,278 +64,98 @@
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <section id="home" class="hero">
-        <div class="hero-content">
-            <div class="hero-text">
-                <h1 class="hero-title">
-                    <span class="title-line">NIGHTMARE</span>
-                    <span class="title-line"><span class="text-accent">RACING</span></span>
-                </h1>
-                <p class="hero-subtitle">Premium automotive services, high-performance parts, and racing merchandise for the ultimate driving experience</p>
-                <div class="hero-buttons">
-                    <button class="btn btn-primary">Book Service</button>
-                    <button class="btn btn-secondary">Shop Parts</button>
-                </div>
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu-overlay"></div>
+    
+    <!-- Mobile Menu -->
+    <div class="mobile-menu">
+        <div class="mobile-menu-content">
+            <div class="mobile-menu-header">
+                <h2>NIGHTMARE<span class="text-accent">RACING</span></h2>
+                <button class="mobile-menu-close">&times;</button>
             </div>
-            <div class="hero-image-container">
-                <img src="pictures/mainPageImage1.png" alt="High-performance sports car" class="hero-image">
-                <img src="pictures/mainPageImage2.png" alt="High-performance sports car" class="hero-image">
-                <img src="pictures/mainPageImage3.png" alt="High-performance sports car" class="hero-image">
-            </div>
-        </div>
-    </section>
-
-    <!-- Services Section -->
-    <section id="services" class="services">
-        <div class="container">
-            <div class="section-header">
-                <h2>MECHANICAL <span class="text-accent">SERVICES</span></h2>
-                <p>Professional automotive services with precision engineering</p>
-            </div>
-            <div class="services-grid">
-                <div class="service-card">
-                    <div class="service-icon">🔧</div>
-                    <h3>Engine Tuning</h3>
-                    <p>Maximize your engine's potential with our expert tuning services</p>
-                    <div class="service-price">From $299</div>
-                </div>
-                <div class="service-card">
-                    <div class="service-icon">⚡</div>
-                    <h3>Performance Upgrades</h3>
-                    <p>Transform your ride with cutting-edge performance modifications</p>
-                    <div class="service-price">From $199</div>
-                </div>
-                <div class="service-card">
-                    <div class="service-icon">🛠️</div>
-                    <h3>Complete Overhaul</h3>
-                    <p>Full mechanical restoration and performance enhancement</p>
-                    <div class="service-price">From $1,999</div>
-                </div>
-                <div class="service-card">
-                    <div class="service-icon">🏁</div>
-                    <h3>Race Prep</h3>
-                    <p>Get your machine ready for the track with professional race prep</p>
-                    <div class="service-price">From $499</div>
-                </div>
-                <div class="service-card">
-                    <div class="service-icon">🔍</div>
-                    <h3>Diagnostics</h3>
-                    <p>Advanced computer diagnostics and troubleshooting</p>
-                    <div class="service-price">From $89</div>
-                </div>
-                <div class="service-card">
-                    <div class="service-icon">🚗</div>
-                    <h3>Custom Builds</h3>
-                    <p>Bespoke automotive builds tailored to your specifications</p>
-                    <div class="service-price">Quote</div>
-                </div>
+            
+            <ul class="mobile-nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#services">Services</a></li>
+                <li><a href="#cars">Our Cars</a></li>
+                <li><a href="#parts">Parts & Merch</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li class="mobile-sign-in">
+                    <a href="https://shop.app/accounts/login?analytics_context=loginWithShopSelfServe&analytics_trace_id=1a30dca3-6621-4c5e-9ae3-c219224c51db&auth_state=eykt6hBT-0lm6x73l7cQzA&authentication_level=email&avoid_sdk_session=false&compact_layout=true&extend_buyer_identity_sdk=1&flow=default&flow_version=account-actions-popover&locale=en&next=OAuthContinue&oseid=JSodCa16pBwWRKz7t7TknUXP&preact=true&redirect_type=iframe&require_verification=false&return_uri=https%3A%2F%2Fc9efe4.myshopify.com%2Fcollections%2Fshop-parts%3Foseid%3DJSodCa16pBwWRKz7t7TknUXP&sign_up_enabled=true&storefront_domain=https%3A%2F%2Fnmrauto.com&uniq_token=4f301951-be0b-4699-91a3-871dbd523352&ux_mode=windoid&visit_token=0c36440a-9bdc-4f1e-9ac4-97bd99758220" 
+                       target="_blank" 
+                       rel="noopener noreferrer">
+                        <svg class="profile-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="currentColor"/>
+                        </svg>
+                        Sign In to Shop
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="mobile-menu-footer">
+                <p>© 2025 Nightmare Racing</p>
+                <p>Premium Auto Services</p>
             </div>
         </div>
-    </section>
+    </div>
 
-    <!-- Featured Cars Section -->
-    <section id="cars" class="cars">
-        <div class="container">
-            <div class="section-header">
-                <h2>FEATURED <span class="text-accent">MACHINES</span></h2>
-                <p>Showcasing our latest builds and customer rides</p>
-            </div>
-            <div class="cars-grid">
-                <div class="car-card">
-                    <div class="car-image">
-                        <div class="car-placeholder">🏎️</div>
-                        <div class="car-overlay">
-                            <button class="btn btn-small">View Details</button>
-                        </div>
-                    </div>
-                    <div class="car-info">
-                        <h3>Twin-Turbo Supra</h3>
-                        <p>1200HP Beast • Custom Build</p>
-                        <div class="car-specs">
-                            <span>0-60: 2.8s</span>
-                            <span>Top Speed: 220mph</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="car-card">
-                    <div class="car-image">
-                        <div class="car-placeholder">🚗</div>
-                        <div class="car-overlay">
-                            <button class="btn btn-small">View Details</button>
-                        </div>
-                    </div>
-                    <div class="car-info">
-                        <h3>Widebody GTR</h3>
-                        <p>Track Weapon • Full Build</p>
-                        <div class="car-specs">
-                            <span>0-60: 2.5s</span>
-                            <span>Track Tested</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="car-card">
-                    <div class="car-image">
-                        <div class="car-placeholder">🏁</div>
-                        <div class="car-overlay">
-                            <button class="btn btn-small">View Details</button>
-                        </div>
-                    </div>
-                    <div class="car-info">
-                        <h3>Drift Spec S15</h3>
-                        <p>Competition Ready • 800HP</p>
-                        <div class="car-specs">
-                            <span>Angle Kit</span>
-                            <span>Roll Cage</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+    <!-- Include Section Files -->
+    <div id="hero-section"></div>
+    <div id="testimonials-section"></div>
+    <div id="services-section"></div>
+    <div id="cars-section"></div>
+    <div id="parts-section"></div>
+    <div id="contact-section"></div>
+    <div id="footer-section"></div>
 
-    <!-- Parts & Merch Section -->
-    <section id="parts" class="parts">
-        <div class="container">
-            <div class="section-header">
-                <h2>PARTS & <span class="text-accent">MERCHANDISE</span></h2>
-                <p>High-performance parts and exclusive Nightmare Racing gear</p>
-            </div>
-            <div class="parts-categories">
-                <div class="category-card">
-                    <div class="category-icon">🔩</div>
-                    <h3>Performance Parts</h3>
-                    <p>Turbochargers, exhausts, intakes, and more</p>
-                    <button class="btn btn-outline">Shop Now</button>
-                </div>
-                <div class="category-card">
-                    <div class="category-icon">👕</div>
-                    <h3>Apparel</h3>
-                    <p>T-shirts, hoodies, and racing gear</p>
-                    <button class="btn btn-outline">Shop Now</button>
-                </div>
-                <div class="category-card">
-                    <div class="category-icon">🎯</div>
-                    <h3>Accessories</h3>
-                    <p>Stickers, keychains, and collectibles</p>
-                    <button class="btn btn-outline">Shop Now</button>
-                </div>
-            </div>
-            <div class="featured-products">
-                <div class="product-card">
-                    <div class="product-badge">NEW</div>
-                    <div class="product-image">📦</div>
-                    <h4>Nightmare Racing Tee</h4>
-                    <div class="product-price">$29.99</div>
-                </div>
-                <div class="product-card">
-                    <div class="product-badge">HOT</div>
-                    <div class="product-image">📦</div>
-                    <h4>Performance Air Filter</h4>
-                    <div class="product-price">$79.99</div>
-                </div>
-                <div class="product-card">
-                    <div class="product-badge">SALE</div>
-                    <div class="product-image">📦</div>
-                    <h4>Racing Sticker Pack</h4>
-                    <div class="product-price">$14.99</div>
-                </div>
-            </div>
-        </div>
-    </section>
+    <!-- Load Section Content -->
+    <script>
+        // Function to load HTML content into sections
+        async function loadSection(sectionId, fileName) {
+            try {
+                const response = await fetch(fileName);
+                const html = await response.text();
+                document.getElementById(sectionId).innerHTML = html;
+            } catch (error) {
+                console.error(`Error loading ${fileName}:`, error);
+            }
+        }
 
-    <!-- Contact Section -->
-    <section id="contact" class="contact">
-        <div class="container">
-            <div class="contact-content">
-                <div class="contact-info">
-                    <h2>GET IN <span class="text-accent">TOUCH</span></h2>
-                    <p>Ready to unleash your car's potential? Contact us today.</p>
-                    <div class="contact-details">
-                        <div class="contact-item">
-                            <span class="contact-icon">📍</span>
-                            <div>
-                                <h4>Location</h4>
-                                <p>123 Speed Street, Racing City, RC 12345</p>
-                            </div>
-                        </div>
-                        <div class="contact-item">
-                            <span class="contact-icon">📞</span>
-                            <div>
-                                <h4>Phone</h4>
-                                <p>(555) 123-RACE</p>
-                            </div>
-                        </div>
-                        <div class="contact-item">
-                            <span class="contact-icon">✉️</span>
-                            <div>
-                                <h4>Email</h4>
-                                <p>info@nightmareracing.com</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="contact-form">
-                    <form>
-                        <div class="form-group">
-                            <input type="text" placeholder="Your Name" required>
-                        </div>
-                        <div class="form-group">
-                            <input type="email" placeholder="Your Email" required>
-                        </div>
-                        <div class="form-group">
-                            <select required>
-                                <option value="">Service Type</option>
-                                <option value="tuning">Engine Tuning</option>
-                                <option value="performance">Performance Upgrades</option>
-                                <option value="overhaul">Complete Overhaul</option>
-                                <option value="race-prep">Race Prep</option>
-                                <option value="custom">Custom Build</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <textarea placeholder="Tell us about your project..." rows="4" required></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary btn-full">Send Message</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </section>
+        // Force video autoplay for mobile
+        function forceVideoPlay() {
+            const bgVideo = document.getElementById('bg-video');
+            if (bgVideo) {
+                bgVideo.muted = true;
+                bgVideo.play().catch(err => {
+                    console.log('Video autoplay failed:', err);
+                    // Fallback: try to play on user interaction
+                    document.addEventListener('touchstart', function playOnTouch() {
+                        bgVideo.play();
+                        document.removeEventListener('touchstart', playOnTouch);
+                    }, { once: true });
+                });
+            }
+        }
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>NIGHTMARE <span class="text-accent">RACING</span></h3>
-                    <p>Where performance meets precision. Your automotive dreams become reality.</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Services</h4>
-                    <ul>
-                        <li><a href="#services">Engine Tuning</a></li>
-                        <li><a href="#services">Performance Upgrades</a></li>
-                        <li><a href="#services">Race Prep</a></li>
-                        <li><a href="#services">Custom Builds</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Follow Us</h4>
-                    <div class="social-links">
-                        <a href="#">Instagram</a>
-                        <a href="#">Facebook</a>
-                        <a href="#">YouTube</a>
-                        <a href="#">TikTok</a>
-                    </div>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2025 Nightmare Racing. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
+        // Load all sections
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadSection('hero-section', 'hero.html');
+            await loadSection('services-section', 'services.html');
+            await loadSection('testimonials-section', 'testimonials.html');
+            await loadSection('cars-section', 'cars.html');
+            await loadSection('parts-section', 'parts.html');
+            await loadSection('contact-section', 'contact.html');
+            await loadSection('footer-section', 'footer.html');
+            // Force video play after content loads
+            setTimeout(forceVideoPlay, 100);
+        });
 
+        // Additional video play attempts
+        window.addEventListener('load', forceVideoPlay);
+        document.addEventListener('click', forceVideoPlay, { once: true });
+        document.addEventListener('touchstart', forceVideoPlay, { once: true });
+    </script>
     <script src="index.js"></script>
 </body>
 </html>
