@@ -104,29 +104,20 @@
 }
 
 .service-card:hover {
-    transform: translateY(-20px) scale(1.75); /* MASSIVE scale and lift */
-    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 0 3px var(--accent-color, #ff6b35); /* Huge shadow + accent outline */
-    z-index: 100; /* Way above everything */
+    transform: translateY(-4px) scale(1.05); /* Subtle lift and scale */
+    box-shadow: 0 4px 16px rgba(0,0,0,0.18), 0 0 0 1px var(--accent-color, #ff6b35); /* Softer shadow + thin accent */
+    z-index: 10;
     border-color: var(--accent-color, #ff6b35);
-    border-width: 4px; /* Thicker border on hover */
+    border-width: 3px;
 }
 
 .service-card:hover .service-icon {
-    transform: scale(1.1); /* Bigger counter-scaling: 1.1 * 1.75 = 1.9x final size */
-    text-shadow: 3px 3px 12px rgba(0, 0, 0, 0.95), 0 0 20px rgba(255, 255, 255, 0.3); /* Enhanced glow */
+    transform: scale(1.03); /* Slightly larger */
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.5), 0 0 8px rgba(255,255,255,0.12); /* Softer glow */
 }
 
 .service-card:hover h3 {
-    font-size: 0.7rem; /* Bigger counter-scaling: 0.7 * 1.75 = 1.23rem final size */
-    font-weight: 800; /* Extra bold text */
-    text-shadow: 3px 3px 12px rgba(0, 0, 0, 0.98), 0 0 20px rgba(255, 255, 255, 0.2); /* Enhanced text shadow + glow */
-    line-height: 1.2; /* Slightly more space between lines */
-    padding: 0 0.17rem; /* Reduced padding: 0.17 * 1.75 = 0.3rem final */
-    word-break: normal; /* Allow normal word breaking */
-    hyphens: none; /* Disable hyphenation */
-    white-space: normal; /* Allow normal text wrapping */
-    max-width: 57%; /* More width: 57% * 1.75 = ~100% final - use full card width */
-    overflow-wrap: break-word; /* Only break words if absolutely necessary */
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.5), 0 0 8px rgba(255,255,255,0.12); /* Softer text shadow */
 }
 
 /* Mobile adjustments */
