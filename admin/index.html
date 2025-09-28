@@ -5,12 +5,100 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex" />
   <title>Nightmare Racing - Admin Portal</title>
+  
+  <!-- Netlify Identity Widget -->
   <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  
   <style>
     body {
       background: #0a0a0a;
       color: #fff;
       font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    
+    /* Loading screen styles */
+    .auth-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      text-align: center;
+    }
+    
+    .auth-screen h1 {
+      color: #e50000;
+      margin-bottom: 20px;
+      font-size: 2.5rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    
+    .auth-screen p {
+      color: #888;
+      margin-bottom: 30px;
+      font-size: 1.2rem;
+    }
+    
+    .auth-button {
+      background: linear-gradient(135deg, #e50000, #cc0000);
+      color: white;
+      padding: 15px 30px;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 1rem;
+      margin: 10px;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: bold;
+    }
+    
+    .auth-button:hover {
+      background: linear-gradient(135deg, #cc0000, #b30000);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(229, 0, 0, 0.4);
+    }
+    
+    .status-message {
+      color: #fff;
+      margin-top: 20px;
+      font-size: 1rem;
+      padding: 10px;
+      border-radius: 5px;
+      max-width: 400px;
+    }
+    
+    .status-success {
+      background: rgba(0, 255, 0, 0.1);
+      border: 1px solid #00ff00;
+    }
+    
+    .status-error {
+      background: rgba(255, 0, 0, 0.1);
+      border: 1px solid #ff0000;
+    }
+    
+    .hidden {
+      display: none !important;
+    }
+    
+    /* CMS Container */
+    #cms-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
     }
     
     /* Style the CMS to match Nightmare Racing theme */
@@ -25,20 +113,167 @@
     .css-v758ki-AppHeaderContent {
       background: #e50000 !important;
     }
+    
+    /* Spinner */
+    .spinner {
+      border: 3px solid rgba(229, 0, 0, 0.3);
+      border-radius: 50%;
+      border-top: 3px solid #e50000;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body>
+  <!-- Authentication Screen -->
+  <div id="auth-screen" class="auth-screen">
+    <h1>NIGHTMARE RACING</h1>
+    <p>Admin Portal</p>
+    
+    <!-- Loading State -->
+    <div id="loading-state">
+      <div class="spinner"></div>
+      <p>Initializing authentication...</p>
+    </div>
+    
+    <!-- Login State -->
+    <div id="login-state" class="hidden">
+      <button id="login-btn" class="auth-button">Login to Admin</button>
+      <div id="status-message" class="status-message hidden"></div>
+    </div>
+    
+    <!-- Success State -->
+    <div id="success-state" class="hidden">
+      <div class="spinner"></div>
+      <p>Login successful! Loading CMS...</p>
+    </div>
+  </div>
+
+  <!-- CMS Container (hidden initially) -->
+  <div id="cms-container" class="hidden"></div>
+
+  <!-- Load Decap CMS -->
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+  
   <script>
-    if (window.netlifyIdentity) {
+    console.log('🏁 Nightmare Racing Admin Portal Loading...');
+    
+    // DOM Elements
+    const authScreen = document.getElementById('auth-screen');
+    const cmsContainer = document.getElementById('cms-container');
+    const loadingState = document.getElementById('loading-state');
+    const loginState = document.getElementById('login-state');
+    const successState = document.getElementById('success-state');
+    const statusMessage = document.getElementById('status-message');
+    const loginBtn = document.getElementById('login-btn');
+
+    // Utility functions
+    function showState(state) {
+      [loadingState, loginState, successState].forEach(el => el.classList.add('hidden'));
+      state.classList.remove('hidden');
+    }
+    
+    function showStatus(message, isError = false) {
+      statusMessage.textContent = message;
+      statusMessage.className = `status-message ${isError ? 'status-error' : 'status-success'}`;
+      statusMessage.classList.remove('hidden');
+      console.log(isError ? '❌' : '✅', message);
+    }
+    
+    function hideAuthScreen() {
+      authScreen.classList.add('hidden');
+      cmsContainer.classList.remove('hidden');
+    }
+
+    // Check if Netlify Identity is available
+    if (!window.netlifyIdentity) {
+      console.error('❌ Netlify Identity widget not loaded');
+      showState(loginState);
+      showStatus('Error: Netlify Identity not available. Please check your setup.', true);
+    } else {
+      console.log('✅ Netlify Identity widget loaded');
+
+      // Initialize Netlify Identity
       window.netlifyIdentity.on("init", user => {
-        if (!user) {
-          window.netlifyIdentity.on("login", () => {
-            document.location.href = "/admin/";
-          });
+        console.log('🔄 Netlify Identity initialized');
+        
+        if (user) {
+          console.log('✅ User already logged in:', user.email);
+          showState(successState);
+          showStatus(`Welcome back, ${user.email}!`);
+          
+          setTimeout(() => {
+            hideAuthScreen();
+          }, 2000);
+        } else {
+          console.log('ℹ️ No user logged in, showing login');
+          showState(loginState);
+          showStatus('Please log in to access the admin portal');
         }
       });
+
+      // Handle login button click
+      loginBtn.addEventListener('click', () => {
+        console.log('🔄 Login button clicked');
+        showStatus('Opening login modal...');
+        window.netlifyIdentity.open();
+      });
+
+      // Handle successful login
+      window.netlifyIdentity.on("login", user => {
+        console.log('✅ User logged in successfully:', user.email);
+        showState(successState);
+        showStatus(`Welcome, ${user.email}! Loading admin panel...`);
+        window.netlifyIdentity.close();
+        
+        setTimeout(() => {
+          hideAuthScreen();
+        }, 2000);
+      });
+
+      // Handle logout
+      window.netlifyIdentity.on("logout", () => {
+        console.log('ℹ️ User logged out');
+        authScreen.classList.remove('hidden');
+        cmsContainer.classList.add('hidden');
+        showState(loginState);
+        showStatus('Successfully logged out');
+      });
+
+      // Handle errors
+      window.netlifyIdentity.on("error", err => {
+        console.error('❌ Netlify Identity error:', err);
+        showState(loginState);
+        showStatus('Authentication error. Please try again or contact support.', true);
+      });
+
+      // Handle modal open/close
+      window.netlifyIdentity.on("open", () => {
+        console.log('🔄 Identity modal opened');
+      });
+
+      window.netlifyIdentity.on("close", () => {
+        console.log('🔄 Identity modal closed');
+      });
+
+      // Initialize
+      console.log('🔄 Initializing Netlify Identity...');
+      window.netlifyIdentity.init({
+        APIUrl: "https://nightmareracing.netlify.app/.netlify/identity"
+      });
     }
+
+    // Handle page reload on login (sometimes needed)
+    window.netlifyIdentity && window.netlifyIdentity.on("login", () => {
+      document.location.href = "/admin/";
+    });
   </script>
 </body>
 </html>
