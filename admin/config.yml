@@ -1,0 +1,45 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "images/cars"
+public_folder: "/images/cars"
+
+collections:
+  - name: "featured-cars"
+    label: "Featured Machines"
+    folder: "_data/cars"
+    create: true
+    extension: "json"
+    slug: "{{slug}}"
+    fields:
+      - {label: "Car Name", name: "name", widget: "string", hint: "e.g., Twin-Turbo Supra"}
+      - {label: "Description", name: "description", widget: "string", hint: "e.g., 1200HP Beast • Custom Build"}
+      - {label: "Main Photo", name: "mainImage", widget: "image", hint: "Primary car photo for the card"}
+      - {label: "Additional Photos", name: "gallery", widget: "list", field: {label: "Photo", name: "image", widget: "image"}, required: false, hint: "Extra photos for gallery view"}
+      - label: "Performance Specs"
+        name: "specs"
+        widget: "object"
+        fields:
+          - {label: "0-60 Time", name: "zeroToSixty", widget: "string", hint: "e.g., 2.8s", required: false}
+          - {label: "Top Speed", name: "topSpeed", widget: "string", hint: "e.g., 220mph", required: false}
+          - {label: "Horsepower", name: "horsepower", widget: "string", hint: "e.g., 1200HP", required: false}
+          - {label: "Custom Spec 1", name: "custom1", widget: "string", hint: "Any other spec", required: false}
+          - {label: "Custom Spec 2", name: "custom2", widget: "string", hint: "Any other spec", required: false}
+      - {label: "Build Status", name: "status", widget: "select", options: ["Completed", "In Progress", "Featured Build", "Customer Car"], default: "Completed"}
+      - {label: "Featured on Homepage", name: "featured", widget: "boolean", default: true, hint: "Show this car on the main page"}
+      - {label: "Date Added", name: "dateAdded", widget: "datetime", default: "{{now}}"}
+
+  - name: "website-updates"
+    label: "Website Change Requests"
+    folder: "_data/updates"
+    create: true
+    extension: "json"
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - {label: "What needs updating?", name: "section", widget: "select", options: ["Contact Info", "Services List", "Hours", "Pricing", "About Text", "Other"]}
+      - {label: "Current Content", name: "current", widget: "text", hint: "What currently shows on the website?", required: false}
+      - {label: "Requested Change", name: "requested", widget: "text", hint: "What would you like it to say instead?"}
+      - {label: "Priority", name: "priority", widget: "select", options: ["Low", "Medium", "High", "Urgent"], default: "Medium"}
+      - {label: "Additional Notes", name: "notes", widget: "text", required: false}
+      - {label: "Date Requested", name: "date", widget: "datetime", default: "{{now}}"}

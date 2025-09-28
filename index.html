@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,7 +11,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
-    
+
     <!-- CSS Files -->
     <link rel="stylesheet" href="indexStyles.css">
     <link rel="stylesheet" href="navStyles.css">
@@ -29,33 +30,37 @@
         <source src="bg-video.mp4" type="video/mp4">
         Your browser does not support the video tag.
     </video>
-    
+
     <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
+            <!-- Add this to your nav-menu ul around line 35 -->
+
             <div class="nav-logo">
                 <img src="pictures/logoImage1.png" alt="Nightmare Racing Logo">
                 <h2>NIGHTMARE<span class="text-accent">RACING</span></h2>
             </div>
-            
+
             <ul class="nav-menu">
+                <li><a href="/admin" target="_blank">Admin</a></li>
                 <li><a href="#home">Home</a></li>
                 <li><a href="#services">Services</a></li>
                 <li><a href="#cars">Our Cars</a></li>
                 <li><a href="#parts">Parts & Merch</a></li>
                 <li><a href="#contact">Contact</a></li>
             </ul>
-            
+
             <div class="nav-actions">
-                <a href="https://nmrauto.com/" 
-                   class="sign-in-btn">
+                <a href="https://nmrauto.com/" class="sign-in-btn">
                     <svg class="profile-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="currentColor"/>
+                        <path
+                            d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
+                            fill="currentColor" />
                     </svg>
                     <span>Sign In to Shop</span>
                 </a>
             </div>
-            
+
             <div class="hamburger">
                 <span></span>
                 <span></span>
@@ -66,7 +71,7 @@
 
     <!-- Mobile Menu Overlay -->
     <div class="mobile-menu-overlay"></div>
-    
+
     <!-- Mobile Menu -->
     <div class="mobile-menu">
         <div class="mobile-menu-content">
@@ -74,25 +79,27 @@
                 <h2>NIGHTMARE<span class="text-accent">RACING</span></h2>
                 <button class="mobile-menu-close">&times;</button>
             </div>
-            
+
             <ul class="mobile-nav-links">
+                <li><a href="/admin" target="_blank">Admin Portal</a></li>
                 <li><a href="#home">Home</a></li>
                 <li><a href="#services">Services</a></li>
                 <li><a href="#cars">Our Cars</a></li>
                 <li><a href="#parts">Parts & Merch</a></li>
                 <li><a href="#contact">Contact</a></li>
                 <li class="mobile-sign-in">
-                    <a href="https://shop.app/accounts/login?analytics_context=loginWithShopSelfServe&analytics_trace_id=1a30dca3-6621-4c5e-9ae3-c219224c51db&auth_state=eykt6hBT-0lm6x73l7cQzA&authentication_level=email&avoid_sdk_session=false&compact_layout=true&extend_buyer_identity_sdk=1&flow=default&flow_version=account-actions-popover&locale=en&next=OAuthContinue&oseid=JSodCa16pBwWRKz7t7TknUXP&preact=true&redirect_type=iframe&require_verification=false&return_uri=https%3A%2F%2Fc9efe4.myshopify.com%2Fcollections%2Fshop-parts%3Foseid%3DJSodCa16pBwWRKz7t7TknUXP&sign_up_enabled=true&storefront_domain=https%3A%2F%2Fnmrauto.com&uniq_token=4f301951-be0b-4699-91a3-871dbd523352&ux_mode=windoid&visit_token=0c36440a-9bdc-4f1e-9ac4-97bd99758220" 
-                       target="_blank" 
-                       rel="noopener noreferrer">
+                    <a href="https://shop.app/accounts/login?analytics_context=loginWithShopSelfServe&analytics_trace_id=1a30dca3-6621-4c5e-9ae3-c219224c51db&auth_state=eykt6hBT-0lm6x73l7cQzA&authentication_level=email&avoid_sdk_session=false&compact_layout=true&extend_buyer_identity_sdk=1&flow=default&flow_version=account-actions-popover&locale=en&next=OAuthContinue&oseid=JSodCa16pBwWRKz7t7TknUXP&preact=true&redirect_type=iframe&require_verification=false&return_uri=https%3A%2F%2Fc9efe4.myshopify.com%2Fcollections%2Fshop-parts%3Foseid%3DJSodCa16pBwWRKz7t7TknUXP&sign_up_enabled=true&storefront_domain=https%3A%2F%2Fnmrauto.com&uniq_token=4f301951-be0b-4699-91a3-871dbd523352&ux_mode=windoid&visit_token=0c36440a-9bdc-4f1e-9ac4-97bd99758220"
+                        target="_blank" rel="noopener noreferrer">
                         <svg class="profile-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="currentColor"/>
+                            <path
+                                d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
+                                fill="currentColor" />
                         </svg>
                         Sign In to Shop
                     </a>
                 </li>
             </ul>
-            
+
             <div class="mobile-menu-footer">
                 <p>© 2025 Nightmare Racing</p>
                 <p>Premium Auto Services</p>
@@ -158,4 +165,5 @@
     </script>
     <script src="index.js"></script>
 </body>
+
 </html>
