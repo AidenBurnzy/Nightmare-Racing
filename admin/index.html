@@ -69,6 +69,12 @@
       box-shadow: 0 8px 20px rgba(229, 0, 0, 0.4);
     }
     
+    .auth-button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
     .status-message {
       color: #fff;
       margin-top: 20px;
@@ -86,6 +92,11 @@
     .status-error {
       background: rgba(255, 0, 0, 0.1);
       border: 1px solid #ff0000;
+    }
+    
+    .status-warning {
+      background: rgba(255, 165, 0, 0.1);
+      border: 1px solid #ffa500;
     }
     
     .hidden {
@@ -129,6 +140,36 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
+
+    .setup-instructions {
+      max-width: 600px;
+      text-align: left;
+      background: rgba(26, 26, 26, 0.8);
+      padding: 20px;
+      border-radius: 10px;
+      border: 1px solid #333;
+    }
+
+    .setup-instructions h3 {
+      color: #e50000;
+      margin-bottom: 15px;
+    }
+
+    .setup-instructions ol {
+      color: #ccc;
+      line-height: 1.6;
+    }
+
+    .setup-instructions li {
+      margin-bottom: 10px;
+    }
+
+    .setup-instructions code {
+      background: #333;
+      padding: 2px 6px;
+      border-radius: 3px;
+      color: #e50000;
+    }
   </style>
 </head>
 <body>
@@ -141,6 +182,22 @@
     <div id="loading-state">
       <div class="spinner"></div>
       <p>Initializing authentication...</p>
+    </div>
+    
+    <!-- Setup Required State -->
+    <div id="setup-state" class="hidden">
+      <div class="setup-instructions">
+        <h3>🔧 Setup Required</h3>
+        <p>Netlify Identity needs to be enabled first. Follow these steps:</p>
+        <ol>
+          <li>Go to your <a href="https://app.netlify.com/sites/nightmareracing/settings/identity" target="_blank" style="color: #e50000;">Netlify site settings → Identity</a></li>
+          <li>Click "Enable Identity"</li>
+          <li>Under "Registration preferences", select "Invite only"</li>
+          <li>Under "Git Gateway", click "Enable Git Gateway"</li>
+          <li>Return to this page and refresh</li>
+        </ol>
+      </div>
+      <button id="retry-btn" class="auth-button">Retry Connection</button>
     </div>
     
     <!-- Login State -->
@@ -169,22 +226,24 @@
     const authScreen = document.getElementById('auth-screen');
     const cmsContainer = document.getElementById('cms-container');
     const loadingState = document.getElementById('loading-state');
+    const setupState = document.getElementById('setup-state');
     const loginState = document.getElementById('login-state');
     const successState = document.getElementById('success-state');
     const statusMessage = document.getElementById('status-message');
     const loginBtn = document.getElementById('login-btn');
+    const retryBtn = document.getElementById('retry-btn');
 
     // Utility functions
     function showState(state) {
-      [loadingState, loginState, successState].forEach(el => el.classList.add('hidden'));
+      [loadingState, setupState, loginState, successState].forEach(el => el.classList.add('hidden'));
       state.classList.remove('hidden');
     }
     
-    function showStatus(message, isError = false) {
+    function showStatus(message, type = 'success') {
       statusMessage.textContent = message;
-      statusMessage.className = `status-message ${isError ? 'status-error' : 'status-success'}`;
+      statusMessage.className = `status-message status-${type}`;
       statusMessage.classList.remove('hidden');
-      console.log(isError ? '❌' : '✅', message);
+      console.log(type === 'error' ? '❌' : type === 'warning' ? '⚠️' : '✅', message);
     }
     
     function hideAuthScreen() {
@@ -192,15 +251,48 @@
       cmsContainer.classList.remove('hidden');
     }
 
-    // Check if Netlify Identity is available
-    if (!window.netlifyIdentity) {
-      console.error('❌ Netlify Identity widget not loaded');
-      showState(loginState);
-      showStatus('Error: Netlify Identity not available. Please check your setup.', true);
-    } else {
-      console.log('✅ Netlify Identity widget loaded');
+    // Get the current site URL dynamically
+    function getSiteUrl() {
+      return window.location.origin;
+    }
 
-      // Initialize Netlify Identity
+    // Check if Netlify Identity is available and properly configured
+    function checkIdentityAvailability() {
+      if (!window.netlifyIdentity) {
+        console.error('❌ Netlify Identity widget not loaded');
+        showState(setupState);
+        showStatus('Netlify Identity widget failed to load. Please check your internet connection.', 'error');
+        return false;
+      }
+      return true;
+    }
+
+    // Initialize Netlify Identity with dynamic URL
+    function initializeIdentity() {
+      if (!checkIdentityAvailability()) return;
+
+      console.log('🔄 Initializing Netlify Identity...');
+      
+      // Use dynamic site URL
+      const siteUrl = getSiteUrl();
+      console.log('🌐 Site URL:', siteUrl);
+      
+      try {
+        window.netlifyIdentity.init({
+          APIUrl: `${siteUrl}/.netlify/identity`
+        });
+      } catch (error) {
+        console.error('❌ Failed to initialize Netlify Identity:', error);
+        showState(setupState);
+        showStatus('Failed to initialize Identity. Please check if Netlify Identity is enabled.', 'error');
+      }
+    }
+
+    // Setup event listeners
+    function setupEventListeners() {
+      if (!window.netlifyIdentity) return;
+
+      // Identity initialization
       window.netlifyIdentity.on("init", user => {
         console.log('🔄 Netlify Identity initialized');
         
@@ -219,14 +311,33 @@
         }
       });
 
-      // Handle login button click
-      loginBtn.addEventListener('click', () => {
-        console.log('🔄 Login button clicked');
-        showStatus('Opening login modal...');
-        window.netlifyIdentity.open();
-      });
+      // Login button handler
+      if (loginBtn) {
+        loginBtn.addEventListener('click', () => {
+          console.log('🔄 Login button clicked');
+          loginBtn.disabled = true;
+          showStatus('Opening login modal...');
+          
+          try {
+            window.netlifyIdentity.open();
+          } catch (error) {
+            console.error('❌ Failed to open login modal:', error);
+            showStatus('Failed to open login. Please check if Identity is enabled.', 'error');
+            loginBtn.disabled = false;
+          }
+        });
+      }
 
-      // Handle successful login
+      // Retry button handler
+      if (retryBtn) {
+        retryBtn.addEventListener('click', () => {
+          console.log('🔄 Retrying connection...');
+          showState(loadingState);
+          setTimeout(initializeIdentity, 1000);
+        });
+      }
+
+      // Successful login
       window.netlifyIdentity.on("login", user => {
         console.log('✅ User logged in successfully:', user.email);
         showState(successState);
@@ -238,7 +349,7 @@
         }, 2000);
       });
 
-      // Handle logout
+      // Logout handler
       window.netlifyIdentity.on("logout", () => {
         console.log('ℹ️ User logged out');
         authScreen.classList.remove('hidden');
@@ -247,32 +358,55 @@
         showStatus('Successfully logged out');
       });
 
-      // Handle errors
+      // Error handler
       window.netlifyIdentity.on("error", err => {
         console.error('❌ Netlify Identity error:', err);
-        showState(loginState);
-        showStatus('Authentication error. Please try again or contact support.', true);
+        loginBtn.disabled = false;
+        
+        if (err.message && err.message.includes('Identity not enabled')) {
+          showState(setupState);
+          showStatus('Netlify Identity is not enabled on this site.', 'warning');
+        } else {
+          showState(loginState);
+          showStatus('Authentication error. Please try again or check setup instructions.', 'error');
+        }
       });
 
-      // Handle modal open/close
+      // Modal handlers
       window.netlifyIdentity.on("open", () => {
         console.log('🔄 Identity modal opened');
       });
 
       window.netlifyIdentity.on("close", () => {
         console.log('🔄 Identity modal closed');
-      });
-
-      // Initialize
-      console.log('🔄 Initializing Netlify Identity...');
-      window.netlifyIdentity.init({
-        APIUrl: "https://nightmareracing.netlify.app/.netlify/identity"
+        loginBtn.disabled = false;
       });
     }
 
-    // Handle page reload on login (sometimes needed)
+    // Initialize everything
+    function initialize() {
+      console.log('🚀 Starting initialization...');
+      
+      if (!checkIdentityAvailability()) {
+        return;
+      }
+
+      setupEventListeners();
+      initializeIdentity();
+    }
+
+    // Wait for the widget to load, then initialize
+    if (window.netlifyIdentity) {
+      initialize();
+    } else {
+      window.addEventListener('load', initialize);
+    }
+
+    // Handle page reload after login (sometimes needed)
     window.netlifyIdentity && window.netlifyIdentity.on("login", () => {
-      document.location.href = "/admin/";
+      if (window.location.hash === '#admin') {
+        document.location.href = "/admin/";
+      }
     });
   </script>
 </body>
