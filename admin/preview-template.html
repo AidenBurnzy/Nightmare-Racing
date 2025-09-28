@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Card Preview</title>
+    <style>
+        /* Nightmare Racing Car Card Preview Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .preview-container {
+            background: #1a1a1a;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .preview-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e50000;
+        }
+
+        .preview-header h1 {
+            color: #e50000;
+            font-size: 2rem;
+            margin: 0 0 10px 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .preview-header p {
+            color: #888;
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        .car-card-preview {
+            background: #1a1a1a;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .car-card-preview:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .car-image-preview {
+            position: relative;
+            height: 250px;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .car-image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .car-placeholder {
+            font-size: 4rem;
+            opacity: 0.3;
+            color: #888;
+        }
+
+        .car-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(229, 0, 0, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .car-card-preview:hover .car-overlay {
+            opacity: 1;
+        }
+
+        .btn {
+            background: transparent;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: 2px solid white;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .btn:hover {
+            background: white;
+            color: #e50000;
+        }
+
+        .car-info {
+            padding: 2rem;
+        }
+
+        .car-info h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: #fff;
+        }
+
+        .car-info p {
+            color: #888;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        .car-specs {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .car-specs span {
+            background: #0a0a0a;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: #e50000;
+            border: 1px solid #333;
+        }
+
+        .status-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #e50000;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .preview-info {
+            margin-top: 30px;
+            padding: 20px;
+            background: #0a0a0a;
+            border-radius: 10px;
+            border-left: 4px solid #e50000;
+        }
+
+        .preview-info h3 {
+            color: #e50000;
+            margin-bottom: 10px;
+        }
+
+        .preview-info p {
+            color: #aaa;
+            margin: 5px 0;
+            font-size: 0.9rem;
+        }
+
+        .priority-indicator {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .priority-high {
+            background: #ff4444;
+            color: white;
+        }
+
+        .priority-normal {
+            background: #888;
+            color: white;
+        }
+
+        .priority-low {
+            background: #333;
+            color: #aaa;
+        }
+
+        .specs-empty {
+            color: #555;
+            font-style: italic;
+            text-align: center;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="preview-container">
+        <div class="preview-header">
+            <h1>Car Card Preview</h1>
+            <p>This is how your car will appear on the Nightmare Racing website</p>
+        </div>
+
+        <div class="car-card-preview">
+            <div class="car-image-preview">
+                <!-- Status Badge -->
+                <div class="status-badge" id="status-badge">COMPLETED</div>
+                
+                <!-- Car Image or Placeholder -->
+                <div id="car-image-container">
+                    <div class="car-placeholder">🏎️</div>
+                </div>
+                
+                <!-- Hover Overlay -->
+                <div class="car-overlay">
+                    <button class="btn">View Details</button>
+                </div>
+            </div>
+            
+            <div class="car-info">
+                <h3 id="car-name">Car Name Will Appear Here</h3>
+                <p id="car-description">Car description will appear here</p>
+                <div class="car-specs" id="car-specs">
+                    <!-- Specs will be populated here -->
+                    <div class="specs-empty">Add performance specs to see them here</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="preview-info">
+            <h3>Preview Information</h3>
+            <p><strong>Featured on Homepage:</strong> <span id="featured-status">Yes</span></p>
+            <p><strong>Build Status:</strong> <span id="build-status">Completed</span></p>
+            <p><strong>Priority:</strong> <span id="priority-display">Normal</span></p>
+            <p><strong>Date Added:</strong> <span id="date-added">Just now</span></p>
+        </div>
+    </div>
+
+    <script>
+        // This script would be used to populate the preview with CMS data
+        // In actual implementation, this would connect to Netlify CMS preview API
+        
+        function updatePreview(data) {
+            // Update car name
+            const nameElement = document.getElementById('car-name');
+            if (data.car_info && data.car_info.name) {
+                nameElement.textContent = data.car_info.name;
+            }
+
+            // Update description
+            const descElement = document.getElementById('car-description');
+            if (data.car_info && data.car_info.description) {
+                descElement.textContent = data.car_info.description;
+            }
+
+            // Update status badge
+            const statusBadge = document.getElementById('status-badge');
+            if (data.car_info && data.car_info.status) {
+                statusBadge.textContent = data.car_info.status.toUpperCase();
+            }
+
+            // Update image
+            const imageContainer = document.getElementById('car-image-container');
+            if (data.media && data.media.mainImage) {
+                imageContainer.innerHTML = `<img src="${data.media.mainImage}" alt="${data.car_info.name}">`;
+            }
+
+            // Update specs
+            const specsContainer = document.getElementById('car-specs');
+            if (data.specs) {
+                let specsHtml = '';
+                if (data.specs.zeroToSixty) specsHtml += `<span>0-60: ${data.specs.zeroToSixty}</span>`;
+                if (data.specs.topSpeed) specsHtml += `<span>Top Speed: ${data.specs.topSpeed}</span>`;
+                if (data.specs.horsepower) specsHtml += `<span>${data.specs.horsepower}</span>`;
+                if (data.specs.engine) specsHtml += `<span>${data.specs.engine}</span>`;
+                if (data.specs.weight) specsHtml += `<span>${data.specs.weight}</span>`;
+                if (data.specs.custom1) specsHtml += `<span>${data.specs.custom1}</span>`;
+                if (data.specs.custom2) specsHtml += `<span>${data.specs.custom2}</span>`;
+                
+                if (specsHtml) {
+                    specsContainer.innerHTML = specsHtml;
+                } else {
+                    specsContainer.innerHTML = '<div class="specs-empty">Add performance specs to see them here</div>';
+                }
+            }
+
+            // Update preview info
+            const featuredStatus = document.getElementById('featured-status');
+            if (data.display && typeof data.display.featured === 'boolean') {
+                featuredStatus.textContent = data.display.featured ? 'Yes' : 'No';
+                featuredStatus.style.color = data.display.featured ? '#4CAF50' : '#f44336';
+            }
+
+            const buildStatus = document.getElementById('build-status');
+            if (data.car_info && data.car_info.status) {
+                buildStatus.textContent = data.car_info.status;
+            }
+
+            const priorityDisplay = document.getElementById('priority-display');
+            if (data.display && data.display.priority) {
+                const priority = data.display.priority;
+                priorityDisplay.textContent = priority.charAt(0).toUpperCase() + priority.slice(1);
+                priorityDisplay.className = `priority-indicator priority-${priority}`;
+            }
+
+            const dateAdded = document.getElementById('date-added');
+            if (data.metadata && data.metadata.dateAdded) {
+                const date = new Date(data.metadata.dateAdded);
+                dateAdded.textContent = date.toLocaleDateString();
+            }
+        }
+
+        // Example of how the preview would be populated
+        // This would normally be called by Netlify CMS preview system
+        document.addEventListener('DOMContentLoaded', function() {
+            // Demo data for preview
+            const demoData = {
+                car_info: {
+                    name: "Twin-Turbo Supra",
+                    description: "1200HP Beast • Custom Build",
+                    status: "Completed"
+                },
+                specs: {
+                    zeroToSixty: "2.8s",
+                    topSpeed: "220mph",
+                    horsepower: "1200HP"
+                },
+                display: {
+                    featured: true,
+                    priority: "high"
+                },
+                metadata: {
+                    dateAdded: new Date().toISOString()
+                }
+            };
+            
+            updatePreview(demoData);
+        });
+    </script>
+</body>
+</html>
