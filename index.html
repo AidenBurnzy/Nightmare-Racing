@@ -22,6 +22,9 @@
     <link rel="stylesheet" href="parts.css">
     <link rel="stylesheet" href="contact.css">
     <link rel="stylesheet" href="footer.css">
+    
+    <!-- Netlify Identity Widget - CRITICAL FOR INVITE FLOW -->
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </head>
 
 <body>
@@ -34,8 +37,6 @@
     <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
-            <!-- Add this to your nav-menu ul around line 35 -->
-
             <div class="nav-logo">
                 <img src="pictures/logoImage1.png" alt="Nightmare Racing Logo">
                 <h2>NIGHTMARE<span class="text-accent">RACING</span></h2>
@@ -163,6 +164,20 @@
         document.addEventListener('click', forceVideoPlay, { once: true });
         document.addEventListener('touchstart', forceVideoPlay, { once: true });
     </script>
+    
+    <!-- Netlify Identity initialization script -->
+    <script>
+        if (window.netlifyIdentity) {
+            window.netlifyIdentity.on("init", user => {
+                if (!user) {
+                    window.netlifyIdentity.on("login", () => {
+                        document.location.href = "/admin/";
+                    });
+                }
+            });
+        }
+    </script>
+    
     <script src="index.js"></script>
 </body>
 

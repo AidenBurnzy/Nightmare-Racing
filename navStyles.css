@@ -686,10 +686,12 @@
     }
 }
 
-/* Smooth scroll behavior for navigation links */
+/* REMOVED: Smooth scroll behavior that was causing auto-scroll issues */
+/* 
 html {
     scroll-behavior: smooth;
 }
+*/
 
 /* Navigation logo text selection prevention */
 .nav-logo h2 {
