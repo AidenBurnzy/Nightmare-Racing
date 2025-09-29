@@ -1,3 +1,31 @@
+.admin-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(90deg, #e53935 0%, #b71c1c 100%);
+    color: #fff;
+    font-family: var(--font-primary);
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 8px 20px;
+    border-radius: 24px;
+    border: none;
+    text-decoration: none;
+    box-shadow: 0 2px 8px rgba(229, 57, 53, 0.15);
+    transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
+    cursor: pointer;
+    margin-left: 1rem;
+}
+.admin-btn:hover {
+    background: linear-gradient(90deg, #b71c1c 0%, #e53935 100%);
+    box-shadow: 0 4px 16px rgba(229, 57, 53, 0.25);
+    transform: translateY(-2px) scale(1.04);
+}
+.admin-btn:active {
+    background: linear-gradient(90deg, #e53935 0%, #b71c1c 100%);
+    box-shadow: 0 2px 8px rgba(229, 57, 53, 0.15);
+    transform: scale(0.98);
+}
 /* ================================
    NAVIGATION STYLES - navStyles.css
    ================================ */
