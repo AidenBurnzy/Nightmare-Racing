@@ -55,15 +55,33 @@
       border: none;
       border-radius: 25px;
       cursor: pointer;
-      font-size: 1rem;
+      font-size: clamp(0.9rem, 2.5vw, 1rem);
       margin: 10px;
       transition: all 0.3s ease;
       text-transform: uppercase;
       letter-spacing: 1px;
       font-weight: bold;
+      min-height: 44px;
+      min-width: 150px;
+      white-space: nowrap;
     }
     
-    .auth-button:hover {
+    .back-button {
+      display: inline-block;
+      color: #888;
+      text-decoration: none;
+      padding: 10px 20px;
+      margin: 10px;
+      font-size: 1rem;
+      transition: color 0.3s ease;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .back-button:hover {
+      color: #e50000;
+      background: rgba(229, 0, 0, 0.1);
+    }    .auth-button:hover {
       background: linear-gradient(135deg, #cc0000, #b30000);
       transform: translateY(-2px);
       box-shadow: 0 8px 20px rgba(229, 0, 0, 0.4);
@@ -442,6 +460,166 @@
       margin-top: 60px;
       color: #888;
     }
+    
+    /* Car Management Styles */
+    .admin-section {
+      max-width: 800px;
+    }
+    
+    .admin-section h2 {
+      color: #e50000;
+      margin-bottom: 10px;
+      font-family: 'Orbitron', monospace;
+    }
+    
+    .admin-section h3 {
+      color: #fff;
+      margin: 30px 0 15px 0;
+      padding-bottom: 5px;
+      border-bottom: 2px solid #333;
+    }
+    
+    .admin-section h4 {
+      color: #ccc;
+      margin: 20px 0 10px 0;
+    }
+    
+    .status-section, .add-car-section, .cars-list-section {
+      background: #1a1a1a;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      border: 1px solid #333;
+    }
+    
+    .connection-status {
+      background: #333;
+      padding: 15px;
+      border-radius: 5px;
+      margin-top: 10px;
+      font-family: monospace;
+      white-space: pre-wrap;
+    }
+    
+    .connection-status.success { color: #4CAF50; }
+    .connection-status.error { color: #f44336; }
+    .connection-status.info { color: #2196F3; }
+    
+    .car-form {
+      display: grid;
+      gap: 15px;
+    }
+    
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+    
+    .specs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+    }
+    
+    .form-group label {
+      color: #ccc;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+    
+    .checkbox-label {
+      flex-direction: row !important;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+    
+    .checkbox-label input[type="checkbox"] {
+      width: auto;
+      margin: 0;
+    }
+    
+    input, textarea, select {
+      background: #333;
+      border: 1px solid #555;
+      color: #fff;
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+    }
+    
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: #e50000;
+    }
+    
+    .form-actions {
+      display: flex;
+      gap: 15px;
+      margin-top: 20px;
+    }
+    
+    .result-message {
+      background: #333;
+      padding: 15px;
+      border-radius: 5px;
+      margin-top: 15px;
+      font-family: monospace;
+      white-space: pre-wrap;
+    }
+    
+    .result-message.success { color: #4CAF50; }
+    .result-message.error { color: #f44336; }
+    .result-message.info { color: #2196F3; }
+    
+    .cars-list {
+      background: #333;
+      padding: 15px;
+      border-radius: 5px;
+      margin-top: 10px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    
+    .car-item {
+      background: #444;
+      padding: 15px;
+      border-radius: 5px;
+      margin: 10px 0;
+      border-left: 4px solid #e50000;
+    }
+    
+    .car-item h4 {
+      color: #e50000;
+      margin: 0 0 5px 0;
+    }
+    
+    .car-item p {
+      color: #ccc;
+      margin: 5px 0;
+    }
+    
+    .car-specs {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+    
+    .car-specs span {
+      background: #555;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      color: #e50000;
+    }
     @media (max-width: 900px) {
       .admin-main {
         padding: 30px 10px;
@@ -517,6 +695,7 @@
     
     <!-- Login State -->
     <div id="login-state" class="hidden">
+      <a href="/" class="back-button">← Back to Home</a>
       <button id="login-btn" class="auth-button">Login to Admin</button>
       <div id="status-message" class="status-message hidden"></div>
     </div>
@@ -537,8 +716,8 @@
       </div>
       <nav class="sidebar-nav">
         <ul>
-          <li><a href="#" id="nav-featured-cars" class="active">🏎️ Featured Cars</a></li>
-          <li><a href="#" id="nav-website-updates">🔧 Website Updates</a></li>
+          <li><a href="#" id="nav-car-management" class="active">🏎️ Car Management</a></li>
+          <li><a href="#" id="nav-database-test">🔧 Database Test</a></li>
         </ul>
       </nav>
       <button id="logout-btn" class="sidebar-logout">Logout</button>
@@ -550,23 +729,117 @@
       </header>
       <section class="dashboard-stats">
         <div class="stat-card">
-          <h3 id="stat-cars">0</h3>
-          <span>Featured Cars</span>
+          <h3 id="stat-cars">-</h3>
+          <span>Total Cars</span>
         </div>
         <div class="stat-card">
-          <h3 id="stat-updates">0</h3>
-          <span>Website Updates</span>
+          <h3 id="stat-featured">-</h3>
+          <span>Featured Cars</span>
         </div>
       </section>
       <section class="dashboard-actions">
-        <button class="btn-primary" id="add-car-btn">Add New Car</button>
-        <button class="btn-secondary" id="review-updates-btn">Review Updates</button>
+        <button class="btn-primary" id="quick-add-car-btn">Quick Add Car</button>
+        <button class="btn-secondary" id="test-database-btn">Test Database</button>
       </section>
       <section id="dashboard-content">
-        <!-- Dynamic content loads here -->
-        <div class="dashboard-placeholder">
-          <h2>Get Started</h2>
-          <p>Select a section from the sidebar to begin managing your site.</p>
+        <!-- Car Management Interface -->
+        <div class="admin-section">
+          <h2>🏎️ Car Management</h2>
+          <p>Add and manage cars for your website. Cars added here will appear in both the carousel and featured cars page.</p>
+          
+          <!-- API Connection Status -->
+          <div class="status-section">
+            <h3>Database Status</h3>
+            <button class="btn-secondary" id="test-connection-btn">Test Database Connection</button>
+            <div id="connection-status" class="connection-status hidden"></div>
+          </div>
+          
+          <!-- Add New Car Form -->
+          <div class="add-car-section">
+            <h3>Add New Car</h3>
+            <form id="add-car-form" class="car-form">
+              <div class="form-group">
+                <label for="car-name">Car Name *</label>
+                <input type="text" id="car-name" placeholder="e.g., Twin-Turbo Supra" required>
+              </div>
+              
+              <div class="form-group">
+                <label for="car-description">Description</label>
+                <textarea id="car-description" placeholder="e.g., 1200HP Beast • Custom Build" rows="2"></textarea>
+              </div>
+              
+              <div class="form-group">
+                <label for="car-image">Main Image URL</label>
+                <input type="url" id="car-image" placeholder="https://example.com/image.jpg">
+              </div>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="car-status">Status</label>
+                  <select id="car-status">
+                    <option value="COMPLETED">COMPLETED</option>
+                    <option value="IN PROGRESS">IN PROGRESS</option>
+                    <option value="FEATURED BUILD">FEATURED BUILD</option>
+                    <option value="CUSTOMER CAR">CUSTOMER CAR</option>
+                  </select>
+                </div>
+                
+                <div class="form-group">
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="car-featured" checked>
+                    Featured (show in carousel)
+                  </label>
+                </div>
+              </div>
+              
+              <h4>Performance Specs</h4>
+              <div class="specs-grid">
+                <div class="form-group">
+                  <label for="spec-0-60">0-60 Time</label>
+                  <input type="text" id="spec-0-60" placeholder="e.g., 3.2s">
+                </div>
+                
+                <div class="form-group">
+                  <label for="spec-top-speed">Top Speed</label>
+                  <input type="text" id="spec-top-speed" placeholder="e.g., 200mph">
+                </div>
+                
+                <div class="form-group">
+                  <label for="spec-horsepower">Horsepower</label>
+                  <input type="text" id="spec-horsepower" placeholder="e.g., 800HP">
+                </div>
+                
+                <div class="form-group">
+                  <label for="spec-engine">Engine</label>
+                  <input type="text" id="spec-engine" placeholder="e.g., 2JZ-GTE">
+                </div>
+                
+                <div class="form-group">
+                  <label for="spec-custom1">Custom Spec 1</label>
+                  <input type="text" id="spec-custom1" placeholder="Any custom specification">
+                </div>
+                
+                <div class="form-group">
+                  <label for="spec-custom2">Custom Spec 2</label>
+                  <input type="text" id="spec-custom2" placeholder="Another custom specification">
+                </div>
+              </div>
+              
+              <div class="form-actions">
+                <button type="submit" class="btn-primary">Add Car to Database</button>
+                <button type="reset" class="btn-secondary">Clear Form</button>
+              </div>
+            </form>
+            
+            <div id="add-car-result" class="result-message hidden"></div>
+          </div>
+          
+          <!-- Current Cars List -->
+          <div class="cars-list-section">
+            <h3>Current Cars</h3>
+            <button class="btn-secondary" id="load-cars-btn">Load Current Cars</button>
+            <div id="cars-list" class="cars-list hidden"></div>
+          </div>
         </div>
       </section>
     </main>
@@ -751,46 +1024,315 @@
 
     // Dashboard stat demo (replace with real data fetch if needed)
     function updateDashboardStats() {
-      // Demo: count files in _data/cars and _data/updates if available
-      // In real CMS, fetch via API or CMS API
-      // For now, just set demo values
-      document.getElementById('stat-cars').textContent = '7';
-      document.getElementById('stat-updates').textContent = '2';
+      // Load car statistics from API
+      loadCarStats();
+    }
+
+    // Load car statistics
+    async function loadCarStats() {
+      try {
+        const response = await fetch('/.netlify/functions/api-cars');
+        if (response.ok) {
+          const cars = await response.json();
+          const featuredCars = cars.filter(car => car.featured !== false);
+          
+          document.getElementById('stat-cars').textContent = cars.length;
+          document.getElementById('stat-featured').textContent = featuredCars.length;
+        } else {
+          document.getElementById('stat-cars').textContent = '?';
+          document.getElementById('stat-featured').textContent = '?';
+        }
+      } catch (error) {
+        console.error('Failed to load car stats:', error);
+        document.getElementById('stat-cars').textContent = '!';
+        document.getElementById('stat-featured').textContent = '!';
+      }
     }
 
     // Navigation logic for dashboard
     function setupDashboardNav() {
-      const navFeatured = document.getElementById('nav-featured-cars');
-      const navUpdates = document.getElementById('nav-website-updates');
+      const navCarManagement = document.getElementById('nav-car-management');
+      const navDatabaseTest = document.getElementById('nav-database-test');
       const dashContent = document.getElementById('dashboard-content');
-      if (!navFeatured || !navUpdates || !dashContent) return;
+      
+      if (!navCarManagement || !navDatabaseTest || !dashContent) return;
 
-      navFeatured.addEventListener('click', (e) => {
+      // Car Management navigation
+      navCarManagement.addEventListener('click', (e) => {
         e.preventDefault();
-        navFeatured.classList.add('active');
-        navUpdates.classList.remove('active');
-        dashContent.innerHTML = `<h2>Featured Cars</h2><p>Manage your featured cars here. (Integration with CMS coming soon.)</p>`;
+        navCarManagement.classList.add('active');
+        navDatabaseTest.classList.remove('active');
+        showCarManagement();
       });
-      navUpdates.addEventListener('click', (e) => {
+      
+      // Database Test navigation
+      navDatabaseTest.addEventListener('click', (e) => {
         e.preventDefault();
-        navUpdates.classList.add('active');
-        navFeatured.classList.remove('active');
-        dashContent.innerHTML = `<h2>Website Updates</h2><p>Review and manage website update requests. (Integration with CMS coming soon.)</p>`;
+        navDatabaseTest.classList.add('active');
+        navCarManagement.classList.remove('active');
+        showDatabaseTest();
       });
+      
       // Action buttons
-      const addCarBtn = document.getElementById('add-car-btn');
-      if (addCarBtn) {
-        addCarBtn.addEventListener('click', () => {
-          navFeatured.click();
-          dashContent.innerHTML = `<h2>Add New Car</h2><p>Car creation form coming soon.</p>`;
+      const quickAddCarBtn = document.getElementById('quick-add-car-btn');
+      if (quickAddCarBtn) {
+        quickAddCarBtn.addEventListener('click', () => {
+          navCarManagement.click();
+          // Scroll to add car form
+          setTimeout(() => {
+            const addCarSection = document.querySelector('.add-car-section');
+            if (addCarSection) {
+              addCarSection.scrollIntoView({ behavior: 'smooth' });
+            }
+          }, 100);
         });
       }
-      const reviewUpdatesBtn = document.getElementById('review-updates-btn');
-      if (reviewUpdatesBtn) {
-        reviewUpdatesBtn.addEventListener('click', () => {
-          navUpdates.click();
+      
+      const testDatabaseBtn = document.getElementById('test-database-btn');
+      if (testDatabaseBtn) {
+        testDatabaseBtn.addEventListener('click', () => {
+          navDatabaseTest.click();
         });
       }
+      
+      // Setup car management functionality
+      setupCarManagement();
+    }
+
+    // Show car management interface
+    function showCarManagement() {
+      const dashContent = document.getElementById('dashboard-content');
+      // Car management is already in the HTML, just make sure it's visible
+      const carManagement = dashContent.querySelector('.admin-section');
+      if (carManagement) {
+        carManagement.style.display = 'block';
+      }
+    }
+
+    // Show database test interface
+    function showDatabaseTest() {
+      const dashContent = document.getElementById('dashboard-content');
+      dashContent.innerHTML = `
+        <div class="admin-section">
+          <h2>🔧 Database Test</h2>
+          <p>Test your database connection and API functionality.</p>
+          
+          <div class="status-section">
+            <h3>API Connection Test</h3>
+            <button class="btn-secondary" id="test-api-btn">Test API Connection</button>
+            <div id="api-test-result" class="connection-status hidden"></div>
+          </div>
+          
+          <div class="status-section">
+            <h3>Get All Cars</h3>
+            <button class="btn-secondary" id="get-cars-btn">Get All Cars</button>
+            <button class="btn-secondary" id="get-featured-btn">Get Featured Only</button>
+            <div id="cars-test-result" class="connection-status hidden"></div>
+          </div>
+          
+          <div class="status-section">
+            <h3>Frontend Integration Test</h3>
+            <button class="btn-secondary" id="test-carousel-btn">Test Carousel Data</button>
+            <button class="btn-secondary" id="test-featured-page-btn">Test Featured Page</button>
+            <div id="frontend-test-result" class="connection-status hidden"></div>
+          </div>
+        </div>
+      `;
+      
+      setupDatabaseTest();
+    }
+
+    // Setup car management functionality
+    function setupCarManagement() {
+      // Test connection button
+      const testConnBtn = document.getElementById('test-connection-btn');
+      if (testConnBtn) {
+        testConnBtn.addEventListener('click', testDatabaseConnection);
+      }
+      
+      // Add car form
+      const addCarForm = document.getElementById('add-car-form');
+      if (addCarForm) {
+        addCarForm.addEventListener('submit', handleAddCar);
+      }
+      
+      // Load cars button
+      const loadCarsBtn = document.getElementById('load-cars-btn');
+      if (loadCarsBtn) {
+        loadCarsBtn.addEventListener('click', loadCurrentCars);
+      }
+    }
+
+    // Test database connection
+    async function testDatabaseConnection() {
+      const statusDiv = document.getElementById('connection-status');
+      statusDiv.style.display = 'block';
+      statusDiv.className = 'connection-status info';
+      statusDiv.textContent = 'Testing database connection...';
+      
+      try {
+        const response = await fetch('/.netlify/functions/api-cars');
+        
+        if (response.ok) {
+          const data = await response.json();
+          statusDiv.className = 'connection-status success';
+          statusDiv.textContent = `✅ Database connected successfully!\nFound ${data.length} cars in database.`;
+        } else {
+          throw new Error(`HTTP ${response.status}`);
+        }
+      } catch (error) {
+        statusDiv.className = 'connection-status error';
+        statusDiv.textContent = `❌ Database connection failed\nError: ${error.message}`;
+      }
+    }
+
+    // Handle add car form submission
+    async function handleAddCar(event) {
+      event.preventDefault();
+      
+      const resultDiv = document.getElementById('add-car-result');
+      resultDiv.style.display = 'block';
+      resultDiv.className = 'result-message info';
+      resultDiv.textContent = 'Adding car to database...';
+      
+      // Collect form data
+      const carData = {
+        name: document.getElementById('car-name').value.trim(),
+        description: document.getElementById('car-description').value.trim(),
+        mainImage: document.getElementById('car-image').value.trim() || null,
+        status: document.getElementById('car-status').value,
+        featured: document.getElementById('car-featured').checked,
+        specs: {
+          zeroToSixty: document.getElementById('spec-0-60').value.trim() || null,
+          topSpeed: document.getElementById('spec-top-speed').value.trim() || null,
+          horsepower: document.getElementById('spec-horsepower').value.trim() || null,
+          engine: document.getElementById('spec-engine').value.trim() || null,
+          custom1: document.getElementById('spec-custom1').value.trim() || null,
+          custom2: document.getElementById('spec-custom2').value.trim() || null
+        }
+      };
+      
+      // Validate required fields
+      if (!carData.name) {
+        resultDiv.className = 'result-message error';
+        resultDiv.textContent = '❌ Car name is required';
+        return;
+      }
+      
+      try {
+        const response = await fetch('/.netlify/functions/api-cars', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(carData)
+        });
+        
+        if (response.ok) {
+          const newCar = await response.json();
+          resultDiv.className = 'result-message success';
+          resultDiv.textContent = `✅ Car "${carData.name}" added successfully!\nID: ${newCar.id}\nStatus: ${newCar.status}\nFeatured: ${newCar.featured ? 'Yes' : 'No'}`;
+          
+          // Clear form
+          document.getElementById('add-car-form').reset();
+          document.getElementById('car-featured').checked = true; // Reset to default
+          
+          // Update stats
+          updateDashboardStats();
+        } else {
+          const error = await response.json();
+          throw new Error(error.message || `HTTP ${response.status}`);
+        }
+      } catch (error) {
+        resultDiv.className = 'result-message error';
+        resultDiv.textContent = `❌ Failed to add car\nError: ${error.message}`;
+      }
+    }
+
+    // Load current cars
+    async function loadCurrentCars() {
+      const listDiv = document.getElementById('cars-list');
+      listDiv.style.display = 'block';
+      listDiv.innerHTML = '<div class="info">Loading cars...</div>';
+      
+      try {
+        const response = await fetch('/.netlify/functions/api-cars');
+        
+        if (response.ok) {
+          const cars = await response.json();
+          
+          if (cars.length === 0) {
+            listDiv.innerHTML = '<div class="info">No cars found in database.</div>';
+          } else {
+            listDiv.innerHTML = cars.map(car => `
+              <div class="car-item">
+                <h4>${car.name} ${car.featured ? '⭐' : ''}</h4>
+                <p><strong>Status:</strong> ${car.status}</p>
+                <p><strong>Description:</strong> ${car.description || 'No description'}</p>
+                <p><strong>Added:</strong> ${new Date(car.dateAdded).toLocaleDateString()}</p>
+                ${car.specs && Object.values(car.specs).some(v => v) ? `
+                  <div class="car-specs">
+                    ${car.specs.zeroToSixty ? `<span>0-60: ${car.specs.zeroToSixty}</span>` : ''}
+                    ${car.specs.topSpeed ? `<span>Top Speed: ${car.specs.topSpeed}</span>` : ''}
+                    ${car.specs.horsepower ? `<span>${car.specs.horsepower}</span>` : ''}
+                    ${car.specs.engine ? `<span>${car.specs.engine}</span>` : ''}
+                    ${car.specs.custom1 ? `<span>${car.specs.custom1}</span>` : ''}
+                    ${car.specs.custom2 ? `<span>${car.specs.custom2}</span>` : ''}
+                  </div>
+                ` : ''}
+              </div>
+            `).join('');
+          }
+        } else {
+          throw new Error(`HTTP ${response.status}`);
+        }
+      } catch (error) {
+        listDiv.innerHTML = `<div class="error">❌ Failed to load cars: ${error.message}</div>`;
+      }
+    }
+
+    // Setup database test functionality
+    function setupDatabaseTest() {
+      document.getElementById('test-api-btn')?.addEventListener('click', async () => {
+        const result = document.getElementById('api-test-result');
+        result.style.display = 'block';
+        result.className = 'connection-status info';
+        result.textContent = 'Testing API...';
+        
+        try {
+          const response = await fetch('/.netlify/functions/api-cars');
+          if (response.ok) {
+            const data = await response.json();
+            result.className = 'connection-status success';
+            result.textContent = `✅ API Connection Success!\nStatus: ${response.status}\nCars found: ${data.length}`;
+          } else {
+            throw new Error(`HTTP ${response.status}`);
+          }
+        } catch (error) {
+          result.className = 'connection-status error';
+          result.textContent = `❌ API Connection Failed\nError: ${error.message}`;
+        }
+      });
+      
+      // Add other test button handlers...
+      document.getElementById('get-cars-btn')?.addEventListener('click', async () => {
+        const result = document.getElementById('cars-test-result');
+        result.style.display = 'block';
+        result.className = 'connection-status info';
+        result.textContent = 'Loading all cars...';
+        
+        try {
+          const response = await fetch('/.netlify/functions/api-cars');
+          if (response.ok) {
+            const cars = await response.json();
+            result.className = 'connection-status success';
+            result.textContent = `✅ Found ${cars.length} cars:\n${cars.map(car => `- ${car.name} (${car.status})`).join('\n')}`;
+          } else {
+            throw new Error(`HTTP ${response.status}`);
+          }
+        } catch (error) {
+          result.className = 'connection-status error';
+          result.textContent = `❌ Failed to load cars: ${error.message}`;
+        }
+      });
     }
 
     // Initialize everything
