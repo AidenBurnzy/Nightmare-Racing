@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex" />
-  <title>Nightmare Racing - Admin Portal</title>
+  <title>Nightmare Racing - Admin Dashboard</title>
   
   <!-- Netlify Identity Widget -->
   <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
@@ -119,6 +119,34 @@
     
     .hidden {
       display: none !important;
+    }
+    
+    /* Prevent any CMS overlays and popups */
+    #nc-root, [data-slate-editor], .netlify-cms-app, #netlify-cms-app {
+      display: none !important;
+      visibility: hidden !important;
+    }
+    
+    /* Ensure our admin dashboard stays on top */
+    #admin-dashboard {
+      z-index: 999999 !important;
+      position: relative !important;
+    }"
+    
+    /* Prevent CMS overlays and popups */
+    #nc-root, [data-slate-editor], .css-* {
+      display: none !important;
+    }
+    
+    /* Hide any Netlify CMS elements that might appear */
+    div[class*="css-"], div[id*="cms"], div[class*="cms"] {
+      display: none !important;
+    }
+    
+    /* Ensure our admin dashboard stays on top */
+    #admin-dashboard {
+      z-index: 9999 !important;
+      position: relative;
     }
     
     /* Admin Dashboard styles */
@@ -703,7 +731,7 @@
     <!-- Success State -->
     <div id="success-state" class="hidden">
       <div class="spinner"></div>
-      <p>Login successful! Loading Admin Panel...</p>
+      <p>Login successful! Loading Admin Dashboard...</p>
     </div>
   </div>
 
@@ -845,9 +873,6 @@
     </main>
   </div>
 
-  <!-- Load Decap CMS -->
-  <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
-  
   <script>
     console.log('🏁 Nightmare Racing Admin Portal Loading...');
     
