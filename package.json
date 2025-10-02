@@ -1,0 +1,32 @@
+{
+  "name": "nightmare-racing",
+  "version": "1.0.0",
+  "description": "Nightmare Racing - Premium Auto Services & Parts",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "netlify dev",
+    "build": "echo 'Build complete'",
+    "deploy": "netlify deploy --prod",
+    "db:setup": "node scripts/setup-database.js"
+  },
+  "dependencies": {
+    "@netlify/neon": "^0.1.0"
+  },
+  "devDependencies": {
+    "netlify-cli": "^17.0.0"
+  },
+  "keywords": [
+    "automotive",
+    "racing",
+    "performance",
+    "cars",
+    "tuning"
+  ],
+  "author": "Nightmare Racing",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AidenBurnzy/Nightmare-Racing.git"
+  }
+}

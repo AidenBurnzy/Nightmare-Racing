@@ -9,15 +9,48 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('Featured Cars page loading...');
     loadAllCars();
     setupModalEvents();
+    
+    // Handle direct car links from carousel
+    handleDirectCarLink();
 });
 
-// Load all featured cars from CMS
+// Handle direct car links (e.g., from carousel)
+function handleDirectCarLink() {
+    const hash = window.location.hash;
+    if (hash && hash.length > 1) {
+        const carName = decodeURIComponent(hash.substring(1));
+        console.log(`Looking for car: ${carName}`);
+        
+        // Wait for cars to load, then try to open the specific car
+        setTimeout(() => {
+            const car = carsData.find(c => c.name === carName);
+            if (car) {
+                openCarModal(car);
+            }
+        }, 1000);
+    }
+}
+
+// Load all featured cars from database
 async function loadAllCars() {
     try {
         showLoadingState(true);
         
-        // Try to load cars from CMS
-        await loadCMSCars();
+        console.log('Loading cars from database API...');
+        
+        // Fetch cars from database API
+        const response = await fetch('/.netlify/functions/api-cars');
+        
+        if (response.ok) {
+            carsData = await response.json();
+            console.log(`Database loaded ${carsData.length} cars`);
+            
+            // Filter to only featured cars if needed
+            carsData = carsData.filter(car => car.featured !== false);
+        } else {
+            console.warn('Database API not available');
+            carsData = [];
+        }
         
         // If no cars loaded, show empty state
         if (carsData.length === 0) {
@@ -28,57 +61,13 @@ async function loadAllCars() {
         
         showLoadingState(false);
     } catch (error) {
-        console.error('Error loading cars:', error);
+        console.error('Error loading cars from database:', error);
         showEmptyState();
         showLoadingState(false);
     }
 }
 
-// Load cars from Netlify CMS
-async function loadCMSCars() {
-    // List of potential car file names to check
-    const potentialFiles = [
-        'supra-build-2025',
-        'gtr-build-2025',
-        'mustang-build-2025',
-        'bmw-build-2025',
-        'nissan-build-2025',
-        'custom-build-1',
-        'custom-build-2',
-        'custom-build-3',
-        'customer-car-1',
-        'customer-car-2',
-        'customer-car-3'
-    ];
-    
-    // Try to load each potential car file
-    for (const filename of potentialFiles) {
-        try {
-            const response = await fetch(`/_data/cars/${filename}.json`);
-            if (response.ok) {
-                const carData = await response.json();
-                
-                // Only include if marked as featured
-                if (carData.featured !== false) {
-                    carsData.push(carData);
-                    console.log(`Loaded car: ${carData.name}`);
-                }
-            }
-        } catch (e) {
-            // File doesn't exist, continue to next
-            continue;
-        }
-    }
-    
-    // Sort cars by date (newest first)
-    carsData.sort((a, b) => {
-        const dateA = new Date(a.dateAdded || 0);
-        const dateB = new Date(b.dateAdded || 0);
-        return dateB - dateA;
-    });
-    
-    console.log(`Total cars loaded: ${carsData.length}`);
-}
+
 
 // Display all cars in grid
 function displayAllCars() {
@@ -99,13 +88,15 @@ function createCarCard(car, index) {
     card.className = 'featured-car-card';
     card.onclick = () => openCarModal(car);
     
-    // Prepare images array
+    // Prepare images array from database structure
     const images = [];
     if (car.mainImage) images.push(car.mainImage);
     if (car.gallery && Array.isArray(car.gallery)) {
         car.gallery.forEach(item => {
             if (typeof item === 'string') {
                 images.push(item);
+            } else if (item.url) {
+                images.push(item.url);
             } else if (item.image) {
                 images.push(item.image);
             }
@@ -124,6 +115,12 @@ function createCarCard(car, index) {
         }
         if (specs.horsepower) {
             specsHTML += createSpecItem('Horsepower', specs.horsepower);
+        }
+        if (specs.engine) {
+            specsHTML += createSpecItem('Engine', specs.engine);
+        }
+        if (specs.weight) {
+            specsHTML += createSpecItem('Weight', specs.weight);
         }
         if (specs.custom1) {
             specsHTML += createSpecItem('', specs.custom1);

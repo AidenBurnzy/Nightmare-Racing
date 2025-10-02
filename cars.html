@@ -13,59 +13,89 @@
                 <h2>FEATURED <span class="text-accent">MACHINES</span></h2>
                 <p>Showcasing our latest builds and customer rides</p>
             </div>
-            <div class="cars-grid">
-                <div class="car-card">
-                    <div class="car-image">
-                        <div class="car-placeholder">🏎️</div>
-                        <div class="car-overlay">
-                            <button class="btn btn-small">View Details</button>
-                        </div>
-                    </div>
-                    <div class="car-info">
-                        <h3>Twin-Turbo Supra</h3>
-                        <p>1200HP Beast • Custom Build</p>
-                        <div class="car-specs">
-                            <span>0-60: 2.8s</span>
-                            <span>Top Speed: 220mph</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="car-card">
-                    <div class="car-image">
-                        <div class="car-placeholder">🚗</div>
-                        <div class="car-overlay">
-                            <button class="btn btn-small">View Details</button>
-                        </div>
-                    </div>
-                    <div class="car-info">
-                        <h3>Widebody GTR</h3>
-                        <p>Track Weapon • Full Build</p>
-                        <div class="car-specs">
-                            <span>0-60: 2.5s</span>
-                            <span>Track Tested</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="see-more-card">
-                    <a href="featured-cars.html" class="see-more-link">
-                        <div class="see-more-images">
-                            <div class="mini-image">🏁</div>
-                            <div class="mini-image">🚙</div>
-                            <div class="mini-image">🏆</div>
-                            <div class="mini-image">⚡</div>
-                            <div class="see-more-overlay">
-                                <div class="see-more-text">
-                                    <h3>View All</h3>
-                                    <p>Explore our complete collection</p>
+            
+            <!-- Carousel Container -->
+            <div class="carousel-container">
+                <div class="carousel-wrapper">
+                    <div class="carousel-track" id="carousel-track">
+                        <!-- Car cards will be dynamically loaded here -->
+                        <div class="car-card">
+                            <div class="car-image">
+                                <div class="car-placeholder">🏎️</div>
+                                <div class="car-overlay">
+                                    <button class="btn btn-small">View Details</button>
+                                </div>
+                            </div>
+                            <div class="car-info">
+                                <h3>Twin-Turbo Supra</h3>
+                                <p>1200HP Beast • Custom Build</p>
+                                <div class="car-specs">
+                                    <span>0-60: 2.8s</span>
+                                    <span>Top Speed: 220mph</span>
                                 </div>
                             </div>
                         </div>
-                        <div class="see-more-info">
-                            <h3>See More</h3>
-                            <p>View our complete collection of builds and projects</p>
+                        <div class="car-card">
+                            <div class="car-image">
+                                <div class="car-placeholder">🚗</div>
+                                <div class="car-overlay">
+                                    <button class="btn btn-small">View Details</button>
+                                </div>
+                            </div>
+                            <div class="car-info">
+                                <h3>Widebody GTR</h3>
+                                <p>Track Weapon • Full Build</p>
+                                <div class="car-specs">
+                                    <span>0-60: 2.5s</span>
+                                    <span>Track Tested</span>
+                                </div>
+                            </div>
                         </div>
-                    </a>
+                        <div class="car-card">
+                            <div class="car-image">
+                                <div class="car-placeholder">🏁</div>
+                                <div class="car-overlay">
+                                    <button class="btn btn-small">View Details</button>
+                                </div>
+                            </div>
+                            <div class="car-info">
+                                <h3>Project Nightfall</h3>
+                                <p>Stealth Build • Coming Soon</p>
+                                <div class="car-specs">
+                                    <span>Classified</span>
+                                    <span>Top Secret</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+                
+                <!-- Carousel Navigation -->
+                <button class="carousel-btn carousel-btn-prev" id="prev-btn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M15 18L9 12L15 6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+                <button class="carousel-btn carousel-btn-next" id="next-btn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M9 18L15 12L9 6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+                
+                <!-- Carousel Indicators -->
+                <div class="carousel-indicators" id="carousel-indicators">
+                    <!-- Dots will be dynamically generated -->
+                </div>
+            </div>
+            
+            <!-- View More Cars Button -->
+            <div class="view-more-section">
+                <a href="featured-cars.html" class="view-more-btn">
+                    <span>View All Cars</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </a>
             </div>
         </div>
     </section>
