@@ -162,6 +162,25 @@
                     <button class="btn-primary" id="load-more-btn">Load More Products</button>
                 </div>
             </div>
+
+            <!-- All Collections List -->
+            <div class="all-collections-section">
+                <div class="section-header">
+                    <h2>ALL <span class="text-accent">COLLECTIONS</span></h2>
+                    <p>Browse all available collections</p>
+                </div>
+
+                <!-- Loading State -->
+                <div id="collections-list-loading" class="loading-state">
+                    <div class="spinner"></div>
+                    <p>Loading collections...</p>
+                </div>
+
+                <!-- Collections List -->
+                <ul id="collections-list" class="collections-list hidden">
+                    <!-- Collections will be loaded here -->
+                </ul>
+            </div>
         </div>
     </section>
 
@@ -213,6 +232,14 @@
                                         minVariantPrice {
                                             amount
                                             currencyCode
+                                        }
+                                    }
+                                    images(first: 1) {
+                                        edges {
+                                            node {
+                                                url
+                                                altText
+                                            }
                                         }
                                     }
                                 }
@@ -326,37 +353,41 @@
         let currentCollectionIndex = 0;
 
         async function loadCollections() {
-    try {
-        const data = await shopifyStorefrontAPI(COLLECTIONS_QUERY);
-        
-        // Filter out unwanted collections by handle
-        const excludedCollections = [
-            'https://admin.shopify.com/store/nightmareracing/collections/317123887244',
-            'https://admin.shopify.com/store/nightmareracing/collections/317568385164',
-            'https://admin.shopify.com/store/nightmareracing/collections/317047013516',
-            'https://admin.shopify.com/store/nightmareracing/collections/287569182860',
-            'https://admin.shopify.com/store/nightmareracing/collections/287458984076',
-            'https://admin.shopify.com/store/nightmareracing/collections/302260158604',
-            'https://admin.shopify.com/store/nightmareracing/collections/287569182860',
-            'frontpage' // example: hide frontpage collection
-        ];
-        
-        collectionsData = data.collections.edges
-            .map(edge => edge.node)
-            .filter(collection => !excludedCollections.includes(collection.handle));
+            try {
+                const data = await shopifyStorefrontAPI(COLLECTIONS_QUERY);
+                
+                // Filter out unwanted collections by handle
+                const excludedCollections = [
+                    'https://admin.shopify.com/store/nightmareracing/collections/317123887244',
+                    'https://admin.shopify.com/store/nightmareracing/collections/317568385164',
+                    'https://admin.shopify.com/store/nightmareracing/collections/317047013516',
+                    'https://admin.shopify.com/store/nightmareracing/collections/287569182860',
+                    'https://admin.shopify.com/store/nightmareracing/collections/287458984076',
+                    'https://admin.shopify.com/store/nightmareracing/collections/302260158604',
+                    'https://admin.shopify.com/store/nightmareracing/collections/287569182860',
+                    'frontpage' // example: hide frontpage collection
+                ];
+                
+                collectionsData = data.collections.edges
+                    .map(edge => edge.node)
+                    .filter(collection => !excludedCollections.includes(collection.handle));
                 
                 if (collectionsData.length === 0) {
                     document.getElementById('collections-loading').innerHTML = '<p>No collections found</p>';
+                    document.getElementById('collections-list-loading').innerHTML = '<p>No collections found</p>';
                     return;
                 }
 
                 displayCollections();
+                displayCollectionsList();
                 document.getElementById('collections-loading').classList.add('hidden');
                 document.getElementById('collections-carousel').classList.remove('hidden');
                 setupCollectionsCarousel();
             } catch (error) {
                 console.error('Error loading collections:', error);
                 document.getElementById('collections-loading').innerHTML = 
+                    '<p class="error">Failed to load collections. Please try again later.</p>';
+                document.getElementById('collections-list-loading').innerHTML = 
                     '<p class="error">Failed to load collections. Please try again later.</p>';
             }
         }
@@ -373,11 +404,51 @@
             updateCarouselIndicators();
         }
 
+        function displayCollectionsList() {
+            const list = document.getElementById('collections-list');
+            const loading = document.getElementById('collections-list-loading');
+            
+            if (!list) return;
+            
+            // Sort collections alphabetically by title
+            const sortedCollections = [...collectionsData].sort((a, b) => 
+                a.title.localeCompare(b.title)
+            );
+            
+            list.innerHTML = '';
+            
+            sortedCollections.forEach(collection => {
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `
+                    <a href="#" onclick="viewCollection('${collection.handle}'); return false;">
+                        ${collection.title}
+                    </a>
+                `;
+                list.appendChild(listItem);
+            });
+            
+            loading.classList.add('hidden');
+            list.classList.remove('hidden');
+        }
+
         function createCollectionCard(collection) {
             const card = document.createElement('div');
             card.className = 'collection-card';
             
-            const imageUrl = collection.image?.url || 'https://via.placeholder.com/400x300/0a0a0a/e50000?text=No+Image';
+            // Try to get collection image first, then fallback to first product image
+            let imageUrl = collection.image?.url;
+            
+            // If no collection image, try to get the first product's image
+            if (!imageUrl && collection.products.edges.length > 0) {
+                const firstProduct = collection.products.edges[0].node;
+                imageUrl = firstProduct.images?.edges[0]?.node.url;
+            }
+            
+            // Final fallback to placeholder
+            if (!imageUrl) {
+                imageUrl = 'https://via.placeholder.com/400x300/0a0a0a/e50000?text=No+Image';
+            }
+            
             const productCount = collection.products.edges.length;
             
             card.innerHTML = `
