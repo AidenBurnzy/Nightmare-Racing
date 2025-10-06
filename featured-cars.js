@@ -42,13 +42,26 @@ async function loadAllCars() {
         const response = await fetch('/.netlify/functions/api-cars');
         
         if (response.ok) {
-            carsData = await response.json();
-            console.log(`Database loaded ${carsData.length} cars`);
-            
-            // Filter to only featured cars if needed
-            carsData = carsData.filter(car => car.featured !== false);
+            const data = await response.json();
+            if (Array.isArray(data)) {
+                carsData = data;
+                console.log(`Database loaded ${carsData.length} cars`);
+                
+                // Filter to only featured cars if needed
+                carsData = carsData.filter(car => car.featured !== false);
+            } else {
+                console.warn('Database returned invalid data format');
+                carsData = [];
+            }
         } else {
-            console.warn('Database API not available');
+            console.warn(`Database API error (${response.status})`);
+            
+            // If it's a 500 error, likely a database connection issue
+            if (response.status === 500) {
+                console.error('Database connection error - check Netlify environment variables');
+                showDatabaseError();
+            }
+            
             carsData = [];
         }
         
@@ -62,7 +75,7 @@ async function loadAllCars() {
         showLoadingState(false);
     } catch (error) {
         console.error('Error loading cars from database:', error);
-        showEmptyState();
+        showDatabaseError();
         showLoadingState(false);
     }
 }
@@ -397,6 +410,30 @@ function showEmptyState() {
     const carsContainer = document.getElementById('cars-container');
     
     if (emptyState) {
+        emptyState.style.display = 'block';
+    }
+    if (carsContainer) {
+        carsContainer.style.display = 'none';
+    }
+}
+
+// Show database error state
+function showDatabaseError() {
+    const emptyState = document.getElementById('empty-state');
+    const carsContainer = document.getElementById('cars-container');
+    
+    if (emptyState) {
+        emptyState.innerHTML = `
+            <div style="text-align: center; padding: 60px 20px; color: #ccc;">
+                <div style="font-size: 4rem; margin-bottom: 20px;">⚠️</div>
+                <h2 style="color: #e50000; margin-bottom: 20px;">Database Connection Error</h2>
+                <p style="margin-bottom: 15px;">Unable to connect to the car database.</p>
+                <p style="margin-bottom: 20px;">This might be due to missing environment variables on Netlify.</p>
+                <button onclick="location.reload()" style="background: #e50000; color: white; border: none; padding: 12px 24px; border-radius: 5px; cursor: pointer;">
+                    Try Again
+                </button>
+            </div>
+        `;
         emptyState.style.display = 'block';
     }
     if (carsContainer) {

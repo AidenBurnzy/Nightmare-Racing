@@ -15,15 +15,22 @@ async function loadCarsData() {
         const response = await fetch('/.netlify/functions/api-cars?featured=true');
         
         if (response.ok) {
-            carsData = await response.json();
-            console.log(`Database loaded ${carsData.length} cars`);
+            const data = await response.json();
+            if (Array.isArray(data) && data.length > 0) {
+                carsData = data;
+                console.log(`Database loaded ${carsData.length} cars`);
+            } else {
+                console.warn('Database returned no cars, using fallback data');
+                carsData = getDefaultCars();
+            }
         } else {
-            console.warn('Database API not available, using fallback data');
-            carsData = getDefaultCars();
-        }
-        
-        // Ensure we have some cars to display
-        if (carsData.length === 0) {
+            console.warn(`Database API error (${response.status}), using fallback data`);
+            
+            // If it's a 500 error, likely a database connection issue
+            if (response.status === 500) {
+                console.error('Database connection error - check Netlify environment variables');
+            }
+            
             carsData = getDefaultCars();
         }
         
@@ -31,7 +38,7 @@ async function loadCarsData() {
         initializeCarousel();
     } catch (error) {
         console.error('Error loading cars from database:', error);
-        console.log('Using fallback data');
+        console.log('Using fallback data - check network or API availability');
         carsData = getDefaultCars();
         initializeCarousel();
     }

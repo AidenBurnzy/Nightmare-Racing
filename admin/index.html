@@ -1188,12 +1188,42 @@
             this.renderCars();
             console.log(`✅ Loaded ${this.cars.length} cars`);
           } else {
-            throw new Error(`API error: ${response.status}`);
+            const errorText = await response.text();
+            console.error(`API error (${response.status}):`, errorText);
+            
+            if (response.status === 500) {
+              document.getElementById('cars-list').innerHTML = 
+                `<div style="color: #ff0000; padding: 20px; text-align: center; border: 2px solid #ff0000; border-radius: 10px; background: rgba(255,0,0,0.1);">
+                  <h3>🚨 Database Connection Error</h3>
+                  <p><strong>Failed to connect to the database.</strong></p>
+                  <p>This is likely because environment variables are missing from Netlify.</p>
+                  <div style="margin-top: 15px; padding: 15px; background: #333; border-radius: 8px; text-align: left;">
+                    <strong>To fix this:</strong><br>
+                    1. Go to Netlify Dashboard → Site Settings → Environment variables<br>
+                    2. Add: <code>DATABASE_URL</code> with your Neon connection string<br>
+                    3. Redeploy the site<br><br>
+                    <small>Check the console for more details.</small>
+                  </div>
+                  <button onclick="window.adminApp.loadCars()" style="margin-top: 15px; background: #e50000; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+                    🔄 Try Again
+                  </button>
+                </div>`;
+            } else {
+              document.getElementById('cars-list').innerHTML = 
+                `<p style="color: #ff0000;">Failed to load cars. API Error: ${response.status}</p>`;
+            }
           }
         } catch (error) {
           console.error('❌ Failed to load cars:', error);
           document.getElementById('cars-list').innerHTML = 
-            '<p style="color: #ff0000;">Failed to load cars. Check your database connection.</p>';
+            `<div style="color: #ff0000; padding: 20px; text-align: center; border: 2px solid #ff0000; border-radius: 10px; background: rgba(255,0,0,0.1);">
+              <h3>🌐 Network Error</h3>
+              <p><strong>Unable to reach the API.</strong></p>
+              <p>Check your internet connection or API availability.</p>
+              <button onclick="window.adminApp.loadCars()" style="margin-top: 15px; background: #e50000; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+                🔄 Try Again
+              </button>
+            </div>`;
         }
       }
       

@@ -4,7 +4,14 @@
 import { neon } from '@neondatabase/serverless';
 
 // Initialize database connection using Netlify environment variables
-const sql = neon(process.env.DATABASE_URL || process.env.NEON_DATABASE_URL);
+const DATABASE_URL = process.env.DATABASE_URL || process.env.NEON_DATABASE_URL;
+
+if (!DATABASE_URL) {
+    console.error('❌ No database connection string found in environment variables');
+    console.error('Required: DATABASE_URL or NEON_DATABASE_URL');
+}
+
+const sql = neon(DATABASE_URL);
 
 // Database utility functions for car data management
 
@@ -15,6 +22,10 @@ const sql = neon(process.env.DATABASE_URL || process.env.NEON_DATABASE_URL);
  */
 export async function getAllCars(featuredOnly = false) {
     try {
+        if (!DATABASE_URL) {
+            throw new Error('Database connection string not configured. Check environment variables.');
+        }
+        
         const query = featuredOnly 
             ? `SELECT * FROM cars WHERE featured = true ORDER BY date_added DESC`
             : `SELECT * FROM cars ORDER BY date_added DESC`;
@@ -51,9 +62,19 @@ export async function getAllCars(featuredOnly = false) {
             })
         );
         
+        console.log(`✅ Database query successful: ${carsWithDetails.length} cars loaded`);
         return carsWithDetails;
     } catch (error) {
-        console.error('Error fetching cars:', error);
+        console.error('❌ Database error in getAllCars:', error);
+        
+        if (error.message.includes('connect') || error.message.includes('timeout')) {
+            console.error('Database connection failed - check network and connection string');
+        } else if (error.message.includes('authentication') || error.message.includes('password')) {
+            console.error('Database authentication failed - check credentials');
+        } else if (error.message.includes('relation') || error.message.includes('table')) {
+            console.error('Database schema error - tables may not exist');
+        }
+        
         throw error;
     }
 }
