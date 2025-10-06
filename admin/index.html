@@ -1180,17 +1180,13 @@
       
       async loadCars() {
         try {
-          console.log('🔄 Admin - Loading cars...');
+          console.log('🔄 Loading cars...');
           const response = await fetch('/.netlify/functions/api-cars');
           
           if (response.ok) {
-            const data = await response.json();
-            console.log('🔍 Admin - Raw API response:', data);
-            this.cars = data;
-            console.log(`✅ Admin - Loaded ${this.cars.length} cars`);
-            console.log('🚗 Admin - First car:', this.cars[0]);
+            this.cars = await response.json();
             this.renderCars();
-            console.log('🎨 Admin - Finished calling renderCars()');
+            console.log(`✅ Loaded ${this.cars.length} cars`);
           } else {
             const errorText = await response.text();
             console.error(`API error (${response.status}):`, errorText);
@@ -1232,16 +1228,9 @@
       }
       
       renderCars() {
-        console.log(`🎨 Admin - renderCars called with ${this.cars.length} cars`);
         const container = document.getElementById('cars-list');
         
-        if (!container) {
-          console.error('❌ Admin - cars-list element not found!');
-          return;
-        }
-        
         if (this.cars.length === 0) {
-          console.log('📭 Admin - No cars to display');
           container.innerHTML = `
             <div style="text-align: center; padding: 60px 20px; color: var(--medium-gray); grid-column: 1 / -1;">
               <div style="font-size: 4rem; margin-bottom: 20px;">🏎️</div>
@@ -1251,8 +1240,7 @@
           `;
           return;
         }
-
-        console.log('🏗️ Admin - Building car cards...');
+        
         container.innerHTML = this.cars.map(car => {
           const hasSpecs = car.specs && (car.specs.horsepower || car.specs.engine || car.specs.zeroToSixty || car.specs.topSpeed);
           const hasImage = car.mainImage && car.mainImage !== 'null';
