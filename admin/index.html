@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="../navStyles.css">
   <link rel="stylesheet" href="../footer.css">
   
-  <!-- Netlify Identity Widget -->
+  <!-- Auctus Identity Widget -->
   <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
   
   <style>
@@ -318,7 +318,7 @@
       <!-- Not Logged In -->
       <div id="auth-login" class="hidden">
         <p>Please log in to access the admin panel</p>
-        <button id="login-button" class="auth-button">Login with Netlify</button>
+        <button id="login-button" class="auth-button">Login with Auctus</button>
         <button id="refresh-button" class="auth-button secondary">Refresh Page</button>
         <a href="../index.html" class="back-link">← Back to Website</a>
       </div>
@@ -326,9 +326,9 @@
       <!-- Setup Required -->
       <div id="auth-setup" class="hidden">
         <h3 style="color: #e50000;">Setup Required</h3>
-        <p>Netlify Identity needs to be configured:</p>
+        <p>Auctus Identity needs to be configured:</p>
         <ol style="text-align: left; color: #ccc;">
-          <li>Enable Netlify Identity in your site settings</li>
+          <li>Enable Auctus Identity in your site settings</li>
           <li>Set registration to "Invite only"</li>
           <li>Enable Git Gateway</li>
           <li>Add your email as a user</li>
@@ -465,9 +465,9 @@
         this.showLoading();
         
         try {
-          // Wait for Netlify Identity to load
+          // Wait for Auctus Identity to load
           if (!window.netlifyIdentity) {
-            await this.waitForNetlifyIdentity();
+            await this.waitForAuctusIdentity();
           }
           
           // Set up event listeners first
@@ -476,7 +476,7 @@
           window.netlifyIdentity.on('logout', () => this.handleLogout());
           window.netlifyIdentity.on('error', (err) => this.handleError(err));
           
-          // Initialize Netlify Identity
+          // Initialize Auctus Identity
           window.netlifyIdentity.init();
           
           // Add timeout in case 'init' event doesn't fire
@@ -505,23 +505,23 @@
         }
       }
       
-      waitForNetlifyIdentity() {
+      waitForAuctusIdentity() {
         return new Promise((resolve, reject) => {
           let attempts = 0;
           const maxAttempts = 30; // 3 seconds
           
           const checkIdentity = () => {
             attempts++;
-            console.log(`🔄 Checking for Netlify Identity... (${attempts}/${maxAttempts})`);
+            console.log(`🔄 Checking for Auctus Identity... (${attempts}/${maxAttempts})`);
             
             if (window.netlifyIdentity) {
-              console.log('✅ Netlify Identity loaded');
+              console.log('✅ Auctus Identity loaded');
               resolve();
             } else if (attempts >= maxAttempts) {
-              console.error('❌ Netlify Identity failed to load after 3 seconds');
-              this.showStatus('Netlify Identity widget failed to load. Please check your internet connection and refresh.', 'error');
+              console.error('❌ Auctus Identity failed to load after 3 seconds');
+              this.showStatus('Auctus Identity widget failed to load. Please check your internet connection and refresh.', 'error');
               setTimeout(() => this.showLogin(), 2000);
-              reject(new Error('Netlify Identity failed to load'));
+              reject(new Error('Auctus Identity failed to load'));
             } else {
               setTimeout(checkIdentity, 100);
             }
@@ -568,7 +568,7 @@
       }
       
       login() {
-        console.log('🔄 Opening login modal...');
+        console.log('🔄 Opening Auctus login modal...');
         this.showStatus('Opening login...', 'info');
         try {
           window.netlifyIdentity.open();
