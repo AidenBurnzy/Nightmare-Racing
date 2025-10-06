@@ -1,0 +1,775 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex" />
+  <title>Nightmare Racing - Admin Dashboard</title>
+  <link rel="stylesheet" href="/admin/styles.css" />
+  <link rel="stylesheet" href="../indexStyles.css">
+  <link rel="stylesheet" href="../navStyles.css">
+  <link rel="stylesheet" href="../footer.css">
+  <!-- Netlify Identity Widget -->
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  
+  
+</head>
+<body>
+  <!-- Authentication Screen -->
+  <div id="auth-screen" class="auth-screen">
+    <h1>NIGHTMARE RACING</h1>
+    <p>Admin Portal</p>
+    
+    <!-- Loading State -->
+    <div id="loading-state">
+      <div class="spinner"></div>
+      <p>Initializing authentication...</p>
+    </div>
+    
+    <!-- Setup Required State -->
+    <div id="setup-state" class="hidden">
+      <div class="setup-instructions">
+        <h3>🔧 Setup Required</h3>
+        <p>Netlify Identity needs to be enabled first. Follow these steps:</p>
+        <ol>
+          <li>Go to your <a href="https://app.netlify.com/sites/nightmareracing/settings/identity" target="_blank" style="color: #e50000;">Netlify site settings → Identity</a></li>
+          <li>Click "Enable Identity"</li>
+          <li>Under "Registration preferences", select "Invite only"</li>
+          <li>Under "Git Gateway", click "Enable Git Gateway"</li>
+          <li>Return to this page and refresh</li>
+        </ol>
+      </div>
+      <button id="retry-btn" class="auth-button">Retry Connection</button>
+    </div>
+    
+    <!-- Login State -->
+    <div id="login-state" class="hidden">
+      <a href="/" class="back-button">← Back to Home</a>
+      <button id="login-btn" class="auth-button">Login to Admin</button>
+      <button id="refresh-btn" class="auth-button" style="background: #666; margin-top: 10px;">Refresh Page</button>
+      <div id="status-message" class="status-message hidden"></div>
+      <p style="color: #888; font-size: 0.9rem; margin-top: 20px;">
+        💡 If login gets stuck, try the refresh button above
+      </p>
+    </div>
+    
+    <!-- Success State -->
+    <div id="success-state" class="hidden">
+      <div class="spinner"></div>
+      <p>Login successful! Loading Admin Dashboard...</p>
+    </div>
+  </div>
+
+  <!-- Admin Dashboard (hidden initially, shown after login) -->
+  <div id="admin-dashboard" class="hidden">
+    <aside class="admin-sidebar">
+      <div class="sidebar-header">
+        <img src="/pictures/logoImage1.png" alt="Nightmare Racing Logo" class="sidebar-logo">
+        <h2>NIGHTMARE<span class="text-accent">RACING</span></h2>
+      </div>
+      <nav class="sidebar-nav">
+        <ul>
+          <li><a href="#" id="nav-car-management" class="active">🏎️ Car Management</a></li>
+          <li><a href="#" id="nav-database-test">🔧 Database Test</a></li>
+        </ul>
+      </nav>
+      <button id="logout-btn" class="sidebar-logout">Logout</button>
+    </aside>
+    <main class="admin-main">
+      <header class="dashboard-header">
+        <h1>Admin Dashboard</h1>
+        <p>Welcome to the Nightmare Racing admin panel. Use the sidebar to manage content.</p>
+      </header>
+      <section class="dashboard-stats">
+        <div class="stat-card">
+          <h3 id="stat-cars">-</h3>
+          <span>Total Cars</span>
+        </div>
+        <div class="stat-card">
+          <h3 id="stat-featured">-</h3>
+          <span>Featured Cars</span>
+        </div>
+      </section>
+      <section class="dashboard-actions">
+        <button class="btn-primary" id="quick-add-car-btn">Quick Add Car</button>
+        <button class="btn-secondary" id="test-database-btn">Test Database</button>
+      </section>
+      <section id="dashboard-content">
+        <!-- Car Management Interface -->
+        <div class="admin-section">
+          <h2>🏎️ Car Management</h2>
+          <p>Add and manage cars for your website. Cars added here will appear in both the carousel and featured cars page.</p>
+          
+          <!-- API Connection Status -->
+          <div class="status-section">
+            <h3>Database Status</h3>
+            <button class="btn-secondary" id="test-connection-btn">Test Database Connection</button>
+            <div id="connection-status" class="connection-status hidden"></div>
+          </div>
+          
+          <!-- Add New Car Form -->
+          <div class="add-car-section">
+            <h3>Add New Car</h3>
+            <form id="add-car-form" class="car-form">
+              <div class="form-group">
+                <label for="car-name">Car Name *</label>
+                <input type="text" id="car-name" placeholder="e.g., Twin-Turbo Supra" required>
+              </div>
+              
+              <div class="form-group">
+                <label for="car-description">Description</label>
+                <textarea id="car-description" placeholder="e.g., 1200HP Beast • Custom Build" rows="2"></textarea>
+              </div>
+              
+              <div class="form-group">
+                <label for="car-image">Main Image URL</label>
+                <input type="url" id="car-image" placeholder="https://example.com/image.jpg">
+              </div>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="car-status">Status</label>
+                  <select id="car-status">
+                    <option value="COMPLETED">COMPLETED</option>
+                    <option value="IN PROGRESS">IN PROGRESS</option>
+                    <option value="FEATURED BUILD">FEATURED BUILD</option>
+                    <option value="CUSTOMER CAR">CUSTOMER CAR</option>
+                  </select>
+                </div>
+                
+                <div class="form-group">
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="car-featured" checked>
+                    Featured (show in carousel)
+                  </label>
+                </div>
+              </div>
+              
+              <h4>Performance Specs</h4>
+              <div class="specs-grid">
+                <div class="form-group">
+                  <label for="spec-0-60">0-60 Time</label>
+                  <input type="text" id="spec-0-60" placeholder="e.g., 3.2s">
+                </div>
+                
+                <div class="form-group">
+                  <label for="spec-top-speed">Top Speed</label>
+                  <input type="text" id="spec-top-speed" placeholder="e.g., 200mph">
+                </div>
+                
+                <div class="form-group">
+                  <label for="spec-horsepower">Horsepower</label>
+                  <input type="text" id="spec-horsepower" placeholder="e.g., 800HP">
+                </div>
+                
+                <div class="form-group">
+                  <label for="spec-engine">Engine</label>
+                  <input type="text" id="spec-engine" placeholder="e.g., 2JZ-GTE">
+                </div>
+                
+                <div class="form-group">
+                  <label for="spec-custom1">Custom Spec 1</label>
+                  <input type="text" id="spec-custom1" placeholder="Any custom specification">
+                </div>
+                
+                <div class="form-group">
+                  <label for="spec-custom2">Custom Spec 2</label>
+                  <input type="text" id="spec-custom2" placeholder="Another custom specification">
+                </div>
+              </div>
+              
+              <div class="form-actions">
+                <button type="submit" class="btn-primary">Add Car to Database</button>
+                <button type="reset" class="btn-secondary">Clear Form</button>
+              </div>
+            </form>
+            
+            <div id="add-car-result" class="result-message hidden"></div>
+          </div>
+          
+          <!-- Current Cars List -->
+          <div class="cars-list-section">
+            <h3>Current Cars</h3>
+            <button class="btn-secondary" id="load-cars-btn">Load Current Cars</button>
+            <div id="cars-list" class="cars-list hidden"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    console.log('🏁 Nightmare Racing Admin Portal Loading...');
+    
+    // DOM Elements
+    const authScreen = document.getElementById('auth-screen');
+    const loadingState = document.getElementById('loading-state');
+    const setupState = document.getElementById('setup-state');
+    const loginState = document.getElementById('login-state');
+    const successState = document.getElementById('success-state');
+    const statusMessage = document.getElementById('status-message');
+    const loginBtn = document.getElementById('login-btn');
+    const retryBtn = document.getElementById('retry-btn');
+    const adminDashboard = document.getElementById('admin-dashboard');
+    const logoutBtn = document.getElementById('logout-btn');
+
+    let loginTimeout;
+    let modalIsOpen = false;
+    let loginAttempts = 0;
+    const MAX_LOGIN_ATTEMPTS = 3;
+
+    // Utility functions
+    function showState(state) {
+      [loadingState, setupState, loginState, successState].forEach(el => el.classList.add('hidden'));
+      state.classList.remove('hidden');
+    }
+    
+    function showStatus(message, type = 'success') {
+      statusMessage.textContent = message;
+      statusMessage.className = `status-message status-${type}`;
+      statusMessage.classList.remove('hidden');
+      console.log(type === 'error' ? '❌' : type === 'warning' ? '⚠️' : '✅', message);
+    }
+    
+    function showAdminDashboard() {
+      authScreen.classList.add('hidden');
+      document.getElementById('admin-dashboard').classList.remove('hidden');
+    }
+    function hideAuthScreen() {
+      authScreen.classList.add('hidden');
+      // Show new dashboard instead of legacy CMS
+      showAdminDashboard();
+    }
+
+    // Get the current site URL dynamically
+    function getSiteUrl() {
+      return window.location.origin;
+    }
+
+    // Check if Netlify Identity is available and properly configured
+    function checkIdentityAvailability() {
+      if (!window.netlifyIdentity) {
+        console.error('❌ Netlify Identity widget not loaded');
+        showState(setupState);
+        showStatus('Netlify Identity widget failed to load. Please check your internet connection.', 'error');
+        return false;
+      }
+      return true;
+    }
+
+    // Initialize Netlify Identity with dynamic URL
+    function initializeIdentity() {
+      if (!checkIdentityAvailability()) return;
+
+      console.log('🔄 Initializing Netlify Identity...');
+      
+      // Use dynamic site URL
+      const siteUrl = getSiteUrl();
+      console.log('🌐 Site URL:', siteUrl);
+      
+      try {
+        window.netlifyIdentity.init({
+          APIUrl: `${siteUrl}/.netlify/identity`
+        });
+      } catch (error) {
+        console.error('❌ Failed to initialize Netlify Identity:', error);
+        showState(setupState);
+        showStatus('Failed to initialize Identity. Please check if Netlify Identity is enabled.', 'error');
+      }
+    }
+
+    // Setup event listeners
+    function setupEventListeners() {
+      if (!window.netlifyIdentity) return;
+
+      // Identity initialization
+      window.netlifyIdentity.on("init", user => {
+        console.log('🔄 Netlify Identity initialized');
+        if (user) {
+          console.log('✅ User already logged in:', user.email);
+          showState(successState);
+          showStatus(`Welcome back, ${user.email}!`);
+          setTimeout(() => {
+            hideAuthScreen();
+          }, 2000);
+        } else {
+          console.log('ℹ️ No user logged in, showing login');
+          showState(loginState);
+          showStatus('Please log in to access the admin portal');
+        }
+      });
+
+      // Login button handler with improved error handling
+      if (loginBtn) {
+        loginBtn.addEventListener('click', () => {
+          console.log('🔄 Login button clicked');
+          
+          // Prevent multiple simultaneous login attempts
+          if (modalIsOpen) {
+            console.log('⚠️ Modal already open, ignoring click');
+            return;
+          }
+          
+          // Check attempt limit
+          if (loginAttempts >= MAX_LOGIN_ATTEMPTS) {
+            showStatus('Too many login attempts. Please refresh the page.', 'error');
+            return;
+          }
+          
+          loginAttempts++;
+          loginBtn.disabled = true;
+          showStatus('Opening login modal...');
+          
+          // Set timeout to prevent stuck modal
+          loginTimeout = setTimeout(() => {
+            if (modalIsOpen) {
+              console.log('⚠️ Login modal timeout, forcing close');
+              try {
+                window.netlifyIdentity.close();
+              } catch (e) {}
+              modalIsOpen = false;
+              loginBtn.disabled = false;
+              showStatus('Login modal timed out. Please try again.', 'error');
+            }
+          }, 10000); // 10 second timeout
+          
+          try {
+            modalIsOpen = true;
+            window.netlifyIdentity.open();
+          } catch (error) {
+            console.error('❌ Failed to open login modal:', error);
+            modalIsOpen = false;
+            clearTimeout(loginTimeout);
+            showStatus('Failed to open login. Please refresh and try again.', 'error');
+            loginBtn.disabled = false;
+          }
+        });
+      }
+
+      // Retry button handler
+      if (retryBtn) {
+        retryBtn.addEventListener('click', () => {
+          console.log('🔄 Retrying connection...');
+          loginAttempts = 0; // Reset attempts on retry
+          modalIsOpen = false;
+          clearTimeout(loginTimeout);
+          showState(loadingState);
+          setTimeout(initializeIdentity, 1000);
+        });
+      }
+      
+      // Add refresh page functionality
+      const refreshBtn = document.getElementById('refresh-btn');
+      if (refreshBtn) {
+        refreshBtn.addEventListener('click', () => {
+          window.location.reload();
+        });
+      }
+
+      // Successful login
+      window.netlifyIdentity.on("login", user => {
+        console.log('✅ User logged in successfully:', user.email);
+        loginAttempts = 0; // Reset attempts on successful login
+        modalIsOpen = false;
+        clearTimeout(loginTimeout);
+        
+        showState(successState);
+        showStatus(`Welcome, ${user.email}! Loading admin panel...`);
+        
+        try {
+          window.netlifyIdentity.close();
+        } catch (e) {
+          console.log('Note: Modal close attempted');
+        }
+        
+        setTimeout(() => {
+          hideAuthScreen();
+        }, 2000);
+      });
+
+      // Logout handler
+      window.netlifyIdentity.on("logout", () => {
+        console.log('ℹ️ User logged out');
+        document.getElementById('admin-dashboard').classList.add('hidden');
+        authScreen.classList.remove('hidden');
+        showState(loginState);
+        showStatus('Successfully logged out');
+      });
+
+      // Sidebar logout button
+      setTimeout(() => {
+        const logoutBtn = document.getElementById('logout-btn');
+        if (logoutBtn) {
+          logoutBtn.addEventListener('click', () => {
+            window.netlifyIdentity && window.netlifyIdentity.logout();
+          });
+        }
+      }, 1000);
+
+      // Error handler
+      window.netlifyIdentity.on("error", err => {
+        console.error('❌ Netlify Identity error:', err);
+        loginBtn.disabled = false;
+        if (err.message && err.message.includes('Identity not enabled')) {
+          showState(setupState);
+          showStatus('Netlify Identity is not enabled on this site.', 'warning');
+        } else {
+          showState(loginState);
+          showStatus('Authentication error. Please try again or check setup instructions.', 'error');
+        }
+      });
+
+      // Modal handlers
+      window.netlifyIdentity.on("open", () => {
+        console.log('🔄 Identity modal opened');
+      });
+      window.netlifyIdentity.on("close", () => {
+        console.log('🔄 Identity modal closed');
+        loginBtn.disabled = false;
+      });
+    }
+
+    // Dashboard stat demo (replace with real data fetch if needed)
+    function updateDashboardStats() {
+      // Load car statistics from API
+      loadCarStats();
+    }
+
+    // Load car statistics
+    async function loadCarStats() {
+      try {
+        const response = await fetch('/.netlify/functions/api-cars');
+        if (response.ok) {
+          const cars = await response.json();
+          const featuredCars = cars.filter(car => car.featured !== false);
+          
+          document.getElementById('stat-cars').textContent = cars.length;
+          document.getElementById('stat-featured').textContent = featuredCars.length;
+        } else {
+          document.getElementById('stat-cars').textContent = '?';
+          document.getElementById('stat-featured').textContent = '?';
+        }
+      } catch (error) {
+        console.error('Failed to load car stats:', error);
+        document.getElementById('stat-cars').textContent = '!';
+        document.getElementById('stat-featured').textContent = '!';
+      }
+    }
+
+    // Navigation logic for dashboard
+    function setupDashboardNav() {
+      const navCarManagement = document.getElementById('nav-car-management');
+      const navDatabaseTest = document.getElementById('nav-database-test');
+      const dashContent = document.getElementById('dashboard-content');
+      
+      if (!navCarManagement || !navDatabaseTest || !dashContent) return;
+
+      // Car Management navigation
+      navCarManagement.addEventListener('click', (e) => {
+        e.preventDefault();
+        navCarManagement.classList.add('active');
+        navDatabaseTest.classList.remove('active');
+        showCarManagement();
+      });
+      
+      // Database Test navigation
+      navDatabaseTest.addEventListener('click', (e) => {
+        e.preventDefault();
+        navDatabaseTest.classList.add('active');
+        navCarManagement.classList.remove('active');
+        showDatabaseTest();
+      });
+      
+      // Action buttons
+      const quickAddCarBtn = document.getElementById('quick-add-car-btn');
+      if (quickAddCarBtn) {
+        quickAddCarBtn.addEventListener('click', () => {
+          navCarManagement.click();
+          // Scroll to add car form
+          setTimeout(() => {
+            const addCarSection = document.querySelector('.add-car-section');
+            if (addCarSection) {
+              addCarSection.scrollIntoView({ behavior: 'smooth' });
+            }
+          }, 100);
+        });
+      }
+      
+      const testDatabaseBtn = document.getElementById('test-database-btn');
+      if (testDatabaseBtn) {
+        testDatabaseBtn.addEventListener('click', () => {
+          navDatabaseTest.click();
+        });
+      }
+      
+      // Setup car management functionality
+      setupCarManagement();
+    }
+
+    // Show car management interface
+    function showCarManagement() {
+      const dashContent = document.getElementById('dashboard-content');
+      // Car management is already in the HTML, just make sure it's visible
+      const carManagement = dashContent.querySelector('.admin-section');
+      if (carManagement) {
+        carManagement.style.display = 'block';
+      }
+    }
+
+    // Show database test interface
+    function showDatabaseTest() {
+      const dashContent = document.getElementById('dashboard-content');
+      dashContent.innerHTML = `
+        <div class="admin-section">
+          <h2>🔧 Database Test</h2>
+          <p>Test your database connection and API functionality.</p>
+          
+          <div class="status-section">
+            <h3>API Connection Test</h3>
+            <button class="btn-secondary" id="test-api-btn">Test API Connection</button>
+            <div id="api-test-result" class="connection-status hidden"></div>
+          </div>
+          
+          <div class="status-section">
+            <h3>Get All Cars</h3>
+            <button class="btn-secondary" id="get-cars-btn">Get All Cars</button>
+            <button class="btn-secondary" id="get-featured-btn">Get Featured Only</button>
+            <div id="cars-test-result" class="connection-status hidden"></div>
+          </div>
+          
+          <div class="status-section">
+            <h3>Frontend Integration Test</h3>
+            <button class="btn-secondary" id="test-carousel-btn">Test Carousel Data</button>
+            <button class="btn-secondary" id="test-featured-page-btn">Test Featured Page</button>
+            <div id="frontend-test-result" class="connection-status hidden"></div>
+          </div>
+        </div>
+      `;
+      
+      setupDatabaseTest();
+    }
+
+    // Setup car management functionality
+    function setupCarManagement() {
+      // Test connection button
+      const testConnBtn = document.getElementById('test-connection-btn');
+      if (testConnBtn) {
+        testConnBtn.addEventListener('click', testDatabaseConnection);
+      }
+      
+      // Add car form
+      const addCarForm = document.getElementById('add-car-form');
+      if (addCarForm) {
+        addCarForm.addEventListener('submit', handleAddCar);
+      }
+      
+      // Load cars button
+      const loadCarsBtn = document.getElementById('load-cars-btn');
+      if (loadCarsBtn) {
+        loadCarsBtn.addEventListener('click', loadCurrentCars);
+      }
+    }
+
+    // Test database connection
+    async function testDatabaseConnection() {
+      const statusDiv = document.getElementById('connection-status');
+      statusDiv.style.display = 'block';
+      statusDiv.className = 'connection-status info';
+      statusDiv.textContent = 'Testing database connection...';
+      
+      try {
+        const response = await fetch('/.netlify/functions/api-cars');
+        
+        if (response.ok) {
+          const data = await response.json();
+          statusDiv.className = 'connection-status success';
+          statusDiv.textContent = `✅ Database connected successfully!\nFound ${data.length} cars in database.`;
+        } else {
+          throw new Error(`HTTP ${response.status}`);
+        }
+      } catch (error) {
+        statusDiv.className = 'connection-status error';
+        statusDiv.textContent = `❌ Database connection failed\nError: ${error.message}`;
+      }
+    }
+
+    // Handle add car form submission
+    async function handleAddCar(event) {
+      event.preventDefault();
+      
+      const resultDiv = document.getElementById('add-car-result');
+      resultDiv.style.display = 'block';
+      resultDiv.className = 'result-message info';
+      resultDiv.textContent = 'Adding car to database...';
+      
+      // Collect form data
+      const carData = {
+        name: document.getElementById('car-name').value.trim(),
+        description: document.getElementById('car-description').value.trim(),
+        mainImage: document.getElementById('car-image').value.trim() || null,
+        status: document.getElementById('car-status').value,
+        featured: document.getElementById('car-featured').checked,
+        specs: {
+          zeroToSixty: document.getElementById('spec-0-60').value.trim() || null,
+          topSpeed: document.getElementById('spec-top-speed').value.trim() || null,
+          horsepower: document.getElementById('spec-horsepower').value.trim() || null,
+          engine: document.getElementById('spec-engine').value.trim() || null,
+          custom1: document.getElementById('spec-custom1').value.trim() || null,
+          custom2: document.getElementById('spec-custom2').value.trim() || null
+        }
+      };
+      
+      // Validate required fields
+      if (!carData.name) {
+        resultDiv.className = 'result-message error';
+        resultDiv.textContent = '❌ Car name is required';
+        return;
+      }
+      
+      try {
+        const response = await fetch('/.netlify/functions/api-cars', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(carData)
+        });
+        
+        if (response.ok) {
+          const newCar = await response.json();
+          resultDiv.className = 'result-message success';
+          resultDiv.textContent = `✅ Car "${carData.name}" added successfully!\nID: ${newCar.id}\nStatus: ${newCar.status}\nFeatured: ${newCar.featured ? 'Yes' : 'No'}`;
+          
+          // Clear form
+          document.getElementById('add-car-form').reset();
+          document.getElementById('car-featured').checked = true; // Reset to default
+          
+          // Update stats
+          updateDashboardStats();
+        } else {
+          const error = await response.json();
+          throw new Error(error.message || `HTTP ${response.status}`);
+        }
+      } catch (error) {
+        resultDiv.className = 'result-message error';
+        resultDiv.textContent = `❌ Failed to add car\nError: ${error.message}`;
+      }
+    }
+
+    // Load current cars
+    async function loadCurrentCars() {
+      const listDiv = document.getElementById('cars-list');
+      listDiv.style.display = 'block';
+      listDiv.innerHTML = '<div class="info">Loading cars...</div>';
+      
+      try {
+        const response = await fetch('/.netlify/functions/api-cars');
+        
+        if (response.ok) {
+          const cars = await response.json();
+          
+          if (cars.length === 0) {
+            listDiv.innerHTML = '<div class="info">No cars found in database.</div>';
+          } else {
+            listDiv.innerHTML = cars.map(car => `
+              <div class="car-item">
+                <h4>${car.name} ${car.featured ? '⭐' : ''}</h4>
+                <p><strong>Status:</strong> ${car.status}</p>
+                <p><strong>Description:</strong> ${car.description || 'No description'}</p>
+                <p><strong>Added:</strong> ${new Date(car.dateAdded).toLocaleDateString()}</p>
+                ${car.specs && Object.values(car.specs).some(v => v) ? `
+                  <div class="car-specs">
+                    ${car.specs.zeroToSixty ? `<span>0-60: ${car.specs.zeroToSixty}</span>` : ''}
+                    ${car.specs.topSpeed ? `<span>Top Speed: ${car.specs.topSpeed}</span>` : ''}
+                    ${car.specs.horsepower ? `<span>${car.specs.horsepower}</span>` : ''}
+                    ${car.specs.engine ? `<span>${car.specs.engine}</span>` : ''}
+                    ${car.specs.custom1 ? `<span>${car.specs.custom1}</span>` : ''}
+                    ${car.specs.custom2 ? `<span>${car.specs.custom2}</span>` : ''}
+                  </div>
+                ` : ''}
+              </div>
+            `).join('');
+          }
+        } else {
+          throw new Error(`HTTP ${response.status}`);
+        }
+      } catch (error) {
+        listDiv.innerHTML = `<div class="error">❌ Failed to load cars: ${error.message}</div>`;
+      }
+    }
+
+    // Setup database test functionality
+    function setupDatabaseTest() {
+      document.getElementById('test-api-btn')?.addEventListener('click', async () => {
+        const result = document.getElementById('api-test-result');
+        result.style.display = 'block';
+        result.className = 'connection-status info';
+        result.textContent = 'Testing API...';
+        
+        try {
+          const response = await fetch('/.netlify/functions/api-cars');
+          if (response.ok) {
+            const data = await response.json();
+            result.className = 'connection-status success';
+            result.textContent = `✅ API Connection Success!\nStatus: ${response.status}\nCars found: ${data.length}`;
+          } else {
+            throw new Error(`HTTP ${response.status}`);
+          }
+        } catch (error) {
+          result.className = 'connection-status error';
+          result.textContent = `❌ API Connection Failed\nError: ${error.message}`;
+        }
+      });
+      
+      // Add other test button handlers...
+      document.getElementById('get-cars-btn')?.addEventListener('click', async () => {
+        const result = document.getElementById('cars-test-result');
+        result.style.display = 'block';
+        result.className = 'connection-status info';
+        result.textContent = 'Loading all cars...';
+        
+        try {
+          const response = await fetch('/.netlify/functions/api-cars');
+          if (response.ok) {
+            const cars = await response.json();
+            result.className = 'connection-status success';
+            result.textContent = `✅ Found ${cars.length} cars:\n${cars.map(car => `- ${car.name} (${car.status})`).join('\n')}`;
+          } else {
+            throw new Error(`HTTP ${response.status}`);
+          }
+        } catch (error) {
+          result.className = 'connection-status error';
+          result.textContent = `❌ Failed to load cars: ${error.message}`;
+        }
+      });
+    }
+
+    // Initialize everything
+    function initialize() {
+      console.log('🚀 Starting initialization...');
+      if (!checkIdentityAvailability()) {
+        return;
+      }
+      setupEventListeners();
+      initializeIdentity();
+      // Setup dashboard nav after DOM loads
+      setTimeout(() => {
+        setupDashboardNav();
+        updateDashboardStats();
+      }, 1200);
+    }
+
+    // Wait for the widget to load, then initialize
+    if (window.netlifyIdentity) {
+      initialize();
+    } else {
+      window.addEventListener('load', initialize);
+    }
+
+    // Handle page reload after login (sometimes needed)
+    window.netlifyIdentity && window.netlifyIdentity.on("login", () => {
+      if (window.location.hash === '#admin') {
+        document.location.href = "/admin/";
+      }
+    });
+  </script>
+</body>
+</html>
