@@ -46,7 +46,11 @@
     <div id="login-state" class="hidden">
       <a href="/" class="back-button">← Back to Home</a>
       <button id="login-btn" class="auth-button">Login to Admin</button>
+      <button id="refresh-btn" class="auth-button" style="background: #666; margin-top: 10px;">Refresh Page</button>
       <div id="status-message" class="status-message hidden"></div>
+      <p style="color: #888; font-size: 0.9rem; margin-top: 20px;">
+        💡 If login gets stuck, try the refresh button above
+      </p>
     </div>
     
     <!-- Success State -->
@@ -209,6 +213,11 @@
     const adminDashboard = document.getElementById('admin-dashboard');
     const logoutBtn = document.getElementById('logout-btn');
 
+    let loginTimeout;
+    let modalIsOpen = false;
+    let loginAttempts = 0;
+    const MAX_LOGIN_ATTEMPTS = 3;
+
     // Utility functions
     function showState(state) {
       [loadingState, setupState, loginState, successState].forEach(el => el.classList.add('hidden'));
@@ -290,17 +299,48 @@
         }
       });
 
-      // Login button handler
+      // Login button handler with improved error handling
       if (loginBtn) {
         loginBtn.addEventListener('click', () => {
           console.log('🔄 Login button clicked');
+          
+          // Prevent multiple simultaneous login attempts
+          if (modalIsOpen) {
+            console.log('⚠️ Modal already open, ignoring click');
+            return;
+          }
+          
+          // Check attempt limit
+          if (loginAttempts >= MAX_LOGIN_ATTEMPTS) {
+            showStatus('Too many login attempts. Please refresh the page.', 'error');
+            return;
+          }
+          
+          loginAttempts++;
           loginBtn.disabled = true;
           showStatus('Opening login modal...');
+          
+          // Set timeout to prevent stuck modal
+          loginTimeout = setTimeout(() => {
+            if (modalIsOpen) {
+              console.log('⚠️ Login modal timeout, forcing close');
+              try {
+                window.netlifyIdentity.close();
+              } catch (e) {}
+              modalIsOpen = false;
+              loginBtn.disabled = false;
+              showStatus('Login modal timed out. Please try again.', 'error');
+            }
+          }, 10000); // 10 second timeout
+          
           try {
+            modalIsOpen = true;
             window.netlifyIdentity.open();
           } catch (error) {
             console.error('❌ Failed to open login modal:', error);
-            showStatus('Failed to open login. Please check if Identity is enabled.', 'error');
+            modalIsOpen = false;
+            clearTimeout(loginTimeout);
+            showStatus('Failed to open login. Please refresh and try again.', 'error');
             loginBtn.disabled = false;
           }
         });
@@ -310,17 +350,38 @@
       if (retryBtn) {
         retryBtn.addEventListener('click', () => {
           console.log('🔄 Retrying connection...');
+          loginAttempts = 0; // Reset attempts on retry
+          modalIsOpen = false;
+          clearTimeout(loginTimeout);
           showState(loadingState);
           setTimeout(initializeIdentity, 1000);
+        });
+      }
+      
+      // Add refresh page functionality
+      const refreshBtn = document.getElementById('refresh-btn');
+      if (refreshBtn) {
+        refreshBtn.addEventListener('click', () => {
+          window.location.reload();
         });
       }
 
       // Successful login
       window.netlifyIdentity.on("login", user => {
         console.log('✅ User logged in successfully:', user.email);
+        loginAttempts = 0; // Reset attempts on successful login
+        modalIsOpen = false;
+        clearTimeout(loginTimeout);
+        
         showState(successState);
         showStatus(`Welcome, ${user.email}! Loading admin panel...`);
-        window.netlifyIdentity.close();
+        
+        try {
+          window.netlifyIdentity.close();
+        } catch (e) {
+          console.log('Note: Modal close attempted');
+        }
+        
         setTimeout(() => {
           hideAuthScreen();
         }, 2000);

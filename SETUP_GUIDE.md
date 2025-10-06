@@ -78,6 +78,21 @@ npm run db:setup
 - Check that you're invited as a user
 - Verify Git Gateway is enabled in Netlify Identity settings
 
+### If authentication gets stuck or "Opening login modal..." doesn't work:
+1. **Try the "Refresh Page" button** in the admin login screen
+2. **Clear your browser cache and cookies** for the site
+3. **Check browser console** for any JavaScript errors
+4. **Try incognito/private browsing** to rule out extensions
+5. **Verify your email is added** in Netlify Identity dashboard
+6. **Wait 30 seconds** then try login again (sometimes there's a delay)
+7. **Check Netlify Identity status** - make sure it's not down
+
+### If login modal opens but won't accept credentials:
+- **Check your password** - try resetting it in Netlify Identity
+- **Verify email verification** - check if you need to confirm your email
+- **Try different browser** - some browsers have stricter security
+- **Disable browser extensions** temporarily
+
 ## 📂 What This Setup Does
 
 ✅ **Database**: Cars stored in Neon PostgreSQL database  
