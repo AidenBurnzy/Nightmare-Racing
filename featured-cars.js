@@ -47,8 +47,9 @@ async function loadAllCars() {
                 carsData = data;
                 console.log(`Database loaded ${carsData.length} cars`);
                 
-                // Filter to only featured cars if needed
-                carsData = carsData.filter(car => car.featured !== false);
+                // Don't filter featured cars on the featured cars page - show ALL cars
+                carsData = data;
+                console.log(`Database loaded ${carsData.length} cars for featured page`);
             } else {
                 console.warn('Database returned invalid data format');
                 carsData = [];

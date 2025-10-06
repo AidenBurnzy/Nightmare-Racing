@@ -12,13 +12,13 @@ async function loadCarsData() {
         console.log('Loading cars from database...');
         
         // Fetch cars from database API
-        const response = await fetch('/.netlify/functions/api-cars?featured=true');
+        const response = await fetch('/.netlify/functions/api-cars');
         
         if (response.ok) {
             const data = await response.json();
             if (Array.isArray(data) && data.length > 0) {
-                carsData = data;
-                console.log(`Database loaded ${carsData.length} cars`);
+                carsData = data.filter(car => car.featured !== false);
+                console.log(`Database loaded ${carsData.length} featured cars`);
             } else {
                 console.warn('Database returned no cars, using fallback data');
                 carsData = getDefaultCars();
