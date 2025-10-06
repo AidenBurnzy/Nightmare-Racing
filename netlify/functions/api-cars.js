@@ -56,7 +56,6 @@ exports.handler = async (event, context) => {
                                 'topSpeed', cs.top_speed,
                                 'custom1', cs.custom1,
                                 'custom2', cs.custom2,
-                                'custom3', cs.custom3
                             )
                         ) FILTER (WHERE cs.car_id IS NOT NULL),
                         '[]'::json
