@@ -28,6 +28,27 @@ export async function handler(event, context) {
     }
     
     try {
+        // Check environment variables first
+        const DATABASE_URL = process.env.DATABASE_URL || process.env.NEON_DATABASE_URL;
+        
+        if (!DATABASE_URL) {
+            console.error('❌ No database connection string found');
+            return {
+                statusCode: 500,
+                headers,
+                body: JSON.stringify({
+                    error: 'Database configuration missing',
+                    message: 'DATABASE_URL environment variable not set in Netlify',
+                    details: 'Please add DATABASE_URL to Netlify environment variables',
+                    environment: {
+                        hasDBUrl: !!process.env.DATABASE_URL,
+                        hasNeonUrl: !!process.env.NEON_DATABASE_URL,
+                        nodeEnv: process.env.NODE_ENV
+                    }
+                })
+            };
+        }
+        
         let result;
         
         switch (httpMethod) {
@@ -63,12 +84,21 @@ export async function handler(event, context) {
         
     } catch (error) {
         console.error('API Error:', error);
+        console.error('Error stack:', error.stack);
+        
         return {
             statusCode: 500,
             headers,
             body: JSON.stringify({ 
                 error: 'Internal server error',
-                message: error.message 
+                message: error.message,
+                details: error.stack,
+                timestamp: new Date().toISOString(),
+                environment: {
+                    hasDBUrl: !!process.env.DATABASE_URL,
+                    hasNeonUrl: !!process.env.NEON_DATABASE_URL,
+                    nodeEnv: process.env.NODE_ENV
+                }
             })
         };
     }
