@@ -19,9 +19,10 @@ async function loadCarsData() {
             if (Array.isArray(data) && data.length > 0) {
                 carsData = data.filter(car => car.featured !== false);
                 console.log(`Database loaded ${carsData.length} featured cars`);
+                initializeCarousel();
+                return; // Exit early if database worked
             } else {
                 console.warn('Database returned no cars, using fallback data');
-                carsData = getDefaultCars();
             }
         } else {
             console.warn(`Database API error (${response.status}), using fallback data`);
@@ -30,18 +31,17 @@ async function loadCarsData() {
             if (response.status === 500) {
                 console.error('Database connection error - check Netlify environment variables');
             }
-            
-            carsData = getDefaultCars();
         }
-        
-        console.log(`Carousel loaded ${carsData.length} cars`);
-        initializeCarousel();
     } catch (error) {
         console.error('Error loading cars from database:', error);
         console.log('Using fallback data - check network or API availability');
-        carsData = getDefaultCars();
-        initializeCarousel();
     }
+    
+    // Only use fallback data if database completely failed
+    console.log('Loading fallback data...');
+    carsData = getDefaultCars();
+    console.log(`Carousel loaded ${carsData.length} fallback cars`);
+    initializeCarousel();
 }
 
 
