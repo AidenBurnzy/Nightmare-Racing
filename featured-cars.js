@@ -39,7 +39,7 @@ async function loadAllCars() {
         console.log('Loading cars from database API...');
         
         // Fetch cars from database API
-        const response = await fetch('/.netlify/functions/api-cars');
+        const response = await fetch('/.netlify/functions/api-cars-simple');
         
         if (response.ok) {
             const data = await response.json();

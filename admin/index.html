@@ -1181,7 +1181,7 @@
       async loadCars() {
         try {
           console.log('🔄 Admin - Loading cars from database...');
-          const response = await fetch('/.netlify/functions/api-cars');
+          const response = await fetch('/.netlify/functions/api-cars-simple');
           
           if (response.ok) {
             this.cars = await response.json();
