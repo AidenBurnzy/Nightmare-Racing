@@ -43,15 +43,17 @@ async function loadAllCars() {
         
         if (response.ok) {
             const data = await response.json();
+            console.log('🔍 Featured Cars - Raw API response:', data);
             if (Array.isArray(data)) {
                 carsData = data;
-                console.log(`Database loaded ${carsData.length} cars`);
+                console.log(`✅ Featured Cars - Database loaded ${carsData.length} cars`);
+                console.log('🚗 Featured Cars - First car:', carsData[0]);
                 
                 // Don't filter featured cars on the featured cars page - show ALL cars
                 carsData = data;
-                console.log(`Database loaded ${carsData.length} cars for featured page`);
+                console.log(`📋 Featured Cars - Final array has ${carsData.length} cars for display`);
             } else {
-                console.warn('Database returned invalid data format');
+                console.warn('❌ Featured Cars - Database returned invalid data format:', typeof data);
                 carsData = [];
             }
         } else {
@@ -68,8 +70,10 @@ async function loadAllCars() {
         
         // If no cars loaded, show empty state
         if (carsData.length === 0) {
+            console.log('❌ Featured Cars - No cars to display, showing empty state');
             showEmptyState();
         } else {
+            console.log(`🎨 Featured Cars - About to display ${carsData.length} cars`);
             displayAllCars();
         }
         
@@ -85,15 +89,23 @@ async function loadAllCars() {
 
 // Display all cars in grid
 function displayAllCars() {
+    console.log('🎨 displayAllCars called with', carsData.length, 'cars');
     const container = document.getElementById('cars-container');
-    if (!container) return;
+    if (!container) {
+        console.error('❌ cars-container element not found!');
+        return;
+    }
     
+    console.log('🧹 Clearing container and adding cars...');
     container.innerHTML = '';
     
     carsData.forEach((car, index) => {
+        console.log(`🚗 Creating card ${index + 1}:`, car.name);
         const carCard = createCarCard(car, index);
         container.appendChild(carCard);
     });
+    
+    console.log('✅ Finished displaying all cars');
 }
 
 // Create car card element
