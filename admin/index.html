@@ -309,6 +309,10 @@
       <div id="auth-loading">
         <div class="spinner"></div>
         <p>Loading authentication...</p>
+        <button id="skip-auth-button" class="auth-button secondary" style="margin-top: 20px; display: none;">Skip Authentication (Debug)</button>
+        <p style="font-size: 0.8rem; color: #666; margin-top: 10px;">
+          Taking too long? <a href="#" id="force-login-link" style="color: #e50000;">Force login screen</a>
+        </p>
       </div>
       
       <!-- Not Logged In -->
@@ -439,46 +443,84 @@
         this.refreshButton.addEventListener('click', () => window.location.reload());
         this.retryButton.addEventListener('click', () => this.init());
         this.logoutButton.addEventListener('click', () => this.logout());
+        
+        // Additional fallback buttons
+        document.getElementById('skip-auth-button').addEventListener('click', () => this.skipAuth());
+        document.getElementById('force-login-link').addEventListener('click', (e) => {
+          e.preventDefault();
+          this.showLogin();
+        });
+        
+        // Show skip button after 5 seconds
+        setTimeout(() => {
+          const skipBtn = document.getElementById('skip-auth-button');
+          if (skipBtn && !this.initialized) {
+            skipBtn.style.display = 'block';
+          }
+        }, 5000);
       }
       
       async init() {
         console.log('🚀 Initializing Nightmare Racing Admin...');
         this.showLoading();
         
-        // Wait for Netlify Identity to load
-        if (!window.netlifyIdentity) {
-          await this.waitForNetlifyIdentity();
-        }
-        
         try {
-          // Initialize Netlify Identity
-          window.netlifyIdentity.init();
+          // Wait for Netlify Identity to load
+          if (!window.netlifyIdentity) {
+            await this.waitForNetlifyIdentity();
+          }
           
-          // Set up event listeners
+          // Set up event listeners first
           window.netlifyIdentity.on('init', (user) => this.handleInit(user));
           window.netlifyIdentity.on('login', (user) => this.handleLogin(user));
           window.netlifyIdentity.on('logout', () => this.handleLogout());
           window.netlifyIdentity.on('error', (err) => this.handleError(err));
           
-          this.initialized = true;
-          console.log('✅ Authentication system initialized');
+          // Initialize Netlify Identity
+          window.netlifyIdentity.init();
+          
+          // Add timeout in case 'init' event doesn't fire
+          setTimeout(() => {
+            if (!this.initialized) {
+              console.log('⚠️ Init event timeout, checking current user...');
+              const currentUser = window.netlifyIdentity.currentUser();
+              if (currentUser) {
+                console.log('✅ Found existing user:', currentUser.email);
+                this.user = currentUser;
+                this.showAdmin();
+              } else {
+                console.log('ℹ️ No current user, showing login');
+                this.showLogin();
+              }
+              this.initialized = true;
+            }
+          }, 3000); // 3 second timeout
+          
+          console.log('✅ Authentication system setup complete');
           
         } catch (error) {
           console.error('❌ Failed to initialize:', error);
-          this.showSetup();
+          this.showStatus('Failed to load authentication. Please refresh the page.', 'error');
+          setTimeout(() => this.showLogin(), 2000);
         }
       }
       
       waitForNetlifyIdentity() {
         return new Promise((resolve, reject) => {
           let attempts = 0;
-          const maxAttempts = 50; // 5 seconds
+          const maxAttempts = 30; // 3 seconds
           
           const checkIdentity = () => {
             attempts++;
+            console.log(`🔄 Checking for Netlify Identity... (${attempts}/${maxAttempts})`);
+            
             if (window.netlifyIdentity) {
+              console.log('✅ Netlify Identity loaded');
               resolve();
             } else if (attempts >= maxAttempts) {
+              console.error('❌ Netlify Identity failed to load after 3 seconds');
+              this.showStatus('Netlify Identity widget failed to load. Please check your internet connection and refresh.', 'error');
+              setTimeout(() => this.showLogin(), 2000);
               reject(new Error('Netlify Identity failed to load'));
             } else {
               setTimeout(checkIdentity, 100);
@@ -545,6 +587,13 @@
           // Force logout by reloading
           window.location.reload();
         }
+      }
+      
+      skipAuth() {
+        console.log('⚠️ Skipping authentication (debug mode)');
+        this.user = { email: 'debug@nightmareracing.com', user_metadata: { full_name: 'Debug User' } };
+        this.showStatus('Authentication bypassed - Debug mode active', 'info');
+        setTimeout(() => this.showAdmin(), 1000);
       }
       
       showLoading() {
