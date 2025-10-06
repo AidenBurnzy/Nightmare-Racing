@@ -1,7 +1,7 @@
 // api-cars.js - API endpoints for car data
 // Serverless functions for Netlify to handle car data operations
 
-import { getAllCars, getCarById, addCar, updateCar, deleteCar } from '../database/database.js';
+import { getAllCars, getCarById, addCar, updateCar, deleteCar } from '../../database/database.js';
 
 /**
  * Main API handler for car operations

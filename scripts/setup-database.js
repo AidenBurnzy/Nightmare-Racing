@@ -1,7 +1,7 @@
 // setup-database.js - Script to initialize the database with schema
 // Run this once to set up your database tables and sample data
 
-import { neon } from '@netlify/neon';
+import { neon } from '@neondatabase/serverless';
 import fs from 'fs';
 import path from 'path';
 
@@ -10,7 +10,7 @@ async function setupDatabase() {
         console.log('🚀 Setting up Nightmare Racing database...');
         
         // Initialize database connection
-        const sql = neon(); // Uses NETLIFY_DATABASE_URL automatically
+        const sql = neon(process.env.DATABASE_URL || process.env.NEON_DATABASE_URL);
         
         // Read and execute schema file
         const schemaPath = path.join(process.cwd(), 'database', 'schema.sql');

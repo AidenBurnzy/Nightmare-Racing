@@ -1,10 +1,10 @@
 // database.js - Database integration for Nightmare Racing
 // Uses Netlify Neon database for car data storage and retrieval
 
-import { neon } from '@netlify/neon';
+import { neon } from '@neondatabase/serverless';
 
-// Initialize database connection
-const sql = neon(); // automatically uses env NETLIFY_DATABASE_URL
+// Initialize database connection using Netlify environment variables
+const sql = neon(process.env.DATABASE_URL || process.env.NEON_DATABASE_URL);
 
 // Database utility functions for car data management
 
