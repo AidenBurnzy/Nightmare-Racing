@@ -51,7 +51,19 @@ exports.handler = async (event, context) => {
             
             const cars = await sql`
                 SELECT 
-                    c.*,
+                    c.id,
+                    c.name,
+                    c.description,
+                    CASE 
+                        WHEN c.main_image LIKE 'http%' THEN c.main_image
+                        WHEN LENGTH(c.main_image) > 200 THEN NULL
+                        ELSE c.main_image
+                    END as main_image,
+                    c.status,
+                    c.featured,
+                    c.date_added,
+                    c.created_at,
+                    c.updated_at,
                     COALESCE(
                         json_agg(
                             json_build_object(
@@ -68,7 +80,11 @@ exports.handler = async (event, context) => {
                     COALESCE(
                         json_agg(
                             json_build_object(
-                                'url', cg.image_url,
+                                'url', CASE 
+                                    WHEN cg.image_url LIKE 'http%' THEN cg.image_url
+                                    WHEN LENGTH(cg.image_url) > 200 THEN NULL
+                                    ELSE cg.image_url
+                                END,
                                 'caption', cg.caption
                             )
                         ) FILTER (WHERE cg.car_id IS NOT NULL),
