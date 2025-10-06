@@ -209,10 +209,12 @@
         const STOREFRONT_ACCESS_TOKEN = '01ebdb40d541cc7fda967406889dc1b4';
         const STOREFRONT_API_VERSION = '2024-01';
 
-        // GraphQL query for collections
+        // (Mapping consolidated later in the file)
+
+        // GraphQL Queries
         const COLLECTIONS_QUERY = `
         {
-            collections(first: 10) {
+            collections(first: 20) {
                 edges {
                     node {
                         id
@@ -250,7 +252,6 @@
             }
         }`;
 
-        // GraphQL query for products
         const PRODUCTS_QUERY = `
         query GetProducts($first: Int!, $after: String) {
             products(first: $first, after: $after) {
@@ -291,7 +292,6 @@
             }
         }`;
 
-        // Search products query
         const SEARCH_QUERY = `
         query SearchProducts($query: String!, $first: Int!) {
             products(first: $first, query: $query) {
@@ -348,6 +348,60 @@
             }).format(amount);
         }
 
+        // Map of known collection handles to local collection pages (normalized keys)
+        const COLLECTION_PAGE_MAP = {
+            'shop-accessories': 'collection_accessories.html',
+            'accessories': 'collection_accessories.html',
+            'bearings': 'collection_bearings.html',
+            'brakes': 'collection-brakes.html',
+            'electronics': 'collection-electronics.html',
+            'engine': 'collection-engine.html',
+            'exterior': 'collection-exterior.html',
+            'fluids': 'collection-fluids.html',
+            'interior': 'collection-interior.html',
+            'lighting': 'collection-lighting.html',
+            'merchandise': 'collection-merchandise.html',
+            'performance': 'collection-performance.html',
+            'suspension': 'collection-suspension.html',
+            'tools': 'collection-tools.html',
+            'wheels': 'collection-wheels.html',
+            'wheels-tires': 'collection-wheels.html'
+        };
+
+        // Enhanced view collection function - navigates to dedicated page when available
+        window.viewCollection = function(handle) {
+            if (!handle) return;
+            const h = String(handle).toLowerCase();
+
+            // Direct match
+            if (COLLECTION_PAGE_MAP[h]) {
+                window.location.href = COLLECTION_PAGE_MAP[h];
+                return;
+            }
+
+            // Try normalized variants (hyphen/underscore)
+            const normalizedHyphen = h.replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-');
+            const normalizedUnderscore = h.replace(/[^a-z0-9\s_]/g, '').trim().replace(/\s+/g, '_');
+
+            if (COLLECTION_PAGE_MAP[normalizedHyphen]) {
+                window.location.href = COLLECTION_PAGE_MAP[normalizedHyphen];
+                return;
+            }
+
+            if (COLLECTION_PAGE_MAP[normalizedUnderscore]) {
+                window.location.href = COLLECTION_PAGE_MAP[normalizedUnderscore];
+                return;
+            }
+
+            // Fallback to opening the Shopify collection in a new tab
+            window.open(`https://${SHOPIFY_DOMAIN}/collections/${handle}`, '_blank');
+        };
+
+        // View product function
+        window.viewProduct = function(handle) {
+            window.open(`https://${SHOPIFY_DOMAIN}/products/${handle}`, '_blank');
+        };
+
         // Load collections
         let collectionsData = [];
         let currentCollectionIndex = 0;
@@ -356,16 +410,9 @@
             try {
                 const data = await shopifyStorefrontAPI(COLLECTIONS_QUERY);
                 
-                // Filter out unwanted collections by handle
                 const excludedCollections = [
-                    'https://admin.shopify.com/store/nightmareracing/collections/317123887244',
-                    'https://admin.shopify.com/store/nightmareracing/collections/317568385164',
-                    'https://admin.shopify.com/store/nightmareracing/collections/317047013516',
-                    'https://admin.shopify.com/store/nightmareracing/collections/287569182860',
-                    'https://admin.shopify.com/store/nightmareracing/collections/287458984076',
-                    'https://admin.shopify.com/store/nightmareracing/collections/302260158604',
-                    'https://admin.shopify.com/store/nightmareracing/collections/287569182860',
-                    'frontpage' // example: hide frontpage collection
+                    'frontpage',
+                    'all'
                 ];
                 
                 collectionsData = data.collections.edges
@@ -410,7 +457,6 @@
             
             if (!list) return;
             
-            // Sort collections alphabetically by title
             const sortedCollections = [...collectionsData].sort((a, b) => 
                 a.title.localeCompare(b.title)
             );
@@ -419,11 +465,23 @@
             
             sortedCollections.forEach(collection => {
                 const listItem = document.createElement('li');
-                listItem.innerHTML = `
-                    <a href="#" onclick="viewCollection('${collection.handle}'); return false;">
-                        ${collection.title}
-                    </a>
-                `;
+                const pageFile = COLLECTION_PAGE_MAP[collection.handle];
+                
+                if (pageFile) {
+                    // Link to dedicated page
+                    listItem.innerHTML = `
+                        <a href="${pageFile}">
+                            ${collection.title}
+                        </a>
+                    `;
+                } else {
+                    // Fallback to viewCollection function
+                    listItem.innerHTML = `
+                        <a href="#" onclick="viewCollection('${collection.handle}'); return false;">
+                            ${collection.title}
+                        </a>
+                    `;
+                }
                 list.appendChild(listItem);
             });
             
@@ -435,16 +493,13 @@
             const card = document.createElement('div');
             card.className = 'collection-card';
             
-            // Try to get collection image first, then fallback to first product image
             let imageUrl = collection.image?.url;
             
-            // If no collection image, try to get the first product's image
             if (!imageUrl && collection.products.edges.length > 0) {
                 const firstProduct = collection.products.edges[0].node;
                 imageUrl = firstProduct.images?.edges[0]?.node.url;
             }
             
-            // Final fallback to placeholder
             if (!imageUrl) {
                 imageUrl = 'https://via.placeholder.com/400x300/0a0a0a/e50000?text=No+Image';
             }
@@ -462,7 +517,7 @@
                 <div class="collection-info">
                     <h3>${collection.title}</h3>
                     <p>${collection.description || 'Explore our selection'}</p>
-                    <span class="product-count">${productCount} product${productCount !== 1 ? 's' : ''}</span>
+                    <span class="product-count">${productCount}+ products</span>
                 </div>
             `;
 
@@ -473,8 +528,8 @@
             const prevBtn = document.getElementById('collections-prev');
             const nextBtn = document.getElementById('collections-next');
             
-            prevBtn.addEventListener('click', () => moveCarousel(-1));
-            nextBtn.addEventListener('click', () => moveCarousel(1));
+            if (prevBtn) prevBtn.addEventListener('click', () => moveCarousel(-1));
+            if (nextBtn) nextBtn.addEventListener('click', () => moveCarousel(1));
 
             updateCarouselButtons();
         }
@@ -484,7 +539,7 @@
             currentCollectionIndex = Math.max(0, Math.min(maxIndex, currentCollectionIndex + direction));
             
             const track = document.getElementById('collections-track');
-            const offset = currentCollectionIndex * -340; // card width + gap
+            const offset = currentCollectionIndex * -340;
             track.style.transform = `translateX(${offset}px)`;
             
             updateCarouselButtons();
@@ -495,12 +550,14 @@
             const prevBtn = document.getElementById('collections-prev');
             const nextBtn = document.getElementById('collections-next');
             
-            prevBtn.disabled = currentCollectionIndex === 0;
-            nextBtn.disabled = currentCollectionIndex >= collectionsData.length - 3;
+            if (prevBtn) prevBtn.disabled = currentCollectionIndex === 0;
+            if (nextBtn) nextBtn.disabled = currentCollectionIndex >= collectionsData.length - 3;
         }
 
         function updateCarouselIndicators() {
             const indicators = document.getElementById('carousel-indicators');
+            if (!indicators) return;
+            
             const totalDots = Math.max(1, collectionsData.length - 2);
             
             indicators.innerHTML = '';
@@ -543,10 +600,12 @@
                 document.getElementById('products-grid').classList.remove('hidden');
                 
                 const loadMoreSection = document.getElementById('load-more-section');
-                if (hasNextPage) {
-                    loadMoreSection.classList.remove('hidden');
-                } else {
-                    loadMoreSection.classList.add('hidden');
+                if (loadMoreSection) {
+                    if (hasNextPage) {
+                        loadMoreSection.classList.remove('hidden');
+                    } else {
+                        loadMoreSection.classList.add('hidden');
+                    }
                 }
             } catch (error) {
                 console.error('Error loading products:', error);
@@ -557,6 +616,8 @@
 
         function displayProducts() {
             const grid = document.getElementById('products-grid');
+            if (!grid) return;
+            
             grid.innerHTML = '';
 
             productsData.forEach(product => {
@@ -599,25 +660,33 @@
         const searchBtn = document.getElementById('search-btn');
         const searchResults = document.getElementById('search-results');
 
-        searchInput.addEventListener('input', (e) => {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
-                if (e.target.value.trim().length >= 3) {
-                    performSearch(e.target.value.trim());
-                } else {
-                    searchResults.classList.add('hidden');
-                }
-            }, 500);
-        });
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    if (e.target.value.trim().length >= 3) {
+                        performSearch(e.target.value.trim());
+                    } else {
+                        if (searchResults) searchResults.classList.add('hidden');
+                    }
+                }, 500);
+            });
+        }
 
-        searchBtn.addEventListener('click', () => {
-            const query = searchInput.value.trim();
-            if (query.length >= 3) {
-                performSearch(query);
-            }
-        });
+        if (searchBtn) {
+            searchBtn.addEventListener('click', () => {
+                if (searchInput) {
+                    const query = searchInput.value.trim();
+                    if (query.length >= 3) {
+                        performSearch(query);
+                    }
+                }
+            });
+        }
 
         async function performSearch(query) {
+            if (!searchResults) return;
+            
             try {
                 searchResults.innerHTML = '<div class="search-loading"><div class="spinner-small"></div>Searching...</div>';
                 searchResults.classList.remove('hidden');
@@ -638,6 +707,8 @@
         }
 
         function displaySearchResults(results) {
+            if (!searchResults) return;
+            
             searchResults.innerHTML = results.map(product => {
                 const imageUrl = product.images.edges[0]?.node.url || '';
                 const price = formatPrice(
@@ -657,20 +728,13 @@
             }).join('');
         }
 
-        // View collection
-        window.viewCollection = function(handle) {
-            window.open(`https://${SHOPIFY_DOMAIN}/collections/${handle}`, '_blank');
-        };
-
-        // View product
-        window.viewProduct = function(handle) {
-            window.open(`https://${SHOPIFY_DOMAIN}/products/${handle}`, '_blank');
-        };
-
         // Load more products
-        document.getElementById('load-more-btn')?.addEventListener('click', () => {
-            loadProducts(true);
-        });
+        const loadMoreBtn = document.getElementById('load-more-btn');
+        if (loadMoreBtn) {
+            loadMoreBtn.addEventListener('click', () => {
+                loadProducts(true);
+            });
+        }
 
         // Initialize page
         document.addEventListener('DOMContentLoaded', () => {
@@ -680,7 +744,7 @@
 
         // Close search results when clicking outside
         document.addEventListener('click', (e) => {
-            if (!e.target.closest('.search-section')) {
+            if (searchResults && !e.target.closest('.search-section')) {
                 searchResults.classList.add('hidden');
             }
         });
