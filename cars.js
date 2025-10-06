@@ -15,7 +15,7 @@ async function loadCarsData() {
         console.log('Loading cars from database...');
         
         // Fetch cars from database API
-        const response = await fetch('/.netlify/functions/api-cars-simple');
+        const response = await fetch('/.netlify/functions/api-cars');
         
         if (response.ok) {
             const data = await response.json();
