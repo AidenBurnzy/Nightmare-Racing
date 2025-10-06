@@ -1,13 +1,13 @@
 // api-cars.js - API endpoints for car data
 // Serverless functions for Netlify to handle car data operations
 
-import { getAllCars, getCarById, addCar, updateCar, deleteCar } from '../../database/database.js';
+const { getAllCars, getCarById, addCar, updateCar, deleteCar } = require('../../database/database.js');
 
 /**
  * Main API handler for car operations
  * Supports GET, POST, PUT, DELETE methods
  */
-export async function handler(event, context) {
+exports.handler = async (event, context) => {
     const { httpMethod, path, queryStringParameters, body } = event;
     
     // CORS headers

@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "Nightmare Racing - Premium Auto Services & Parts",
   "main": "index.js",
-  "type": "module",
   "scripts": {
     "dev": "netlify dev",
     "build": "echo 'Build complete'",
