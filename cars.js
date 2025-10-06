@@ -6,6 +6,9 @@ let currentSlide = 0;
 let cardsPerView = 1;
 let totalSlides = 0;
 
+// Make carsData globally accessible for other pages
+window.carsData = carsData;
+
 // Load car data from database API
 async function loadCarsData() {
     try {
@@ -18,6 +21,7 @@ async function loadCarsData() {
             const data = await response.json();
             if (Array.isArray(data) && data.length > 0) {
                 carsData = data.filter(car => car.featured !== false);
+                window.carsData = carsData; // Make globally accessible
                 console.log(`Database loaded ${carsData.length} featured cars`);
                 initializeCarousel();
                 return; // Exit early if database worked
@@ -40,6 +44,7 @@ async function loadCarsData() {
     // Only use fallback data if database completely failed
     console.log('Loading fallback data...');
     carsData = getDefaultCars();
+    window.carsData = carsData; // Make globally accessible
     console.log(`Carousel loaded ${carsData.length} fallback cars`);
     initializeCarousel();
 }

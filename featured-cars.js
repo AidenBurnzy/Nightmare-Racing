@@ -43,42 +43,41 @@ async function loadAllCars() {
         
         if (response.ok) {
             const data = await response.json();
-            if (Array.isArray(data)) {
+            if (Array.isArray(data) && data.length > 0) {
                 carsData = data;
-                console.log(`Database loaded ${carsData.length} cars`);
-                
-                // Don't filter featured cars on the featured cars page - show ALL cars
-                carsData = data;
-                console.log(`Database loaded ${carsData.length} cars for featured page`);
+                console.log(`✅ Database loaded ${carsData.length} cars`);
+                displayAllCars();
+                showLoadingState(false);
+                return;
             } else {
-                console.warn('Database returned invalid data format');
-                carsData = [];
+                console.warn('Database returned no cars');
             }
         } else {
-            console.warn(`Database API error (${response.status})`);
-            
-            // If it's a 500 error, likely a database connection issue
-            if (response.status === 500) {
-                console.error('Database connection error - check Netlify environment variables');
-                showDatabaseError();
-            }
-            
-            carsData = [];
+            console.warn(`Database API error (${response.status}): ${response.statusText}`);
         }
-        
-        // If no cars loaded, show empty state
-        if (carsData.length === 0) {
-            showEmptyState();
-        } else {
-            displayAllCars();
-        }
-        
-        showLoadingState(false);
     } catch (error) {
         console.error('Error loading cars from database:', error);
-        showDatabaseError();
-        showLoadingState(false);
     }
+    
+    // If API failed, try to use the same data source as the working carousel
+    console.log('API failed, attempting to load from alternative source...');
+    try {
+        // Since carousel works, let's try to get its data
+        if (window.carsData && window.carsData.length > 0) {
+            carsData = window.carsData;
+            console.log(`✅ Used carousel data: ${carsData.length} cars`);
+            displayAllCars();
+        } else {
+            // Last resort - show a helpful message
+            console.log('No data available from any source');
+            showDatabaseError();
+        }
+    } catch (error) {
+        console.error('Failed to load alternative data:', error);
+        showDatabaseError();
+    }
+    
+    showLoadingState(false);
 }
 
 
