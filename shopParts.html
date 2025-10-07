@@ -159,7 +159,7 @@
 
                 <!-- Load More Button -->
                 <div class="load-more-section hidden" id="load-more-section">
-                    <button class="btn-primary" id="load-more-btn">Load More Products</button>
+                    <button class="btn btn-primary" id="load-more-btn">Load More Products</button>
                 </div>
             </div>
 
@@ -509,9 +509,7 @@
             card.innerHTML = `
                 <div class="collection-image" style="background-image: url('${imageUrl}')">
                     <div class="collection-overlay">
-                        <button class="btn-view-collection" onclick="viewCollection('${collection.handle}')">
-                            View Collection
-                        </button>
+                                                <button class="btn btn-outline" onclick="viewCollection('${collection.handle}')">\n                            View Collection\n                        </button>
                     </div>
                 </div>
                 <div class="collection-info">
