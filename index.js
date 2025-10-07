@@ -68,15 +68,41 @@ function ensureVideoAutoplay() {
 
 // Nightmare Racing - Enhanced Responsive JavaScript with Slow Smooth Scrolling
 document.addEventListener('DOMContentLoaded', function() {
-    // Remove anchor hash from URL on initial load to prevent auto-scroll
-    if (window.location.hash) {
-        history.replaceState(null, '', window.location.pathname + window.location.search);
+    // Handle anchor links from other pages (like index.html#services)
+    if (window.location.hash && document.referrer && !document.referrer.includes(window.location.hostname)) {
+        // Coming from external site with hash - allow scroll
+        const targetId = window.location.hash.substring(1);
+        const targetElement = document.getElementById(targetId);
+        if (targetElement) {
+            setTimeout(() => {
+                targetElement.scrollIntoView({ behavior: 'smooth' });
+            }, 500); // Small delay to ensure page is fully loaded
+        }
+    } else if (window.location.hash && document.referrer && document.referrer.includes(window.location.hostname)) {
+        // Coming from same site with hash (like clicking Services from another page)
+        const targetId = window.location.hash.substring(1);
+        const targetElement = document.getElementById(targetId);
+        if (targetElement) {
+            setTimeout(() => {
+                targetElement.scrollIntoView({ behavior: 'smooth' });
+            }, 300); // Scroll to section after brief delay
+        }
+    } else {
+        // Direct page load - remove hash and start at top
+        if (window.location.hash) {
+            history.replaceState(null, '', window.location.pathname + window.location.search);
+        }
     }
-    // Always start at top of page on initial load
+    
+    // Always set scroll restoration to manual
     if ('scrollRestoration' in history) {
         history.scrollRestoration = 'manual';
     }
-    window.scrollTo(0, 0);
+    
+    // Only scroll to top if no hash was present
+    if (!window.location.hash) {
+        window.scrollTo(0, 0);
+    }
     
     // ================================
     // FIX FOR AUTO-SCROLL ISSUE
@@ -687,8 +713,17 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         // Ensure external links (like Book Service) are never intercepted
+        // But handle cross-page anchor links (like index.html#services) specially
         document.querySelectorAll('a[href$=".html"], a[href^="http"]').forEach(link => {
             link.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                
+                // Check if this is a cross-page anchor link (like index.html#services)
+                if (href && href.includes('#') && !href.startsWith('http')) {
+                    // This is a cross-page anchor link - let it navigate normally
+                    // The scroll-to-anchor will be handled by the browser or on page load
+                } 
+                
                 // Allow normal navigation - do not prevent default
                 // Just close mobile menu if it's open
                 if (mobileMenu && mobileMenu.classList.contains('active')) {
