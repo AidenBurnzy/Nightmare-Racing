@@ -539,33 +539,107 @@
       word-wrap: break-word;
     }
     
-    /* Responsive Design */
-    @media (max-width: 768px) {
+    /* Responsive Design - Improved */
+    @media (max-width: 1200px) {
       .admin-main {
         padding: 20px;
       }
       
       .form-grid {
         grid-template-columns: 1fr;
+        gap: 15px;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .admin-main {
+        padding: 15px;
+      }
+      
+      .form-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
       }
       
       .cars-grid {
         grid-template-columns: 1fr;
+        gap: 15px;
+      }
+      
+      .admin-nav {
+        padding: 15px 10px;
+        overflow-x: auto;
+        white-space: nowrap;
       }
       
       .admin-nav button {
-        margin: 5px;
+        display: inline-block;
+        margin: 0 5px;
         font-size: 0.9rem;
-        padding: 10px 20px;
+        padding: 10px 15px;
+        min-width: 120px;
+      }
+      
+      .admin-header h1 {
+        font-size: 2rem;
+      }
+      
+      .admin-header {
+        padding: 20px 0;
+      }
+      
+      .admin-card {
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+      
+      .car-card {
+        padding: 15px;
       }
       
       .auth-box {
-        padding: 30px;
-        margin: 20px;
+        padding: 20px;
+        margin: 10px;
+        width: calc(100% - 20px);
       }
       
       .auth-title {
-        font-size: 2rem;
+        font-size: 1.8rem;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .admin-main {
+        padding: 10px;
+      }
+      
+      .admin-header h1 {
+        font-size: 1.6rem;
+        letter-spacing: 1px;
+      }
+      
+      .admin-card {
+        padding: 15px;
+      }
+      
+      .form-group label {
+        font-size: 0.9rem;
+      }
+      
+      .form-group input,
+      .form-group select,
+      .form-group textarea {
+        font-size: 16px; /* Prevent zoom on iOS */
+      }
+      
+      .auth-box {
+        padding: 15px;
+        margin: 5px;
+        width: calc(100% - 10px);
+      }
+      
+      .auth-title {
+        font-size: 1.5rem;
       }
     }
     
@@ -834,7 +908,11 @@
           }
           
           // Set up event listeners first
-          window.netlifyIdentity.on('init', (user) => this.handleInit(user));
+          window.netlifyIdentity.on('init', (user) => {
+            console.log('🔄 Netlify Identity initialized');
+            this.initialized = true;
+            this.handleInit(user);
+          });
           window.netlifyIdentity.on('login', (user) => this.handleLogin(user));
           window.netlifyIdentity.on('logout', () => this.handleLogout());
           window.netlifyIdentity.on('error', (err) => this.handleError(err));
@@ -846,16 +924,23 @@
           setTimeout(() => {
             if (!this.initialized) {
               console.log('⚠️ Init event timeout, checking current user...');
-              const currentUser = window.netlifyIdentity.currentUser();
-              if (currentUser) {
-                console.log('✅ Found existing user:', currentUser.email);
-                this.user = currentUser;
-                this.showAdmin();
-              } else {
-                console.log('ℹ️ No current user, showing login');
+              try {
+                const currentUser = window.netlifyIdentity.currentUser();
+                if (currentUser) {
+                  console.log('✅ Found existing user:', currentUser.email);
+                  this.user = currentUser;
+                  this.initialized = true;
+                  this.showAdmin();
+                } else {
+                  console.log('ℹ️ No current user, showing login');
+                  this.showLogin();
+                  this.initialized = true;
+                }
+              } catch (err) {
+                console.error('❌ Error checking current user:', err);
                 this.showLogin();
+                this.initialized = true;
               }
-              this.initialized = true;
             }
           }, 3000); // 3 second timeout
           
@@ -895,7 +980,6 @@
       }
       
       handleInit(user) {
-        console.log('🔄 Netlify Identity initialized');
         if (user) {
           console.log('✅ User already logged in:', user.email);
           this.user = user;
@@ -916,6 +1000,10 @@
       handleLogout() {
         console.log('ℹ️ User logged out');
         this.user = null;
+        this.initialized = false;
+        // Reset admin content and show auth screen
+        this.adminContent.classList.remove('show');
+        this.authScreen.style.display = 'flex';
         this.showLogin();
         this.showStatus('Logged out successfully', 'info');
       }
@@ -943,12 +1031,20 @@
       
       logout() {
         console.log('🔄 Logging out...');
+        this.showStatus('Logging out...', 'info');
         try {
-          window.netlifyIdentity.logout();
+          if (window.netlifyIdentity && this.user) {
+            window.netlifyIdentity.logout();
+          } else {
+            // Force logout if no identity or user
+            this.handleLogout();
+          }
         } catch (error) {
           console.error('❌ Logout error:', error);
-          // Force logout by reloading
-          window.location.reload();
+          // Force logout by clearing user and showing login
+          this.user = null;
+          this.showLogin();
+          this.showStatus('Logged out (forced)', 'info');
         }
       }
       
