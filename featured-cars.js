@@ -95,20 +95,31 @@ function createCarCard(car, index) {
     card.className = 'featured-car-card';
     card.onclick = () => openCarModal(car);
     
+    // Debug: Log car data to see what images are available
+    console.log('Car data for', car.name, ':', {
+        mainImage: car.mainImage,
+        gallery: car.gallery,
+        fullCarData: car
+    });
+    
     // Prepare images array from database structure
     const images = [];
-    if (car.mainImage) images.push(car.mainImage);
+    if (car.mainImage && car.mainImage !== 'null' && car.mainImage !== null) {
+        images.push(car.mainImage);
+    }
     if (car.gallery && Array.isArray(car.gallery)) {
         car.gallery.forEach(item => {
-            if (typeof item === 'string') {
+            if (typeof item === 'string' && item && item !== 'null') {
                 images.push(item);
-            } else if (item.url) {
+            } else if (item && item.url && item.url !== 'null') {
                 images.push(item.url);
-            } else if (item.image) {
+            } else if (item && item.image && item.image !== 'null') {
                 images.push(item.image);
             }
         });
     }
+    
+    console.log('Processed images for', car.name, ':', images);
     
     // Create specs HTML
     let specsHTML = '';
