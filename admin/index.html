@@ -1638,17 +1638,16 @@ ${JSON.stringify(cars, null, 2)}
       }
       
     
-    // Initialize everything when page loads
-    let auth, adminApp;
-    
-    document.addEventListener('DOMContentLoaded', () => {
-      console.log('🚀 Starting Nightmare Racing Admin...');
-      auth = new AdminAuth();
-      adminApp = new AdminApp();
-      
-      // Make adminApp globally available for onclick handlers
-      window.adminApp = adminApp;
-    });
+// Initialize everything when page loads
+let auth, adminApp;
+
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('🚀 Starting Nightmare Racing Admin...');
+  auth = new AdminAuth();
+  adminApp = new AdminApp();
+  // Make adminApp globally available for onclick handlers
+  window.adminApp = adminApp;
+});
   </script>
 </body>
 </html>
