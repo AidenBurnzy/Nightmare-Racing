@@ -920,29 +920,20 @@
           // Initialize Auctus Identity
           window.netlifyIdentity.init();
           
-          // Add timeout in case 'init' event doesn't fire
+          // Add multiple timeouts to handle different scenarios
           setTimeout(() => {
             if (!this.initialized) {
               console.log('⚠️ Init event timeout, checking current user...');
-              try {
-                const currentUser = window.netlifyIdentity.currentUser();
-                if (currentUser) {
-                  console.log('✅ Found existing user:', currentUser.email);
-                  this.user = currentUser;
-                  this.initialized = true;
-                  this.showAdmin();
-                } else {
-                  console.log('ℹ️ No current user, showing login');
-                  this.showLogin();
-                  this.initialized = true;
-                }
-              } catch (err) {
-                console.error('❌ Error checking current user:', err);
-                this.showLogin();
-                this.initialized = true;
-              }
+              this.checkAndInitialize();
             }
-          }, 3000); // 3 second timeout
+          }, 2000); // First check at 2 seconds
+          
+          setTimeout(() => {
+            if (!this.initialized) {
+              console.log('⚠️ Second timeout, force checking current user...');
+              this.checkAndInitialize();
+            }
+          }, 5000); // Second check at 5 seconds
           
           console.log('✅ Authentication system setup complete');
           
@@ -950,6 +941,26 @@
           console.error('❌ Failed to initialize:', error);
           this.showStatus('Failed to load authentication. Please refresh the page.', 'error');
           setTimeout(() => this.showLogin(), 2000);
+        }
+      }
+      
+      checkAndInitialize() {
+        try {
+          const currentUser = window.netlifyIdentity.currentUser();
+          if (currentUser) {
+            console.log('✅ Found existing user:', currentUser.email);
+            this.user = currentUser;
+            this.initialized = true;
+            this.showAdmin();
+          } else {
+            console.log('ℹ️ No current user, showing login');
+            this.showLogin();
+            this.initialized = true;
+          }
+        } catch (err) {
+          console.error('❌ Error checking current user:', err);
+          this.showLogin();
+          this.initialized = true;
         }
       }
       
@@ -1073,10 +1084,25 @@
       }
       
       showAdmin() {
+        console.log('🚀 Admin - Showing admin content');
         this.authScreen.style.display = 'none';
         this.adminContent.classList.add('show');
         // Initialize admin functionality
-        window.adminApp && window.adminApp.init();
+        if (window.adminApp) {
+          console.log('🚀 Admin - Calling adminApp.init()');
+          window.adminApp.init();
+        } else {
+          console.warn('⚠️ Admin - adminApp not available, retrying...');
+          // Retry after a short delay
+          setTimeout(() => {
+            if (window.adminApp) {
+              console.log('🚀 Admin - Retry successful, calling adminApp.init()');
+              window.adminApp.init();
+            } else {
+              console.error('❌ Admin - adminApp still not available');
+            }
+          }, 500);
+        }
       }
       
       hideAll() {
@@ -1390,13 +1416,13 @@
               </div>
               
               <div class="car-actions">
-                <button onclick="adminApp.editCar(${car.id})" title="Edit car details">
+                <button onclick="if(window.adminApp) { window.adminApp.editCar(${car.id}); } else { console.error('adminApp not available'); }" title="Edit car details">
                   ✏️ Edit
                 </button>
-                <button onclick="adminApp.deleteCar(${car.id})" class="danger" title="Delete car">
+                <button onclick="if(window.adminApp) { window.adminApp.deleteCar(${car.id}); } else { console.error('adminApp not available'); }" class="danger" title="Delete car">
                   🗑️ Delete
                 </button>
-                <button onclick="adminApp.viewCar(${car.id})" title="View full details">
+                <button onclick="if(window.adminApp) { window.adminApp.viewCar(${car.id}); } else { console.error('adminApp not available'); }" title="View full details">
                   👁️ View
                 </button>
               </div>
