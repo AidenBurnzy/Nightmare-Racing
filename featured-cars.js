@@ -6,7 +6,7 @@ let currentImageIndex = 0;
 
 // Initialize when DOM loads
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Featured Cars page loading...');
+    // Featured Cars Page JavaScript
     loadAllCars();
     setupModalEvents();
     
@@ -19,7 +19,7 @@ function handleDirectCarLink() {
     const hash = window.location.hash;
     if (hash && hash.length > 1) {
         const carName = decodeURIComponent(hash.substring(1));
-        console.log(`Looking for car: ${carName}`);
+        // Find specific car from URL parameter
         
         // Wait for cars to load, then try to open the specific car
         setTimeout(() => {
@@ -36,8 +36,6 @@ async function loadAllCars() {
     try {
         showLoadingState(true);
         
-        console.log('Loading cars from database API...');
-        
         // Fetch cars from database API
         const response = await fetch('/.netlify/functions/api-cars');
         
@@ -45,7 +43,6 @@ async function loadAllCars() {
             const data = await response.json();
             if (Array.isArray(data) && data.length > 0) {
                 carsData = data;
-                console.log(`✅ Database loaded ${carsData.length} cars`);
                 displayAllCars();
                 showLoadingState(false);
                 return;
@@ -60,16 +57,13 @@ async function loadAllCars() {
     }
     
     // If API failed, try to use the same data source as the working carousel
-    console.log('API failed, attempting to load from alternative source...');
     try {
         // Since carousel works, let's try to get its data
         if (window.carsData && window.carsData.length > 0) {
             carsData = window.carsData;
-            console.log(`✅ Used carousel data: ${carsData.length} cars`);
             displayAllCars();
         } else {
             // Last resort - show a helpful message
-            console.log('No data available from any source');
             showDatabaseError();
         }
     } catch (error) {

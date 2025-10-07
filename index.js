@@ -43,9 +43,9 @@ function ensureVideoAutoplay() {
             
             if (playPromise !== undefined) {
                 playPromise.then(() => {
-                    console.log('Video autoplay started successfully');
+                    // Video autoplay started successfully
                 }).catch(error => {
-                    console.log('Video autoplay failed, will try on user interaction:', error);
+                    // Video autoplay failed, will try on user interaction
                     
                     // Fallback: play on any user interaction
                     const playOnInteraction = () => {
@@ -1176,7 +1176,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // ================================
     
     function initialize() {
-        console.log('🏁 Initializing Nightmare Racing Enhanced Responsive JavaScript...');
+                // Initialize Nightmare Racing Enhanced Responsive JavaScript
         
         // Initial viewport setup
         handleViewportChanges();
@@ -1206,7 +1206,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Reset initial load flag after full initialization
             setTimeout(() => {
                 isInitialLoad = false;
-                console.log('🎯 Initial load flag cleared - smooth scrolling now enabled');
+                                // Initial load flag cleared - smooth scrolling now enabled
             }, 2000);
         }, 300);
         

@@ -1,12 +1,4 @@
-:root {
-    --section-padding: 80px 0;
-    --secondary-black: #1a1a1a;
-    --primary-black: #0f0f0f;
-    --accent-red: #e50000;
-    --pure-white: #ffffff;
-    --medium-gray: #888888;
-    --font-secondary: 'Arial', sans-serif;
-}
+/* Parts page styles - uses CSS variables from indexStyles.css */
 
 * {
     margin: 0;

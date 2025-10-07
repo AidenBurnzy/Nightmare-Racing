@@ -12,8 +12,6 @@ window.carsData = carsData;
 // Load car data from database API
 async function loadCarsData() {
     try {
-        console.log('Loading cars from database...');
-        
         // Fetch cars from database API
         const response = await fetch('/.netlify/functions/api-cars');
         
@@ -22,7 +20,6 @@ async function loadCarsData() {
             if (Array.isArray(data) && data.length > 0) {
                 carsData = data.filter(car => car.featured !== false);
                 window.carsData = carsData; // Make globally accessible
-                console.log(`Database loaded ${carsData.length} featured cars`);
                 initializeCarousel();
                 return; // Exit early if database worked
             } else {
@@ -38,93 +35,16 @@ async function loadCarsData() {
         }
     } catch (error) {
         console.error('Error loading cars from database:', error);
-        console.log('Using fallback data - check network or API availability');
+        // No fallback data - carousel will be empty if database fails
+        carsData = [];
+        window.carsData = carsData;
+        initializeCarousel();
     }
-    
-    // Only use fallback data if database completely failed
-    console.log('Loading fallback data...');
-    carsData = getDefaultCars();
-    window.carsData = carsData; // Make globally accessible
-    console.log(`Carousel loaded ${carsData.length} fallback cars`);
-    initializeCarousel();
 }
 
 
 
-// Default cars with same structure as CMS data
-function getDefaultCars() {
-    return [
-        {
-            name: "Twin-Turbo Supra",
-            description: "1200HP Beast • Custom Build",
-            mainImage: null,
-            gallery: [],
-            specs: {
-                zeroToSixty: "2.8s",
-                topSpeed: "220mph",
-                horsepower: "1200HP"
-            },
-            status: "COMPLETED",
-            featured: true,
-            dateAdded: "2025-01-15T00:00:00Z"
-        },
-        {
-            name: "Widebody GTR",
-            description: "Track Weapon • Full Build",
-            mainImage: null,
-            gallery: [],
-            specs: {
-                zeroToSixty: "2.5s",
-                custom1: "Track Tested",
-                horsepower: "1000HP"
-            },
-            status: "COMPLETED",
-            featured: true,
-            dateAdded: "2025-01-10T00:00:00Z"
-        },
-        {
-            name: "Project Nightfall",
-            description: "Stealth Build • Coming Soon",
-            mainImage: null,
-            gallery: [],
-            specs: {
-                custom1: "Classified",
-                custom2: "Top Secret"
-            },
-            status: "IN PROGRESS",
-            featured: true,
-            dateAdded: "2025-01-05T00:00:00Z"
-        },
-        {
-            name: "Turbo Mustang",
-            description: "American Muscle • 900HP",
-            mainImage: null,
-            gallery: [],
-            specs: {
-                zeroToSixty: "3.2s",
-                horsepower: "900HP",
-                topSpeed: "200mph"
-            },
-            status: "COMPLETED",
-            featured: true,
-            dateAdded: "2025-01-01T00:00:00Z"
-        },
-        {
-            name: "Drift Special",
-            description: "Sideways Master • Competition Ready",
-            mainImage: null,
-            gallery: [],
-            specs: {
-                custom1: "Drift Ready",
-                custom2: "Competition",
-                horsepower: "600HP"
-            },
-            status: "FEATURED BUILD",
-            featured: true,
-            dateAdded: "2024-12-25T00:00:00Z"
-        }
-    ];
-}
+
 
 // Initialize carousel
 function initializeCarousel() {

@@ -1,10 +1,9 @@
 // Professional Google Reviews Style Testimonials
 
 // Add console log to verify script is loading
-console.log('Testimonials script loading...');
+// Testimonials functionality
 
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM loaded, initializing testimonials...');
+document.addEventListener('DOMContentLoaded', function() {
     
     const reviews = [
         {
@@ -143,7 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Display reviews for current page
     function displayReviews() {
-        console.log(`Displaying reviews for page ${currentPage + 1}`);
+                // Update page display
         const startIndex = currentPage * reviewsPerPage;
         const endIndex = startIndex + reviewsPerPage;
         const pageReviews = reviews.slice(startIndex, endIndex);

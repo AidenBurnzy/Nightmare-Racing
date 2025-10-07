@@ -1,15 +1,4 @@
-/* Shop Parts Page Styles */
-
-:root {
-    --primary-black: #0a0a0a;
-    --secondary-black: #1a1a1a;
-    --accent-red: #e50000;
-    --pure-white: #ffffff;
-    --medium-gray: #888;
-    --dark-gray: #333;
-    --font-primary: 'Orbitron', monospace;
-    --font-secondary: 'Rajdhani', sans-serif;
-}
+/* Shop Parts Page Styles - uses CSS variables from indexStyles.css */
 
 /* Page Layout */
 .shop-parts-page {
