@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Auth Debug - Nightmare Racing</title>
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            background: #1a1a1a; 
+            color: white; 
+            padding: 20px; 
+        }
+        .status { 
+            margin: 10px 0; 
+            padding: 10px; 
+            border-radius: 5px; 
+        }
+        .success { background: #004d00; }
+        .error { background: #4d0000; }
+        .info { background: #003d4d; }
+        .warning { background: #4d3d00; }
+    </style>
+</head>
+<body>
+    <h1>Nightmare Racing - Authentication Debug</h1>
+    <div id="debug-output"></div>
+    
+    <script>
+        const output = document.getElementById('debug-output');
+        
+        function log(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `status ${type}`;
+            div.innerHTML = `<strong>${new Date().toLocaleTimeString()}:</strong> ${message}`;
+            output.appendChild(div);
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+        
+        // Check if script loaded
+        log('🔄 Starting authentication debug...', 'info');
+        
+        // Check if Netlify Identity widget loaded
+        setTimeout(() => {
+            if (typeof window.netlifyIdentity === 'undefined') {
+                log('❌ Netlify Identity widget did NOT load', 'error');
+                log('This could be due to:', 'warning');
+                log('• Script blocked by browser/adblocker', 'warning');
+                log('• Network connectivity issues', 'warning');
+                log('• CORS/security policy blocking the script', 'warning');
+            } else {
+                log('✅ Netlify Identity widget loaded successfully', 'success');
+                
+                // Try to initialize
+                try {
+                    log('🔄 Attempting to initialize Netlify Identity...', 'info');
+                    
+                    window.netlifyIdentity.on('init', (user) => {
+                        log(`✅ Identity initialized. User: ${user ? user.email : 'None'}`, 'success');
+                    });
+                    
+                    window.netlifyIdentity.on('error', (err) => {
+                        log(`❌ Identity error: ${err.message}`, 'error');
+                    });
+                    
+                    window.netlifyIdentity.init();
+                    log('🔄 Init() called successfully', 'info');
+                    
+                } catch (error) {
+                    log(`❌ Error during initialization: ${error.message}`, 'error');
+                }
+            }
+        }, 1000);
+        
+        // Check current URL and site info
+        log(`🌐 Current URL: ${window.location.href}`, 'info');
+        log(`🌐 Origin: ${window.location.origin}`, 'info');
+        log(`🌐 Host: ${window.location.host}`, 'info');
+        
+        // Check if we're on Netlify
+        if (window.location.host.includes('netlify.app')) {
+            log('✅ Running on Netlify domain', 'success');
+        } else if (window.location.host.includes('localhost')) {
+            log('⚠️ Running on localhost - Identity may not work locally', 'warning');
+        } else {
+            log('ℹ️ Running on custom domain', 'info');
+        }
+        
+        // Manual test button
+        setTimeout(() => {
+            const testBtn = document.createElement('button');
+            testBtn.textContent = 'Test Manual Login';
+            testBtn.style.cssText = 'padding: 10px 20px; margin: 20px 0; background: #e50000; color: white; border: none; border-radius: 5px; cursor: pointer;';
+            testBtn.onclick = () => {
+                try {
+                    if (window.netlifyIdentity) {
+                        log('🔄 Attempting to open login modal...', 'info');
+                        window.netlifyIdentity.open();
+                    } else {
+                        log('❌ Cannot test - netlifyIdentity not available', 'error');
+                    }
+                } catch (error) {
+                    log(`❌ Login test failed: ${error.message}`, 'error');
+                }
+            };
+            output.appendChild(testBtn);
+        }, 2000);
+    </script>
+</body>
+</html>
