@@ -1636,18 +1636,18 @@ ${JSON.stringify(cars, null, 2)}
           results.innerHTML = `<p style="color: #ff0000;">❌ Error: ${error.message}</p>`;
         }
       }
-      
+    }
     
-// Initialize everything when page loads
-let auth, adminApp;
+    // Initialize everything when page loads
+    let auth, adminApp;
 
-document.addEventListener('DOMContentLoaded', () => {
-  console.log('🚀 Starting Nightmare Racing Admin...');
-  auth = new AdminAuth();
-  adminApp = new AdminApp();
-  // Make adminApp globally available for onclick handlers
-  window.adminApp = adminApp;
-});
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('🚀 Starting Nightmare Racing Admin...');
+      auth = new AdminAuth();
+      adminApp = new AdminApp();
+      // Make adminApp globally available for onclick handlers
+      window.adminApp = adminApp;
+    });
   </script>
 </body>
 </html>
