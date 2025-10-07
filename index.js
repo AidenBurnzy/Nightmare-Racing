@@ -667,14 +667,14 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Setup smooth scrolling for navigation links - FIXED VERSION
     function setupSmoothScrolling() {
-        // Add smooth scrolling to all navigation links
+        // Add smooth scrolling ONLY to internal anchor links (starting with #)
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
-                e.preventDefault();
                 const target = this.getAttribute('href');
                 
-                // Only scroll if user has interacted and it's not initial load
+                // Only apply smooth scrolling to internal anchor links
                 if (target && target !== '#' && hasUserInteracted && !isInitialLoad) {
+                    e.preventDefault();
                     console.log('Smooth scrolling to:', target); // Debug log
                     smoothScroll(target);
                     
@@ -682,6 +682,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (mobileMenu && mobileMenu.classList.contains('active')) {
                         closeMobileMenu();
                     }
+                }
+            });
+        });
+        
+        // Ensure external links (like Book Service) are never intercepted
+        document.querySelectorAll('a[href$=".html"], a[href^="http"]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                // Allow normal navigation - do not prevent default
+                // Just close mobile menu if it's open
+                if (mobileMenu && mobileMenu.classList.contains('active')) {
+                    closeMobileMenu();
                 }
             });
         });
