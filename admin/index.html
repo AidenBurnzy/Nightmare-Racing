@@ -1073,9 +1073,11 @@
       }
       
       showAdmin() {
+        console.log('🚀 Admin - showAdmin() called, switching to admin content');
         this.authScreen.style.display = 'none';
         this.adminContent.classList.add('show');
         // Initialize admin functionality
+        console.log('🚀 Admin - Calling adminApp.init()');
         window.adminApp && window.adminApp.init();
       }
       
@@ -1277,17 +1279,36 @@
       async loadCars() {
         try {
           console.log('🔄 Admin - Loading cars from database...');
+          console.log('🔄 Admin - Making API call to:', '/.netlify/functions/api-cars');
+          
           const response = await fetch('/.netlify/functions/api-cars');
           
+          console.log('🔄 Admin - Response status:', response.status);
+          console.log('🔄 Admin - Response headers:', response.headers);
+          
           if (response.ok) {
-            this.cars = await response.json();
-            if (Array.isArray(this.cars) && this.cars.length > 0) {
-              console.log(`✅ Admin - Loaded ${this.cars.length} cars from database`);
-              this.renderCars();
-              return;
+            const responseText = await response.text();
+            console.log('🔄 Admin - Raw response:', responseText);
+            
+            try {
+              this.cars = JSON.parse(responseText);
+              console.log('🔄 Admin - Parsed cars:', this.cars);
+              
+              if (Array.isArray(this.cars) && this.cars.length > 0) {
+                console.log(`✅ Admin - Loaded ${this.cars.length} cars from database`);
+                this.renderCars();
+                return;
+              } else {
+                console.warn('⚠️ Admin - Cars array is empty or not an array:', this.cars);
+              }
+            } catch (parseError) {
+              console.error('❌ Admin - Failed to parse JSON response:', parseError);
+              console.log('Raw response that failed to parse:', responseText);
             }
           } else {
+            const errorText = await response.text();
             console.warn(`❌ Admin - API error (${response.status}): ${response.statusText}`);
+            console.log('Error response body:', errorText);
           }
         } catch (error) {
           console.error('❌ Admin - Failed to load from database:', error);
