@@ -59,7 +59,7 @@ exports.handler = async (event, context) => {
                         WHEN LENGTH(c.main_image) > 200 THEN NULL
                         ELSE c.main_image
                     END as main_image,
-                    COALESCE(c.build_status, c.status, 'COMPLETED') as status,
+                    c.status,
                     c.featured,
                     c.date_added,
                     COALESCE(
@@ -74,7 +74,7 @@ exports.handler = async (event, context) => {
                     ) as gallery
                 FROM cars c
                 LEFT JOIN car_gallery cg ON c.id = cg.car_id
-                GROUP BY c.id, c.name, c.description, c.main_image, c.build_status, c.status, c.featured, c.date_added
+                GROUP BY c.id, c.name, c.description, c.main_image, c.status, c.featured, c.date_added
                 ORDER BY c.date_added DESC
             `;
             
@@ -106,7 +106,7 @@ exports.handler = async (event, context) => {
             
             // Insert car with simplified structure
             const [newCar] = await sql`
-                INSERT INTO cars (name, description, main_image, build_status, featured, date_added)
+                INSERT INTO cars (name, description, main_image, status, featured, date_added)
                 VALUES (
                     ${carData.name}, 
                     ${carData.description}, 
@@ -115,7 +115,7 @@ exports.handler = async (event, context) => {
                     ${carData.featured !== false}, 
                     ${carData.dateAdded || new Date().toISOString()}
                 )
-                RETURNING id, name, description, main_image, build_status as status, featured, date_added
+                RETURNING id, name, description, main_image, status, featured, date_added
             `;
             
             // Insert gallery images if provided
@@ -157,55 +157,18 @@ exports.handler = async (event, context) => {
             
             console.log(`📝 Updating car ${carId}...`);
             
-            // Update car basic info
+                        // Update car basic info
             await sql`
                 UPDATE cars 
                 SET name = ${carData.name}, 
                     description = ${carData.description},
                     main_image = ${carData.mainImage}, 
                     status = ${carData.status},
-                    featured = ${carData.featured}, 
-                    updated_at = NOW()
+                    featured = ${carData.featured}
                 WHERE id = ${carId}
             `;
             
-            // Update or insert specs
-            if (carData.specs) {
-                const existingSpecs = await sql`
-                    SELECT * FROM car_specs WHERE car_id = ${carId}
-                `;
-                
-                if (existingSpecs.length > 0) {
-                    await sql`
-                        UPDATE car_specs 
-                        SET zero_to_sixty = ${carData.specs.zeroToSixty || null},
-                            top_speed = ${carData.specs.topSpeed || null},
-                            horsepower = ${carData.specs.horsepower || null},
-                            engine = ${carData.specs.engine || null},
-                            weight = ${carData.specs.weight || null},
-                            custom1 = ${carData.specs.custom1 || null},
-                            custom2 = ${carData.specs.custom2 || null}
-                        WHERE car_id = ${carId}
-                    `;
-                } else {
-                    await sql`
-                        INSERT INTO car_specs (
-                            car_id, zero_to_sixty, top_speed, horsepower,
-                            engine, weight, custom1, custom2
-                        )
-                        VALUES (
-                            ${carId}, 
-                            ${carData.specs.zeroToSixty || null},
-                            ${carData.specs.topSpeed || null},
-                            ${carData.specs.horsepower || null},
-                            ${carData.specs.engine || null},
-                            ${carData.specs.weight || null},
-                            ${carData.specs.custom1 || null},
-                            ${carData.specs.custom2 || null}
-                        )
-                    `;
-                }
-            }
+            // Update gallery images if provided
             
             console.log(`✅ Successfully updated car ${carId}`);
             

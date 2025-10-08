@@ -1336,7 +1336,6 @@
         }
         
         container.innerHTML = this.cars.map(car => {
-          const hasSpecs = car.specs && (car.specs.horsepower || car.specs.engine || car.specs.zeroToSixty || car.specs.topSpeed);
           const hasImage = car.mainImage && car.mainImage !== 'null';
           const hasGallery = car.gallery && car.gallery.length > 0;
           
@@ -1360,18 +1359,6 @@
                 <p class="car-meta"><strong>Status:</strong> ${this.getStatusEmoji(car.status)} ${car.status}</p>
                 <p class="car-meta"><strong>Featured:</strong> ${car.featured ? '⭐ Yes' : '❌ No'}</p>
               </div>
-              
-              ${hasSpecs ? `
-                <div style="background: var(--primary-black); padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid var(--dark-gray);">
-                  <h4 style="color: var(--accent-red); margin: 0 0 10px 0; font-size: 0.9rem;">🏁 PERFORMANCE</h4>
-                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.85rem;">
-                    ${car.specs.horsepower ? `<span>💨 ${car.specs.horsepower}</span>` : ''}
-                    ${car.specs.engine ? `<span>🔧 ${car.specs.engine}</span>` : ''}
-                    ${car.specs.zeroToSixty ? `<span>⚡ 0-60: ${car.specs.zeroToSixty}</span>` : ''}
-                    ${car.specs.topSpeed ? `<span>🏎️ ${car.specs.topSpeed}</span>` : ''}
-                  </div>
-                </div>
-              ` : ''}
               
               ${hasGallery ? `
                 <div style="margin-bottom: 15px;">
@@ -1436,13 +1423,6 @@
             <p><strong>Description:</strong> ${car.description}</p>
             <p><strong>Status:</strong> ${car.status}</p>
             <p><strong>Featured:</strong> ${car.featured ? 'Yes' : 'No'}</p>
-            ${car.specs && (car.specs.horsepower || car.specs.engine) ? `
-              <h3 style="color: var(--accent-red);">Performance Specs</h3>
-              ${car.specs.horsepower ? `<p>Horsepower: ${car.specs.horsepower}</p>` : ''}
-              ${car.specs.engine ? `<p>Engine: ${car.specs.engine}</p>` : ''}
-              ${car.specs.zeroToSixty ? `<p>0-60: ${car.specs.zeroToSixty}</p>` : ''}
-              ${car.specs.topSpeed ? `<p>Top Speed: ${car.specs.topSpeed}</p>` : ''}
-            ` : ''}
             <button onclick="this.parentElement.parentElement.remove()" style="margin-top: 20px; padding: 10px 20px; background: var(--accent-red); color: white; border: none; border-radius: 5px; cursor: pointer;">Close</button>
           </div>
         `;
