@@ -11,15 +11,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- CSS Files -->
-    <link rel="stylesheet" href="indexStyles.css">
-    <link rel="stylesheet" href="navStyles.css">
-    <link rel="stylesheet" href="hero.css">
-    <link rel="stylesheet" href="services.css">
-    <link rel="stylesheet" href="cars.css">
-    <link rel="stylesheet" href="parts.css">
-    <link rel="stylesheet" href="testimonials.css">
-    <link rel="stylesheet" href="contact.css">
-    <link rel="stylesheet" href="footer.css">
+    <link rel="stylesheet" href="src/css/indexStyles.css">
+    <link rel="stylesheet" href="src/css/navStyles.css">
+    <link rel="stylesheet" href="src/css/hero.css">
+    <link rel="stylesheet" href="src/css/services.css">
+    <link rel="stylesheet" href="src/css/cars.css">
+    <link rel="stylesheet" href="src/css/parts.css">
+    <link rel="stylesheet" href="src/css/testimonials.css">
+    <link rel="stylesheet" href="src/css/contact.css">
+    <link rel="stylesheet" href="src/css/footer.css">
     
     <!-- Netlify Identity Widget -->
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
@@ -36,15 +36,15 @@
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-logo">
-                <a href="index.html"><img src="pictures/logoImage1.png" alt="Nightmare Racing Logo"></a>
+                <a href="index.html">        <img src="assets/logoImage1.png" alt="Nightmare Racing Logo" class="nav-logo" data-logo-target="#home"></a>
                 <h2>NIGHTMARE<span class="text-accent">RACING</span></h2>
             </div>
 
             <ul class="nav-menu">
                 <li><a href="index.html" class="active">Home</a></li>
                 <li><a href="#services">Services</a></li>
-                <li><a href="featured-cars.html">Featured Cars</a></li>
-                <li><a href="shopParts.html">Shop Parts</a></li>
+                <li><a href="src/pages/featured-cars.html">Featured Cars</a></li>
+                <li><a href="src/pages/shopParts.html">Shop Parts</a></li>
                 <li><a href="#contact">Contact</a></li>
             </ul>
 
@@ -75,8 +75,8 @@
                 <li><a href="/admin" target="_blank">Admin Portal</a></li>
                 <li><a href="/">Home</a></li>
                 <li><a href="#services">Services</a></li>
-                <li><a href="featured-cars.html">Featured Cars</a></li>
-                <li><a href="shopParts.html">Shop Parts</a></li>
+                <li><a href="src/pages/featured-cars.html">Featured Cars</a></li>
+                <li><a href="src/pages/shopParts.html">Shop Parts</a></li>
                 <li><a href="#contact">Contact</a></li>
                 <li class="mobile-sign-in">
                     <a href="https://nmrauto.com/" target="_blank" rel="noopener noreferrer">
@@ -105,7 +105,7 @@
         
         <div class="hero-content">
             <div class="hero-text">
-                <img src="pictures/backgroundLogo.png" alt="Nightmare Racing Logo" class="hero-logo">
+                <img src="assets/backgroundLogo.png" alt="Nightmare Racing Logo" class="hero-logo">
                 <div class="hero-buttons">
                     <a href="request-quote.html" class="btn btn-primary">Book Service</a>
                     <a href="https://nmrauto.com/collections" class="btn btn-secondary">Shop Parts</a>
@@ -113,9 +113,9 @@
             </div>
             
             <div class="hero-image-container">
-                <img src="pictures/mainPageImage1.png" alt="High-performance sports car" class="hero-image">
-                <img src="pictures/mainPageImage2.png" alt="High-performance sports car" class="hero-image">
-                <img src="pictures/mainPageImage3.png" alt="High-performance sports car" class="hero-image">
+                <img src="assets/mainPageImage1.png" alt="High-performance sports car" class="hero-image">
+                <img src="assets/mainPageImage2.png" alt="High-performance sports car" class="hero-image">
+                <img src="assets/mainPageImage3.png" alt="High-performance sports car" class="hero-image">
             </div>
         </div>
     </section>
@@ -303,7 +303,7 @@
             </div>
             
             <div class="view-more-section">
-                <a href="featured-cars.html" class="view-more-btn">
+                <a href="src/pages/featured-cars.html" class="view-more-btn">
                     <span>View All Cars</span>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                         <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -393,8 +393,8 @@
     </script>
 
     <!-- Scripts -->
-    <script src="index.js"></script>
-    <script src="cars.js"></script>
+    <script src="src/js/index.js"></script>
+    <script src="src/js/cars.js"></script>
     
     <!-- Netlify Identity -->
     <script>

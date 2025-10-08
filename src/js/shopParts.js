@@ -4,66 +4,16 @@ const SHOPIFY_DOMAIN = 'nightmareracing.myshopify.com';
 const STOREFRONT_ACCESS_TOKEN = '01ebdb40d541cc7fda967406889dc1b4';
 const STOREFRONT_API_VERSION = '2024-01';
 
-// Collection handle to filename mapping (normalized keys)
+// Collection handle to filename mapping (disabled - collection pages removed during reorganization)
 const COLLECTION_PAGE_MAP = {
-    // Mappings generated/updated for user's selected collections
-    'nmr-merch': 'collections/collection_nmr_merch.html',
-    'bearings': 'collections/collection_bearings.html',
-    'clutch-kits-multi': 'collections/collection_clutch_kits_multi.html',
-    'clutch-kits-single': 'collections/collection_clutch_kits_single.html',
-    'drivetrain': 'collections/collection_drivetrain.html',
-    'engine-components': 'collections/collection_engine_components.html',
-    'fabrication': 'collections/collection_fabrication.html',
-    'tools': 'collections/collection_tools.html',
-    'bolts': 'collections/collection_bolts.html',
-    'license-frame': 'collections/collection_licenseframe.html',
-    'lug-nuts': 'collections/collection_lug_nuts.html',
-    'wheel-accessories': 'collections/collection_wheel_accessories.html',
-    'wheel-and-tire-accessories': 'collections/collection_wheel_and_tire_accessories.html',
-    'wheel-bolts': 'collections/collection_wheel_bolts.html',
-    'fuel-pumps': 'collections/collection_fuel_pumps.html',
-    'gauges': 'collections/collection_gauges.html',
-    'belts-timing-accessory': 'collections/collection_belts_timing_accessory.html',
-    'brackets': 'collections/collection_brackets.html',
-    'cooling': 'collections/collection_cooling.html',
-    'fuel-systems': 'collections/collection_fuel_systems.html',
-    'gasket-kits': 'collections/collection_gasket_kits.html',
-    'hoses': 'collections/collection_hoses.html',
-    'air-filters': 'collections/collection_air_filters.html',
-    'batteries-starting-charging': 'collections/collection_batteries_starting_charging.html',
-    'coilovers': 'collections/collection_coilovers.html',
-    'cold-air-intakes': 'collections/collection_cold_air_intakes.html',
-    'downpipes': 'collections/collection_downpipes.html',
-    'exhaust-mufflers-tips': 'collections/collection_exhaust_mufflers_tips.html',
-    'headers-manifolds': 'collections/collection_headers_manifolds.html',
-    'lift-kits': 'collections/collection_lift_kits.html',
-    'suspension': 'collections/collection-suspension.html',
-    'sway-bars': 'collections/collection_sway_bars.html',
-    'turbo-kits': 'collections/collection_turbo_kits.html',
-    'air-suspension-kits': 'collections/collection_air_suspension_kits.html',
-    'diffusers': 'collections/collection_diffusers.html',
-    'brakes-rotors-pads': 'collections/collection-brakes.html',
-    'brakes': 'collections/collection-brakes.html',
-    'shift-knobs': 'collections/collection_shift_knobs.html',
-    'camber-kits': 'collections/collection_camber_kits.html',
-    'coilover-springs': 'collections/collection_coilover_springs.html',
-    'head-gaskets': 'collections/collection_head_gaskets.html',
-    'steering-wheels': 'collections/collection_steering_wheels.html',
-    'turbochargers': 'collections/collection_turbochargers.html',
-    'superchargers': 'collections/collection_superchargers.html',
-    'steering-wheel-hubs': 'collections/collection_steering_wheel_hubs.html',
-    'seats': 'collections/collection_seats.html',
-    'nitrous-bottles': 'collections/collection_nitrous_bottles.html',
-    'shop-accessories': 'collections/collection_accessories.html',
-
-    // existing non-selected mappings left unchanged elsewhere
+    // Collection navigation disabled - redirect to external shop instead
 };
 
 // Optional: whitelist specific collection handles to display (empty = show all)
 // Example: const COLLECTIONS_WHITELIST = ['accessories', 'bearings', 'wheels'];
 // By default, set the whitelist to all keys in COLLECTION_PAGE_MAP so current mapped collections are shown.
 // Sort handles alphabetically so the whitelist has a stable order. The UI will still sort by collection title for display.
-const COLLECTIONS_WHITELIST = Object.keys(COLLECTION_PAGE_MAP).sort((a, b) => a.localeCompare(b));
+const COLLECTIONS_WHITELIST = [];
 
 // Updated GraphQL query to get product count for each collection
 // We'll fetch collections in pages using cursors to ensure we get all collections
@@ -200,31 +150,11 @@ function formatPrice(amount, currencyCode) {
     }).format(amount);
 }
 
-// Enhanced view collection function - navigates to dedicated page
+// Enhanced view collection function - redirects to external shop (collection pages removed)
 window.viewCollection = function(handle) {
     if (!handle) return;
-    const h = String(handle).toLowerCase();
-
-    // try direct and normalized forms
-    if (COLLECTION_PAGE_MAP[h]) {
-        window.location.href = COLLECTION_PAGE_MAP[h];
-        return;
-    }
-
-    const normalizedHyphen = h.replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-');
-    const normalizedUnderscore = h.replace(/[^a-z0-9\s_]/g, '').trim().replace(/\s+/g, '_');
-
-    if (COLLECTION_PAGE_MAP[normalizedHyphen]) {
-        window.location.href = COLLECTION_PAGE_MAP[normalizedHyphen];
-        return;
-    }
-
-    if (COLLECTION_PAGE_MAP[normalizedUnderscore]) {
-        window.location.href = COLLECTION_PAGE_MAP[normalizedUnderscore];
-        return;
-    }
-
-    // fallback to shopify
+    
+    // Redirect to external shop collection page
     window.open(`https://${SHOPIFY_DOMAIN}/collections/${handle}`, '_blank');
 };
 

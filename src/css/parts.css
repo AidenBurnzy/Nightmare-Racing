@@ -179,29 +179,28 @@ body {
 
 /* Product Background Images with hover states */
 /* Using placeholder images for demonstration - replace with your actual image paths */
-.tee-bg {
-    background-image: url('pictures/productImages/pi1.png');
+.product:nth-child(1) {
+    background-image: url('../../assets/productImages/pi1.png');
 }
 
-.tee-bg:hover {
-    background-image: url('pictures/productImages/pi2.png');
+.product:nth-child(2) {
+    background-image: url('../../assets/productImages/pi2.png');
 }
 
-.filter-bg {
-    background-image: url('pictures/productImages/pi3.png');
+.product:nth-child(3) {
+    background-image: url('../../assets/productImages/pi3.png');
 }
 
-.filter-bg:hover {
-    background-image: url('pictures/productImages/pi4.png');
+.product:nth-child(4) {
+    background-image: url('../../assets/productImages/pi4.png');
 }
 
-.sticker-bg {
-    background-image: url('pictures/productImages/pi5.png');
+.product:nth-child(5) {
+    background-image: url('../../assets/productImages/pi5.png');
 }
 
-.sticker-bg:hover {
-    background-image: url('pictures/productImages/pi6.png');
-}
+.product:nth-child(6) {
+    background-image: url('../../assets/productImages/pi6.png');
 
 .product-card h4 {
     margin-bottom: 1rem;
