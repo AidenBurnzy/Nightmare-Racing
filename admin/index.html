@@ -1508,7 +1508,7 @@
         } catch (error) {
           const action = this.editingCarId ? 'update' : 'add';
           console.error(`❌ Failed to ${action} car:`, error);
-          this.showNotification(`Failed to ${action} car: ` + error.message, 'error');
+          this.showMessage(`Failed to ${action} car: ` + error.message, 'error');
           
           // Reset button
           const submitBtn = form.querySelector('button[type="submit"]');
@@ -1729,6 +1729,60 @@ ${JSON.stringify(cars, null, 2)}
         } catch (error) {
           results.innerHTML = `<p style="color: #ff0000;">❌ Error: ${error.message}</p>`;
         }
+      }
+      
+      showMessage(message, type = 'info') {
+        console.log(`📝 Admin Message (${type}):`, message);
+        
+        // Create or update a message element
+        let messageEl = document.getElementById('admin-message');
+        if (!messageEl) {
+          messageEl = document.createElement('div');
+          messageEl.id = 'admin-message';
+          messageEl.style.cssText = `
+            position: fixed; top: 20px; right: 20px; z-index: 10000;
+            padding: 12px 24px; border-radius: 8px; font-weight: 500;
+            max-width: 300px; word-wrap: break-word;
+            transition: all 0.3s ease; transform: translateX(100%);
+          `;
+          document.body.appendChild(messageEl);
+        }
+        
+        // Set message and style based on type
+        messageEl.textContent = message;
+        messageEl.className = '';
+        
+        if (type === 'error') {
+          messageEl.style.cssText += `
+            background: var(--accent-red); color: white;
+            border: 2px solid #cc0000;
+          `;
+        } else if (type === 'success') {
+          messageEl.style.cssText += `
+            background: #00aa00; color: white;
+            border: 2px solid #008800;
+          `;
+        } else {
+          messageEl.style.cssText += `
+            background: var(--secondary-black); color: var(--pure-white);
+            border: 2px solid var(--accent-red);
+          `;
+        }
+        
+        // Show message
+        setTimeout(() => {
+          messageEl.style.transform = 'translateX(0)';
+        }, 100);
+        
+        // Hide message after 4 seconds
+        setTimeout(() => {
+          messageEl.style.transform = 'translateX(100%)';
+          setTimeout(() => {
+            if (messageEl.parentNode) {
+              messageEl.parentNode.removeChild(messageEl);
+            }
+          }, 300);
+        }, 4000);
       }
     }
     
