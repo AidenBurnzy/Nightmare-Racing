@@ -1,4 +1,4 @@
-// shopParts.js - Enhanced with collection page navigation
+// shopParts.js - Enhanced with collection page navigation and accurate product counts
 // Shopify Storefront API Configuration
 const SHOPIFY_DOMAIN = 'nightmareracing.myshopify.com';
 const STOREFRONT_ACCESS_TOKEN = '01ebdb40d541cc7fda967406889dc1b4';
@@ -6,25 +6,24 @@ const STOREFRONT_API_VERSION = '2024-01';
 
 // Collection handle to filename mapping (normalized keys)
 const COLLECTION_PAGE_MAP = {
-    'shop-accessories': 'collection_accessories.html',
-    'accessories': 'collection_accessories.html',
-    'bearings': 'collection_bearings.html',
-    'brakes': 'collection-brakes.html',
-    'electronics': 'collection-electronics.html',
-    'engine': 'collection-engine.html',
-    'exterior': 'collection-exterior.html',
-    'fluids': 'collection-fluids.html',
-    'interior': 'collection-interior.html',
-    'lighting': 'collection-lighting.html',
-    'merchandise': 'collection-merchandise.html',
-    'performance': 'collection-performance.html',
-    'suspension': 'collection-suspension.html',
-    'tools': 'collection-tools.html',
-    'wheels': 'collection-wheels.html',
-    'wheels-tires': 'collection-wheels.html'
+    'shop-accessories': 'collections/collection_accessories.html',
+    'accessories': 'collections/collection_accessories.html',
+    'bearings': 'collections/collection_bearings.html',
+    'brakes': 'collection/collection-brakes.html',
+    'electronics': 'collections/collection-electronics.htmll',
+    'engine': 'collections/collection-engine.html',
+    'exterior': 'collections/collection-exterior.html',
+    'fluids': 'collections/collection-fluids.html',
+    'interior': 'collections/collection-interior.html',
+    'lighting': 'collections/collection-lighting.html',
+    'merchandise': 'collections/collection-merchandise.html',
+    'performance': 'collections/collection-performance.html',
+    'suspension': 'collections/collection-suspension.html',
+    'tools': 'collections/collection-tools.html',
+    'wheels-tires': 'collections/collection-wheels.html'
 };
 
-// GraphQL Queries (keeping existing ones)
+// Updated GraphQL query to get product count for each collection
 const COLLECTIONS_QUERY = `
 {
     collections(first: 20) {
@@ -38,17 +37,10 @@ const COLLECTIONS_QUERY = `
                     url
                     altText
                 }
-                products(first: 4) {
+                products(first: 250) {
                     edges {
                         node {
                             id
-                            title
-                            priceRange {
-                                minVariantPrice {
-                                    amount
-                                    currencyCode
-                                }
-                            }
                             images(first: 1) {
                                 edges {
                                     node {
@@ -196,7 +188,6 @@ window.viewProduct = function(handle) {
 
 // Load collections
 let collectionsData = [];
-let currentCollectionIndex = 0;
 
 async function loadCollections() {
     try {
@@ -212,35 +203,16 @@ async function loadCollections() {
             .filter(collection => !excludedCollections.includes(collection.handle));
         
         if (collectionsData.length === 0) {
-            document.getElementById('collections-loading').innerHTML = '<p>No collections found</p>';
             document.getElementById('collections-list-loading').innerHTML = '<p>No collections found</p>';
             return;
         }
 
-        displayCollections();
         displayCollectionsList();
-        document.getElementById('collections-loading').classList.add('hidden');
-        document.getElementById('collections-carousel').classList.remove('hidden');
-        setupCollectionsCarousel();
     } catch (error) {
         console.error('Error loading collections:', error);
-        document.getElementById('collections-loading').innerHTML = 
-            '<p class="error">Failed to load collections. Please try again later.</p>';
         document.getElementById('collections-list-loading').innerHTML = 
             '<p class="error">Failed to load collections. Please try again later.</p>';
     }
-}
-
-function displayCollections() {
-    const track = document.getElementById('collections-track');
-    track.innerHTML = '';
-
-    collectionsData.forEach(collection => {
-        const card = createCollectionCard(collection);
-        track.appendChild(card);
-    });
-
-    updateCarouselIndicators();
 }
 
 function displayCollectionsList() {
@@ -279,89 +251,6 @@ function displayCollectionsList() {
     
     loading.classList.add('hidden');
     list.classList.remove('hidden');
-}
-
-function createCollectionCard(collection) {
-    const card = document.createElement('div');
-    card.className = 'collection-card';
-    
-    let imageUrl = collection.image?.url;
-    
-    if (!imageUrl && collection.products.edges.length > 0) {
-        const firstProduct = collection.products.edges[0].node;
-        imageUrl = firstProduct.images?.edges[0]?.node.url;
-    }
-    
-    if (!imageUrl) {
-        imageUrl = 'https://via.placeholder.com/400x300/0a0a0a/e50000?text=No+Image';
-    }
-    
-    const productCount = collection.products.edges.length;
-    
-    card.innerHTML = `
-        <div class="collection-image" style="background-image: url('${imageUrl}')">
-            <div class="collection-overlay">
-                <button class="btn-view-collection" onclick="viewCollection('${collection.handle}')">
-                    View Collection
-                </button>
-            </div>
-        </div>
-        <div class="collection-info">
-            <h3>${collection.title}</h3>
-            <p>${collection.description || 'Explore our selection'}</p>
-            <span class="product-count">${productCount}+ products</span>
-        </div>
-    `;
-
-    return card;
-}
-
-function setupCollectionsCarousel() {
-    const prevBtn = document.getElementById('collections-prev');
-    const nextBtn = document.getElementById('collections-next');
-    
-    if (prevBtn) prevBtn.addEventListener('click', () => moveCarousel(-1));
-    if (nextBtn) nextBtn.addEventListener('click', () => moveCarousel(1));
-
-    updateCarouselButtons();
-}
-
-function moveCarousel(direction) {
-    const maxIndex = Math.max(0, collectionsData.length - 3);
-    currentCollectionIndex = Math.max(0, Math.min(maxIndex, currentCollectionIndex + direction));
-    
-    const track = document.getElementById('collections-track');
-    const offset = currentCollectionIndex * -340;
-    track.style.transform = `translateX(${offset}px)`;
-    
-    updateCarouselButtons();
-    updateCarouselIndicators();
-}
-
-function updateCarouselButtons() {
-    const prevBtn = document.getElementById('collections-prev');
-    const nextBtn = document.getElementById('collections-next');
-    
-    if (prevBtn) prevBtn.disabled = currentCollectionIndex === 0;
-    if (nextBtn) nextBtn.disabled = currentCollectionIndex >= collectionsData.length - 3;
-}
-
-function updateCarouselIndicators() {
-    const indicators = document.getElementById('carousel-indicators');
-    if (!indicators) return;
-    
-    const totalDots = Math.max(1, collectionsData.length - 2);
-    
-    indicators.innerHTML = '';
-    for (let i = 0; i < totalDots; i++) {
-        const dot = document.createElement('div');
-        dot.className = `indicator-dot ${i === currentCollectionIndex ? 'active' : ''}`;
-        dot.addEventListener('click', () => {
-            currentCollectionIndex = i;
-            moveCarousel(0);
-        });
-        indicators.appendChild(dot);
-    }
 }
 
 // Load products
