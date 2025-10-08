@@ -662,6 +662,21 @@
       border-top-color: transparent;
       animation: spin 1s linear infinite;
     }
+    
+    /* Image Management Styles */
+    .image-upload-area.has-image {
+      position: relative;
+    }
+    
+    .image-upload-area.has-image:hover .upload-overlay {
+      opacity: 1 !important;
+    }
+    
+    .upload-overlay button:hover {
+      transform: scale(1.05);
+      transition: transform 0.2s;
+    }
+    
   </style>
 </head>
 <body>
@@ -1600,14 +1615,17 @@
         document.getElementById('car-status').value = car.status || 'IN PROGRESS';
         document.getElementById('car-featured').checked = car.featured || false;
         
-        // Handle existing images
+        // Handle existing main image
         if (car.mainImage && car.mainImage !== 'null') {
           document.getElementById('main-image-url').value = car.mainImage;
           const mainImageUpload = document.getElementById('main-image-upload');
           mainImageUpload.classList.add('has-image');
           mainImageUpload.innerHTML = `
             <img src="${car.mainImage}" class="image-preview" style="max-width: 100%; max-height: 200px; border-radius: 10px;">
-            <div class="upload-overlay">Click to change image</div>
+            <div class="upload-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s; border-radius: 10px;">
+              <button type="button" class="change-image-btn" onclick="document.getElementById('main-image-input').click()" style="background: var(--accent-red); color: white; border: none; padding: 8px 16px; margin: 4px; border-radius: 6px; cursor: pointer; font-size: 14px;">📷 Change Image</button>
+              <button type="button" class="remove-image-btn" onclick="window.adminApp.removeMainImage()" style="background: #666; color: white; border: none; padding: 8px 16px; margin: 4px; border-radius: 6px; cursor: pointer; font-size: 14px;">🗑️ Remove</button>
+            </div>
           `;
         }
         
@@ -1617,8 +1635,12 @@
           document.getElementById('gallery-urls').value = JSON.stringify(galleryUrls);
           
           const galleryPreview = document.getElementById('gallery-preview');
-          galleryPreview.innerHTML = galleryUrls.map(url => `
-            <img src="${url}" style="width: 100px; height: 100px; object-fit: cover; margin: 5px; border-radius: 5px;">
+          galleryPreview.innerHTML = galleryUrls.map((url, index) => `
+            <div class="gallery-item" style="position: relative; display: inline-block; margin: 5px;">
+              <img src="${url}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 5px;">
+              <button type="button" class="remove-gallery-btn" onclick="window.adminApp.removeGalleryImage(${index})" 
+                      style="position: absolute; top: -5px; right: -5px; background: var(--accent-red); color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center;">✕</button>
+            </div>
           `).join('');
         }
         
@@ -1783,6 +1805,62 @@ ${JSON.stringify(cars, null, 2)}
             }
           }, 300);
         }, 4000);
+      }
+      
+      removeMainImage() {
+        console.log('🗑️ Removing main image');
+        
+        // Clear the image URL input
+        document.getElementById('main-image-url').value = '';
+        
+        // Reset the upload area
+        const mainImageUpload = document.getElementById('main-image-upload');
+        mainImageUpload.classList.remove('has-image');
+        mainImageUpload.innerHTML = `
+          <input type="file" id="main-image-input" class="hidden-input" accept="image/*">
+          <div class="upload-content">
+            <div class="upload-icon">📷</div>
+            <div class="upload-placeholder">Click to upload main car image</div>
+            <small style="color: var(--medium-gray);">Recommended: 1920x1080px, JPG or PNG</small>
+          </div>
+        `;
+        
+        // Re-attach the file input event listener
+        this.setupImageUploads();
+        
+        this.showMessage('Main image removed', 'info');
+      }
+      
+      removeGalleryImage(index) {
+        console.log(`🗑️ Removing gallery image at index ${index}`);
+        
+        // Get current gallery URLs
+        const galleryUrls = document.getElementById('gallery-urls').value;
+        let gallery = galleryUrls ? JSON.parse(galleryUrls) : [];
+        
+        // Remove the image at the specified index
+        gallery.splice(index, 1);
+        
+        // Update the hidden input
+        document.getElementById('gallery-urls').value = JSON.stringify(gallery);
+        
+        // Update the preview
+        const galleryPreview = document.getElementById('gallery-preview');
+        galleryPreview.innerHTML = gallery.map((url, i) => `
+          <div class="gallery-item" style="position: relative; display: inline-block; margin: 5px;">
+            <img src="${url}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 5px;">
+            <button type="button" class="remove-gallery-btn" onclick="window.adminApp.removeGalleryImage(${i})" 
+                    style="position: absolute; top: -5px; right: -5px; background: var(--accent-red); color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center;">✕</button>
+          </div>
+        `).join('');
+        
+        this.showMessage('Gallery image removed', 'info');
+      }
+      
+      setupImageUploads() {
+        // Re-setup image upload handlers
+        this.setupImageUpload('main-image-upload', 'main-image-input', 'main-image-url', false);
+        this.setupImageUpload('gallery-upload', 'gallery-input', 'gallery-urls', true);
       }
     }
     
