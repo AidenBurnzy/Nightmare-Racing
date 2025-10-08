@@ -107,7 +107,7 @@
             <div class="hero-text">
                 <img src="assets/backgroundLogo.png" alt="Nightmare Racing Logo" class="hero-logo">
                 <div class="hero-buttons">
-                    <a href="request-quote.html" class="btn btn-primary">Book Service</a>
+                    <a href="src/pages/request-quote.html" class="btn btn-primary">Book Service</a>
                     <a href="https://nmrauto.com/collections" class="btn btn-secondary">Shop Parts</a>
                 </div>
             </div>
@@ -203,7 +203,7 @@
             <div class="section-header">
                 <h2>MECHANICAL <span class="text-accent">SERVICES</span></h2>
                 <br>
-                <a href="request-quote.html" class="btn">Get a quote!</a>
+                <a href="src/pages/request-quote.html" class="btn">Get a quote!</a>
             </div>
             <div class="services-grid">
                 <div class="service-card">
@@ -371,7 +371,7 @@
         <div style="max-width: 900px; margin: 0 auto; padding: 40px 20px 0 20px; text-align: center;">
             <h2 style="color: #e50000; margin-bottom: 12px; font-size: 2.2rem;">Get In Touch</h2>
             <p style="color: #fff; margin-bottom: 32px; font-size: 1.1rem;">Click below to request a quote or contact us.</p>
-            <a href="request-quote.html" style="display: inline-block; padding: 18px 48px; background: #e50000; color: #fff; font-size: 1.3rem; font-weight: 600; border-radius: 8px; text-decoration: none; margin-top: 24px; transition: background 0.2s;">Request a Quote</a>
+            <a href="src/pages/request-quote.html" style="display: inline-block; padding: 18px 48px; background: #e50000; color: #fff; font-size: 1.3rem; font-weight: 600; border-radius: 8px; text-decoration: none; margin-top: 24px; transition: background 0.2s;">Request a Quote</a>
         </div>
     </section>
 
@@ -382,7 +382,7 @@
     <script>
         async function loadFooter() {
             try {
-                const response = await fetch('footer.html');
+                const response = await fetch('src/pages/footer.html');
                 const html = await response.text();
                 document.getElementById('footer-section').innerHTML = html;
             } catch (error) {

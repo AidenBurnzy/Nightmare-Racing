@@ -430,3 +430,40 @@ document.addEventListener('click', (e) => {
         searchResults.classList.add('hidden');
     }
 });
+
+// Collections Dropdown Functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const dropdownBtn = document.getElementById('collections-dropdown-btn');
+    const dropdownMenu = document.getElementById('collections-dropdown-menu');
+    
+    if (dropdownBtn && dropdownMenu) {
+        // Toggle dropdown
+        dropdownBtn.addEventListener('click', function() {
+            const isOpen = !dropdownMenu.classList.contains('hidden');
+            
+            if (isOpen) {
+                dropdownMenu.classList.add('hidden');
+                dropdownBtn.classList.remove('active');
+            } else {
+                dropdownMenu.classList.remove('hidden');
+                dropdownBtn.classList.add('active');
+            }
+        });
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!dropdownBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                dropdownMenu.classList.add('hidden');
+                dropdownBtn.classList.remove('active');
+            }
+        });
+        
+        // Close dropdown when pressing Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                dropdownMenu.classList.add('hidden');
+                dropdownBtn.classList.remove('active');
+            }
+        });
+    }
+});
