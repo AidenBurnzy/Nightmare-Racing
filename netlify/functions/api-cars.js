@@ -59,42 +59,23 @@ exports.handler = async (event, context) => {
                         WHEN LENGTH(c.main_image) > 200 THEN NULL
                         ELSE c.main_image
                     END as main_image,
-                    c.status,
+                    COALESCE(c.build_status, c.status, 'COMPLETED') as status,
                     c.featured,
                     c.date_added,
-                    c.created_at,
-                    c.updated_at,
                     COALESCE(
                         json_agg(
                             json_build_object(
-                                'horsepower', cs.horsepower,
-                                'engine', cs.engine,
-                                'zeroToSixty', cs.zero_to_sixty,
-                                'topSpeed', cs.top_speed,
-                                'custom1', cs.custom1,
-                                'custom2', cs.custom2
-                            )
-                        ) FILTER (WHERE cs.car_id IS NOT NULL),
-                        '[]'::json
-                    ) as specs_array,
-                    COALESCE(
-                        json_agg(
-                            json_build_object(
-                                'url', CASE 
-                                    WHEN cg.image_url LIKE 'http%' THEN cg.image_url
-                                    WHEN LENGTH(cg.image_url) > 200 THEN NULL
-                                    ELSE cg.image_url
-                                END,
-                                'caption', cg.caption
-                            )
-                        ) FILTER (WHERE cg.car_id IS NOT NULL),
-                        '[]'::json
-                    ) as gallery_array
+                                'url', cg.image_url,
+                                'order', cg.image_order
+                            ) 
+                            ORDER BY cg.image_order
+                        ) FILTER (WHERE cg.image_url IS NOT NULL), 
+                        '[]'
+                    ) as gallery
                 FROM cars c
-                LEFT JOIN car_specs cs ON c.id = cs.car_id
                 LEFT JOIN car_gallery cg ON c.id = cg.car_id
-                GROUP BY c.id
-                ORDER BY c.created_at DESC
+                GROUP BY c.id, c.name, c.description, c.main_image, c.build_status, c.status, c.featured, c.date_added
+                ORDER BY c.date_added DESC
             `;
             
             // Transform data to match frontend format
@@ -103,13 +84,10 @@ exports.handler = async (event, context) => {
                 name: car.name,
                 description: car.description,
                 mainImage: car.main_image,
-                gallery: car.gallery_array || [],
-                specs: car.specs_array && car.specs_array.length > 0 ? car.specs_array[0] : {},
+                gallery: car.gallery || [],
                 status: car.status,
                 featured: car.featured,
-                dateAdded: car.created_at,
-                createdAt: car.created_at,
-                updatedAt: car.updated_at
+                dateAdded: car.date_added
             }));
             
             console.log(`✅ Successfully fetched ${transformedCars.length} cars`);
@@ -126,9 +104,9 @@ exports.handler = async (event, context) => {
             console.log('📝 Adding new car...');
             const carData = JSON.parse(event.body);
             
-            // Insert car
+            // Insert car with simplified structure
             const [newCar] = await sql`
-                INSERT INTO cars (name, description, main_image, status, featured, date_added)
+                INSERT INTO cars (name, description, main_image, build_status, featured, date_added)
                 VALUES (
                     ${carData.name}, 
                     ${carData.description}, 
@@ -137,28 +115,8 @@ exports.handler = async (event, context) => {
                     ${carData.featured !== false}, 
                     ${carData.dateAdded || new Date().toISOString()}
                 )
-                RETURNING *
+                RETURNING id, name, description, main_image, build_status as status, featured, date_added
             `;
-            
-            // Insert specs if provided
-            if (carData.specs && Object.keys(carData.specs).length > 0) {
-                await sql`
-                    INSERT INTO car_specs (
-                        car_id, zero_to_sixty, top_speed, horsepower, 
-                        engine, weight, custom1, custom2
-                    )
-                    VALUES (
-                        ${newCar.id}, 
-                        ${carData.specs.zeroToSixty || null}, 
-                        ${carData.specs.topSpeed || null},
-                        ${carData.specs.horsepower || null}, 
-                        ${carData.specs.engine || null},
-                        ${carData.specs.weight || null}, 
-                        ${carData.specs.custom1 || null},
-                        ${carData.specs.custom2 || null}
-                    )
-                `;
-            }
             
             // Insert gallery images if provided
             if (carData.gallery && Array.isArray(carData.gallery) && carData.gallery.length > 0) {

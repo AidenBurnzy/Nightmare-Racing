@@ -780,36 +780,12 @@
               <input type="hidden" id="gallery-urls" name="gallery">
             </div>
             
-            <!-- Performance Specs -->
-            <h3 style="color: var(--accent-red); margin: 30px 0 20px 0;">🏁 Performance Specs (Optional)</h3>
-            <div class="form-grid">
-              <div class="form-group">
-                <label for="car-horsepower">Horsepower</label>
-                <input type="text" id="car-horsepower" name="horsepower" placeholder="e.g., 1200HP">
-              </div>
-              
-              <div class="form-group">
-                <label for="car-engine">Engine</label>
-                <input type="text" id="car-engine" name="engine" placeholder="e.g., 2JZ-GTE Twin Turbo">
-              </div>
-              
-              <div class="form-group">
-                <label for="car-zero-sixty">0-60 Time</label>
-                <input type="text" id="car-zero-sixty" name="zeroToSixty" placeholder="e.g., 2.8s">
-              </div>
-              
-              <div class="form-group">
-                <label for="car-top-speed">Top Speed</label>
-                <input type="text" id="car-top-speed" name="topSpeed" placeholder="e.g., 220mph">
-              </div>
-            </div>
-            
             <!-- Featured Toggle -->
             <div class="checkbox-wrapper">
               <input type="checkbox" id="car-featured" name="featured" checked>
               <label for="car-featured">⭐ Feature this car on homepage</label>
             </div>
-            
+
             <button type="submit" class="auth-button" style="margin-top: 20px;">
               🚗 Add Car to Database
             </button>
@@ -1489,13 +1465,7 @@
           status: formData.get('status'),
           featured: formData.has('featured'),
           mainImage: formData.get('mainImage') || null,
-          gallery: gallery,
-          specs: {
-            horsepower: formData.get('horsepower') || null,
-            engine: formData.get('engine') || null,
-            zeroToSixty: formData.get('zeroToSixty') || null,
-            topSpeed: formData.get('topSpeed') || null
-          }
+          gallery: gallery
         };
         
         try {
@@ -1649,14 +1619,6 @@
         document.getElementById('car-description').value = car.description || '';
         document.getElementById('car-status').value = car.status || 'IN PROGRESS';
         document.getElementById('car-featured').checked = car.featured || false;
-        
-        // Populate specs
-        if (car.specs) {
-          document.getElementById('horsepower').value = car.specs.horsepower || '';
-          document.getElementById('engine').value = car.specs.engine || '';
-          document.getElementById('zero-to-sixty').value = car.specs.zeroToSixty || '';
-          document.getElementById('top-speed').value = car.specs.topSpeed || '';
-        }
         
         // Handle existing images
         if (car.mainImage && car.mainImage !== 'null') {
