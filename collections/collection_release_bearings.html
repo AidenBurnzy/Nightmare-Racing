@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shop Accessories | Nightmare Racing</title>
+    <title>Release Bearings | Nightmare Racing</title>
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -84,8 +84,8 @@
         <div class="container">
             <!-- Collection Header -->
             <div class="collection-header">
-                <h1 id="collection-title">SHOP <span class="text-accent">ACCESSORIES</span></h1>
-                <p id="collection-description" class="collection-description">Premium automotive accessories and parts</p>
+                <h1 id="collection-title">RELEASE BEARINGS</h1>
+                <p id="collection-description" class="collection-description">Release bearings and clutch components</p>
                 <p id="collection-count" class="collection-count">Loading products...</p>
             </div>
 
@@ -96,7 +96,7 @@
                         <circle cx="11" cy="11" r="8"></circle>
                         <path d="m21 21-4.35-4.35"></path>
                     </svg>
-                    <input type="text" id="collection-search" placeholder="Search accessories...">
+                    <input type="text" id="collection-search" placeholder="Search release bearings...">
                     <button class="search-btn" id="search-btn">Search</button>
                 </div>
                 <div id="search-results" class="search-results hidden"></div>
@@ -119,7 +119,7 @@
                 <div id="empty-state" class="empty-state hidden">
                     <div class="empty-icon">📦</div>
                     <h3>No Products Found</h3>
-                    <p>Check back soon for new accessories!</p>
+                    <p>Check back soon for clutch components!</p>
                     <a href="../shopParts.html" class="btn-primary">Browse All Parts</a>
                 </div>
 
@@ -152,7 +152,7 @@
     <script src="../index.js"></script>
     <script>
         // Collection Configuration - CHANGE THIS FOR EACH COLLECTION
-        const COLLECTION_HANDLE = 'merchandise'; // ← Change this for different collections
+        const COLLECTION_HANDLE = 'release-bearings'; // ← Change this for different collections
         
         // Shopify Storefront API Configuration
         const SHOPIFY_DOMAIN = 'nightmareracing.myshopify.com';
@@ -326,8 +326,7 @@
         function updateCollectionHeader() {
             if (!collectionData) return;
 
-            document.getElementById('collection-title').innerHTML = 
-                `${collectionData.title.toUpperCase()} <span class="text-accent">COLLECTION</span>`;
+            document.getElementById('collection-title').textContent = collectionData.title.toUpperCase();
             
             if (collectionData.description) {
                 document.getElementById('collection-description').textContent = collectionData.description;

@@ -6,27 +6,74 @@ const STOREFRONT_API_VERSION = '2024-01';
 
 // Collection handle to filename mapping (normalized keys)
 const COLLECTION_PAGE_MAP = {
-    'shop-accessories': 'collections/collection_accessories.html',
-    'accessories': 'collections/collection_accessories.html',
+    // Mappings generated/updated for user's selected collections
+    'nmr-merch': 'collections/collection_nmr_merch.html',
     'bearings': 'collections/collection_bearings.html',
-    'brakes': 'collection/collection-brakes.html',
-    'electronics': 'collections/collection-electronics.htmll',
-    'engine': 'collections/collection-engine.html',
-    'exterior': 'collections/collection-exterior.html',
-    'fluids': 'collections/collection-fluids.html',
-    'interior': 'collections/collection-interior.html',
-    'lighting': 'collections/collection-lighting.html',
-    'merchandise': 'collections/collection-merchandise.html',
-    'performance': 'collections/collection-performance.html',
+    'clutch-kits-multi': 'collections/collection_clutch_kits_multi.html',
+    'clutch-kits-single': 'collections/collection_clutch_kits_single.html',
+    'drivetrain': 'collections/collection_drivetrain.html',
+    'engine-components': 'collections/collection_engine_components.html',
+    'fabrication': 'collections/collection_fabrication.html',
+    'tools': 'collections/collection_tools.html',
+    'bolts': 'collections/collection_bolts.html',
+    'license-frame': 'collections/collection_licenseframe.html',
+    'lug-nuts': 'collections/collection_lug_nuts.html',
+    'wheel-accessories': 'collections/collection_wheel_accessories.html',
+    'wheel-and-tire-accessories': 'collections/collection_wheel_and_tire_accessories.html',
+    'wheel-bolts': 'collections/collection_wheel_bolts.html',
+    'fuel-pumps': 'collections/collection_fuel_pumps.html',
+    'gauges': 'collections/collection_gauges.html',
+    'belts-timing-accessory': 'collections/collection_belts_timing_accessory.html',
+    'brackets': 'collections/collection_brackets.html',
+    'cooling': 'collections/collection_cooling.html',
+    'fuel-systems': 'collections/collection_fuel_systems.html',
+    'gasket-kits': 'collections/collection_gasket_kits.html',
+    'hoses': 'collections/collection_hoses.html',
+    'air-filters': 'collections/collection_air_filters.html',
+    'batteries-starting-charging': 'collections/collection_batteries_starting_charging.html',
+    'coilovers': 'collections/collection_coilovers.html',
+    'cold-air-intakes': 'collections/collection_cold_air_intakes.html',
+    'downpipes': 'collections/collection_downpipes.html',
+    'exhaust-mufflers-tips': 'collections/collection_exhaust_mufflers_tips.html',
+    'headers-manifolds': 'collections/collection_headers_manifolds.html',
+    'lift-kits': 'collections/collection_lift_kits.html',
     'suspension': 'collections/collection-suspension.html',
-    'tools': 'collections/collection-tools.html',
-    'wheels-tires': 'collections/collection-wheels.html'
+    'sway-bars': 'collections/collection_sway_bars.html',
+    'turbo-kits': 'collections/collection_turbo_kits.html',
+    'air-suspension-kits': 'collections/collection_air_suspension_kits.html',
+    'diffusers': 'collections/collection_diffusers.html',
+    'brakes-rotors-pads': 'collections/collection-brakes.html',
+    'brakes': 'collections/collection-brakes.html',
+    'shift-knobs': 'collections/collection_shift_knobs.html',
+    'camber-kits': 'collections/collection_camber_kits.html',
+    'coilover-springs': 'collections/collection_coilover_springs.html',
+    'head-gaskets': 'collections/collection_head_gaskets.html',
+    'steering-wheels': 'collections/collection_steering_wheels.html',
+    'turbochargers': 'collections/collection_turbochargers.html',
+    'superchargers': 'collections/collection_superchargers.html',
+    'steering-wheel-hubs': 'collections/collection_steering_wheel_hubs.html',
+    'seats': 'collections/collection_seats.html',
+    'nitrous-bottles': 'collections/collection_nitrous_bottles.html',
+    'shop-accessories': 'collections/collection_accessories.html',
+
+    // existing non-selected mappings left unchanged elsewhere
 };
 
+// Optional: whitelist specific collection handles to display (empty = show all)
+// Example: const COLLECTIONS_WHITELIST = ['accessories', 'bearings', 'wheels'];
+// By default, set the whitelist to all keys in COLLECTION_PAGE_MAP so current mapped collections are shown.
+// Sort handles alphabetically so the whitelist has a stable order. The UI will still sort by collection title for display.
+const COLLECTIONS_WHITELIST = Object.keys(COLLECTION_PAGE_MAP).sort((a, b) => a.localeCompare(b));
+
 // Updated GraphQL query to get product count for each collection
+// We'll fetch collections in pages using cursors to ensure we get all collections
 const COLLECTIONS_QUERY = `
-{
-    collections(first: 20) {
+query GetCollections($first: Int!, $after: String) {
+    collections(first: $first, after: $after) {
+        pageInfo {
+            hasNextPage
+            endCursor
+        }
         edges {
             node {
                 id
@@ -37,7 +84,7 @@ const COLLECTIONS_QUERY = `
                     url
                     altText
                 }
-                products(first: 250) {
+                products(first: 1) {
                     edges {
                         node {
                             id
@@ -191,17 +238,41 @@ let collectionsData = [];
 
 async function loadCollections() {
     try {
-        const data = await shopifyStorefrontAPI(COLLECTIONS_QUERY);
-        
-        const excludedCollections = [
-            'frontpage',
-            'all'
-        ];
-        
-        collectionsData = data.collections.edges
-            .map(edge => edge.node)
-            .filter(collection => !excludedCollections.includes(collection.handle));
-        
+        const excludedCollections = ['frontpage', 'all'];
+        const pageSize = 50; // page size per request
+        let after = null;
+        let hasNext = true;
+        let fetched = [];
+
+        while (hasNext) {
+            const data = await shopifyStorefrontAPI(COLLECTIONS_QUERY, { first: pageSize, after });
+            if (!data || !data.collections) break;
+
+            const edges = data.collections.edges || [];
+            fetched.push(...edges.map(e => e.node));
+
+            const pageInfo = data.collections.pageInfo || { hasNextPage: false, endCursor: null };
+            hasNext = pageInfo.hasNextPage;
+            after = pageInfo.endCursor;
+
+            // safety: avoid infinite loop
+            if (fetched.length > 1000) break;
+        }
+
+        // filter excluded handles
+        let filtered = fetched.filter(c => !excludedCollections.includes(c.handle));
+
+        // If a whitelist is provided, only keep those handles and preserve whitelist order
+        if (Array.isArray(COLLECTIONS_WHITELIST) && COLLECTIONS_WHITELIST.length > 0) {
+            const byHandle = Object.fromEntries(filtered.map(c => [c.handle, c]));
+            filtered = COLLECTIONS_WHITELIST.map(h => byHandle[h]).filter(Boolean);
+        }
+
+        collectionsData = filtered;
+
+        console.info(`Loaded ${collectionsData.length} collections from Shopify.`);
+        console.debug('Collection handles:', collectionsData.map(c => c.handle));
+
         if (collectionsData.length === 0) {
             document.getElementById('collections-list-loading').innerHTML = '<p>No collections found</p>';
             return;

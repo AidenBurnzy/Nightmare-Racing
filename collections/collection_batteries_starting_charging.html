@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shop Accessories | Nightmare Racing</title>
+    <title>Batteries & Charging | Nightmare Racing</title>
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -84,8 +84,8 @@
         <div class="container">
             <!-- Collection Header -->
             <div class="collection-header">
-                <h1 id="collection-title">SHOP <span class="text-accent">ACCESSORIES</span></h1>
-                <p id="collection-description" class="collection-description">Premium automotive accessories and parts</p>
+                <h1 id="collection-title">BATTERIES, STARTING & CHARGING</h1>
+                <p id="collection-description" class="collection-description">Batteries, starters, alternators, and charging systems</p>
                 <p id="collection-count" class="collection-count">Loading products...</p>
             </div>
 
@@ -96,7 +96,7 @@
                         <circle cx="11" cy="11" r="8"></circle>
                         <path d="m21 21-4.35-4.35"></path>
                     </svg>
-                    <input type="text" id="collection-search" placeholder="Search accessories...">
+                    <input type="text" id="collection-search" placeholder="Search batteries...">
                     <button class="search-btn" id="search-btn">Search</button>
                 </div>
                 <div id="search-results" class="search-results hidden"></div>
@@ -119,7 +119,7 @@
                 <div id="empty-state" class="empty-state hidden">
                     <div class="empty-icon">📦</div>
                     <h3>No Products Found</h3>
-                    <p>Check back soon for new accessories!</p>
+                    <p>Check back soon for batteries and charging parts!</p>
                     <a href="../shopParts.html" class="btn-primary">Browse All Parts</a>
                 </div>
 
@@ -152,7 +152,7 @@
     <script src="../index.js"></script>
     <script>
         // Collection Configuration - CHANGE THIS FOR EACH COLLECTION
-        const COLLECTION_HANDLE = 'merchandise'; // ← Change this for different collections
+        const COLLECTION_HANDLE = 'batteries-starting-charging'; // ← Change this for different collections
         
         // Shopify Storefront API Configuration
         const SHOPIFY_DOMAIN = 'nightmareracing.myshopify.com';
@@ -345,37 +345,28 @@
             grid.innerHTML = '';
 
             productsData.forEach(product => {
-                const card = createProductCard(product);
+                const card = document.createElement('div');
+                card.className = 'product-card';
+
+                const imageUrl = product.images.edges[0]?.node.url || 'https://via.placeholder.com/300x300/0a0a0a/e50000?text=No+Image';
+                const price = formatPrice(product.priceRange.minVariantPrice.amount, product.priceRange.minVariantPrice.currencyCode);
+                const isAvailable = product.variants.edges[0]?.node.availableForSale ?? true;
+
+                card.innerHTML = `
+                    <div class="product-image">
+                        <img src="${imageUrl}" alt="${product.title}">
+                        ${!isAvailable ? '<div class="sold-out-badge">Sold Out</div>' : ''}
+                    </div>
+                    <div class="product-info">
+                        <h3>${product.title}</h3>
+                        <div class="product-price">${price}</div>
+                        <button class="btn-view-product" onclick="viewProduct('${product.handle}')" ${!isAvailable ? 'disabled' : ''}>
+                            ${isAvailable ? 'View Product' : 'Out of Stock'}
+                        </button>
+                    </div>`;
+
                 grid.appendChild(card);
             });
-        }
-
-        function createProductCard(product) {
-            const card = document.createElement('div');
-            card.className = 'product-card';
-            
-            const imageUrl = product.images.edges[0]?.node.url || 'https://via.placeholder.com/300x300/0a0a0a/e50000?text=No+Image';
-            const price = formatPrice(
-                product.priceRange.minVariantPrice.amount,
-                product.priceRange.minVariantPrice.currencyCode
-            );
-            const isAvailable = product.variants.edges[0]?.node.availableForSale ?? true;
-
-            card.innerHTML = `
-                <div class="product-image">
-                    <img src="${imageUrl}" alt="${product.title}">
-                    ${!isAvailable ? '<div class="sold-out-badge">Sold Out</div>' : ''}
-                </div>
-                <div class="product-info">
-                    <h3>${product.title}</h3>
-                    <div class="product-price">${price}</div>
-                    <button class="btn-view-product" onclick="viewProduct('${product.handle}')" ${!isAvailable ? 'disabled' : ''}>
-                        ${isAvailable ? 'View Product' : 'Out of Stock'}
-                    </button>
-                </div>
-            `;
-
-            return card;
         }
 
         function showEmptyState() {
@@ -384,105 +375,30 @@
             document.getElementById('empty-state').classList.remove('hidden');
         }
 
-        // Search functionality - searches within collection only
-        let searchTimeout;
-        const searchInput = document.getElementById('collection-search');
-        const searchBtn = document.getElementById('search-btn');
-        const searchResults = document.getElementById('search-results');
-
-        if (searchInput) {
-            searchInput.addEventListener('input', (e) => {
-                clearTimeout(searchTimeout);
-                searchTimeout = setTimeout(() => {
-                    if (e.target.value.trim().length >= 3) {
-                        performSearch(e.target.value.trim());
-                    } else {
-                        if (searchResults) searchResults.classList.add('hidden');
-                    }
-                }, 500);
-            });
-        }
-
-        if (searchBtn) {
-            searchBtn.addEventListener('click', () => {
-                if (searchInput) {
-                    const query = searchInput.value.trim();
-                    if (query.length >= 3) {
-                        performSearch(query);
-                    }
-                }
-            });
-        }
+        document.getElementById('load-more-btn')?.addEventListener('click', () => loadCollection(true));
+        document.getElementById('search-btn')?.addEventListener('click', () => {
+            const q = document.getElementById('collection-search').value.trim();
+            if (q.length >= 3) performSearch(q);
+        });
 
         async function performSearch(query) {
-            if (!searchResults) return;
-            
             try {
-                searchResults.innerHTML = '<div class="search-loading"><div class="spinner-small"></div>Searching...</div>';
-                searchResults.classList.remove('hidden');
+                const data = await shopifyStorefrontAPI(SEARCH_COLLECTION_QUERY, { query, first: 20 });
+                const results = data.products.edges.map(e => e.node);
 
-                // Search with collection filter
-                const searchQuery = `${query} AND collection:${COLLECTION_HANDLE}`;
-                const data = await shopifyStorefrontAPI(SEARCH_COLLECTION_QUERY, { 
-                    query: searchQuery, 
-                    first: 10 
-                });
-                
-                const results = data.products.edges.map(edge => edge.node);
+                const resultsEl = document.getElementById('search-results');
+                resultsEl.innerHTML = results.map(p => `
+                    <div class="search-item">
+                        <a href="#" onclick="viewProduct('${p.handle}');return false;">${p.title}</a>
+                    </div>`).join('');
 
-                if (results.length === 0) {
-                    searchResults.innerHTML = '<div class="no-results">No products found in this collection</div>';
-                    return;
-                }
-
-                displaySearchResults(results);
+                resultsEl.classList.remove('hidden');
             } catch (error) {
-                console.error('Search error:', error);
-                searchResults.innerHTML = '<div class="search-error">Search failed. Please try again.</div>';
+                console.error('Search error', error);
             }
         }
 
-        function displaySearchResults(results) {
-            if (!searchResults) return;
-            
-            searchResults.innerHTML = results.map(product => {
-                const imageUrl = product.images.edges[0]?.node.url || '';
-                const price = formatPrice(
-                    product.priceRange.minVariantPrice.amount,
-                    product.priceRange.minVariantPrice.currencyCode
-                );
-
-                return `
-                    <div class="search-result-item" onclick="viewProduct('${product.handle}')">
-                        ${imageUrl ? `<img src="${imageUrl}" alt="${product.title}">` : ''}
-                        <div class="search-result-info">
-                            <h4>${product.title}</h4>
-                            <span class="search-result-price">${price}</span>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        // Load more products
-        const loadMoreBtn = document.getElementById('load-more-btn');
-        if (loadMoreBtn) {
-            loadMoreBtn.addEventListener('click', () => {
-                loadCollection(true);
-            });
-        }
-
-        // Initialize page
-        document.addEventListener('DOMContentLoaded', () => {
-            loadCollection();
-        });
-
-        // Close search results when clicking outside
-        document.addEventListener('click', (e) => {
-            if (searchResults && !e.target.closest('.search-section')) {
-                searchResults.classList.add('hidden');
-            }
-        });
+        loadCollection();
     </script>
 </body>
 </html>

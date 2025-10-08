@@ -162,7 +162,7 @@
         // GraphQL Queries
         const COLLECTION_QUERY = `
         query GetCollection($handle: String!, $first: Int!, $after: String) {
-            collection(handle: $handle) {
+            collectionByHandle(handle: $handle) {
                 id
                 title
                 description
@@ -282,12 +282,12 @@
 
                 const data = await shopifyStorefrontAPI(COLLECTION_QUERY, variables);
                 
-                if (!data.collection) {
+                if (!data.collectionByHandle) {
                     showEmptyState();
                     return;
                 }
 
-                collectionData = data.collection;
+                collectionData = data.collectionByHandle;
 
                 if (!loadMore) {
                     productsData = [];

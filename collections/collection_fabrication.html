@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shop Accessories | Nightmare Racing</title>
+    <title>Fabrication | Nightmare Racing</title>
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -84,19 +84,15 @@
         <div class="container">
             <!-- Collection Header -->
             <div class="collection-header">
-                <h1 id="collection-title">SHOP <span class="text-accent">ACCESSORIES</span></h1>
-                <p id="collection-description" class="collection-description">Premium automotive accessories and parts</p>
+                <h1 id="collection-title">FABRICATION</h1>
+                <p id="collection-description" class="collection-description">Fabrication parts and accessories</p>
                 <p id="collection-count" class="collection-count">Loading products...</p>
             </div>
 
             <!-- Search Bar -->
             <div class="search-section">
                 <div class="search-bar">
-                    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <path d="m21 21-4.35-4.35"></path>
-                    </svg>
-                    <input type="text" id="collection-search" placeholder="Search accessories...">
+                    <input type="text" id="collection-search" placeholder="Search fabrication...">
                     <button class="search-btn" id="search-btn">Search</button>
                 </div>
                 <div id="search-results" class="search-results hidden"></div>
@@ -117,9 +113,7 @@
 
                 <!-- Empty State -->
                 <div id="empty-state" class="empty-state hidden">
-                    <div class="empty-icon">📦</div>
                     <h3>No Products Found</h3>
-                    <p>Check back soon for new accessories!</p>
                     <a href="../shopParts.html" class="btn-primary">Browse All Parts</a>
                 </div>
 
@@ -152,7 +146,7 @@
     <script src="../index.js"></script>
     <script>
         // Collection Configuration - CHANGE THIS FOR EACH COLLECTION
-        const COLLECTION_HANDLE = 'merchandise'; // ← Change this for different collections
+        const COLLECTION_HANDLE = 'fabrication'; // ← Change this for different collections
         
         // Shopify Storefront API Configuration
         const SHOPIFY_DOMAIN = 'nightmareracing.myshopify.com';
@@ -197,33 +191,6 @@
                                         id
                                         availableForSale
                                     }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }`;
-
-        const SEARCH_COLLECTION_QUERY = `
-        query SearchInCollection($query: String!, $first: Int!) {
-            products(first: $first, query: $query) {
-                edges {
-                    node {
-                        id
-                        title
-                        handle
-                        priceRange {
-                            minVariantPrice {
-                                amount
-                                currencyCode
-                            }
-                        }
-                        images(first: 1) {
-                            edges {
-                                node {
-                                    url
-                                    altText
                                 }
                             }
                         }
@@ -326,16 +293,13 @@
         function updateCollectionHeader() {
             if (!collectionData) return;
 
-            document.getElementById('collection-title').innerHTML = 
-                `${collectionData.title.toUpperCase()} <span class="text-accent">COLLECTION</span>`;
-            
+            document.getElementById('collection-title').textContent = collectionData.title.toUpperCase();
+
             if (collectionData.description) {
                 document.getElementById('collection-description').textContent = collectionData.description;
             }
 
-            const totalProducts = productsData.length;
-            const countText = totalProducts === 1 ? '1 product' : `${totalProducts} products`;
-            document.getElementById('collection-count').textContent = countText;
+            document.getElementById('collection-count').textContent = productsData.length === 1 ? '1 product' : productsData.length + ' products';
         }
 
         function displayProducts() {

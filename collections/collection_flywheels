@@ -152,7 +152,7 @@
     <script src="../index.js"></script>
     <script>
         // Collection Configuration - CHANGE THIS FOR EACH COLLECTION
-        const COLLECTION_HANDLE = 'exterior'; // ← Change this for different collections
+        const COLLECTION_HANDLE = 'flywheels'; // ← Change this for different collections
         
         // Shopify Storefront API Configuration
         const SHOPIFY_DOMAIN = 'nightmareracing.myshopify.com';
@@ -162,7 +162,7 @@
         // GraphQL Queries
         const COLLECTION_QUERY = `
         query GetCollection($handle: String!, $first: Int!, $after: String) {
-            collection(handle: $handle) {
+            collectionByHandle(handle: $handle) {
                 id
                 title
                 description
@@ -282,12 +282,12 @@
 
                 const data = await shopifyStorefrontAPI(COLLECTION_QUERY, variables);
                 
-                if (!data.collection) {
+                if (!data.collectionByHandle) {
                     showEmptyState();
                     return;
                 }
 
-                collectionData = data.collection;
+                collectionData = data.collectionByHandle;
 
                 if (!loadMore) {
                     productsData = [];
