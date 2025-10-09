@@ -1208,75 +1208,73 @@
           
           const imageUrls = [];
           files.forEach((file, index) => {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-              // For now, we'll use data URLs. In production, you'd upload to a service
-              imageUrls.push(e.target.result);
-              urlField.value = JSON.stringify(imageUrls);
-              
-              // Create preview
-              const previewDiv = document.createElement('div');
-              previewDiv.style.display = 'inline-block';
-              previewDiv.style.margin = '10px';
-              previewDiv.style.position = 'relative';
-              
-              const img = document.createElement('img');
-              img.src = e.target.result;
-              img.style.width = '120px';
-              img.style.height = '80px';
-              img.style.objectFit = 'cover';
-              img.style.borderRadius = '8px';
-              img.style.border = '2px solid var(--accent-red)';
-              
-              const removeBtn = document.createElement('button');
-              removeBtn.innerHTML = '✕';
-              removeBtn.style.position = 'absolute';
-              removeBtn.style.top = '-8px';
-              removeBtn.style.right = '-8px';
-              removeBtn.style.background = 'var(--accent-red)';
-              removeBtn.style.color = 'white';
-              removeBtn.style.border = 'none';
-              removeBtn.style.borderRadius = '50%';
-              removeBtn.style.width = '20px';
-              removeBtn.style.height = '20px';
-              removeBtn.style.cursor = 'pointer';
-              removeBtn.style.fontSize = '12px';
-              
-              removeBtn.onclick = () => {
-                previewDiv.remove();
-                // Update URL field by removing this image
-                const currentUrls = JSON.parse(urlField.value || '[]');
-                const newUrls = currentUrls.filter((_, i) => i !== index);
-                urlField.value = JSON.stringify(newUrls);
-              };
-              
-              previewDiv.appendChild(img);
-              previewDiv.appendChild(removeBtn);
-              galleryPreview.appendChild(previewDiv);
+            // Create a placeholder URL based on filename for demo purposes
+            // In production, you'd upload to a service like Cloudinary, AWS S3, etc.
+            const placeholderUrl = `https://via.placeholder.com/400x300/000000/e50000?text=Gallery+${index + 1}`;
+            imageUrls.push(placeholderUrl);
+            
+            urlField.value = JSON.stringify(imageUrls);
+            
+            // Create preview
+            const previewDiv = document.createElement('div');
+            previewDiv.style.display = 'inline-block';
+            previewDiv.style.margin = '10px';
+            previewDiv.style.position = 'relative';
+            
+            const img = document.createElement('img');
+            img.src = placeholderUrl;
+            img.style.width = '120px';
+            img.style.height = '80px';
+            img.style.objectFit = 'cover';
+            img.style.borderRadius = '8px';
+            img.style.border = '2px solid var(--accent-red)';
+            
+            const removeBtn = document.createElement('button');
+            removeBtn.innerHTML = '✕';
+            removeBtn.style.position = 'absolute';
+            removeBtn.style.top = '-8px';
+            removeBtn.style.right = '-8px';
+            removeBtn.style.background = 'var(--accent-red)';
+            removeBtn.style.color = 'white';
+            removeBtn.style.border = 'none';
+            removeBtn.style.borderRadius = '50%';
+            removeBtn.style.width = '20px';
+            removeBtn.style.height = '20px';
+            removeBtn.style.cursor = 'pointer';
+            removeBtn.style.fontSize = '12px';
+            
+            removeBtn.onclick = () => {
+              previewDiv.remove();
+              // Update URL field by removing this image
+              const currentUrls = JSON.parse(urlField.value || '[]');
+              const newUrls = currentUrls.filter((_, i) => i !== index);
+              urlField.value = JSON.stringify(newUrls);
             };
-            reader.readAsDataURL(file);
+            
+            previewDiv.appendChild(img);
+            previewDiv.appendChild(removeBtn);
+            galleryPreview.appendChild(previewDiv);
           });
           
           uploadArea.innerHTML = `
             <div style="color: var(--accent-red); font-weight: bold;">
-              📷 ${files.length} image(s) selected for gallery
+              📷 ${files.length} image(s) selected for gallery (demo placeholders)
             </div>
           `;
         } else {
           // Handle single main image
           const file = files[0];
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            urlField.value = e.target.result;
-            
-            uploadArea.innerHTML = `
-              <img src="${e.target.result}" class="image-preview" style="max-width: 100%; max-height: 200px; border-radius: 10px;">
-              <div style="margin-top: 10px; color: var(--accent-red); font-weight: bold;">
-                📷 Main image uploaded: ${file.name}
-              </div>
-            `;
-          };
-          reader.readAsDataURL(file);
+          // Create a placeholder URL for demo purposes
+          const placeholderUrl = `https://via.placeholder.com/800x400/000000/e50000?text=Main+Image`;
+          
+          urlField.value = placeholderUrl;
+          
+          uploadArea.innerHTML = `
+            <img src="${placeholderUrl}" class="image-preview" style="max-width: 100%; max-height: 200px; border-radius: 10px;">
+            <div style="margin-top: 10px; color: var(--accent-red); font-weight: bold;">
+              📷 Main image uploaded: ${file.name} (demo placeholder)
+            </div>
+          `;
         }
       }
       

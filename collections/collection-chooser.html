@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Collection Chooser — Nightmare Racing</title>
+  <style>
+    body{font-family:Inter, system-ui, -apple-system, Arial, sans-serif;margin:0;padding:1rem;background:#0a0a0a;color:#eee}
+    .wrap{max-width:980px;margin:0 auto}
+    h1{font-size:1.25rem;margin-bottom:0.25rem}
+    .controls{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem}
+    button{background:#e50000;color:#fff;border:none;padding:.5rem .75rem;border-radius:6px;cursor:pointer}
+    button.secondary{background:#333}
+    input[type=search]{flex:1;padding:.5rem;border-radius:6px;border:1px solid #222;background:#111;color:#fff}
+    .list{background:#080808;border:1px solid #222;padding:.75rem;border-radius:6px;max-height:60vh;overflow:auto}
+    .item{display:flex;align-items:center;gap:.75rem;padding:.35rem .25rem;border-bottom:1px solid #111}
+    .item:last-child{border-bottom:none}
+    label{flex:1}
+    .meta{color:#bbb;font-size:.9rem}
+    .footer{margin-top:1rem;display:flex;gap:.5rem;align-items:center}
+    textarea{width:100%;height:120px;background:#050505;color:#fff;border:1px solid #222;padding:.5rem;border-radius:6px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Collection Chooser</h1>
+    <p class="meta">Fetches all collections from Shopify so you can pick which handles to include in the whitelist. Use <strong>Export Selected</strong> to download JSON you can paste into <code>shopParts.js</code>.</p>
+
+    <div class="controls">
+      <input id="search" type="search" placeholder="Filter collections by name or handle...">
+      <button id="selectAll" class="secondary">Select All</button>
+      <button id="clearAll" class="secondary">Clear</button>
+      <button id="export" title="Download JSON list">Export Selected</button>
+      <button id="copy" class="secondary">Copy JSON</button>
+      <button id="refresh" class="secondary">Refresh</button>
+    </div>
+
+    <div id="status" class="meta">Loading collections...</div>
+    <div id="list" class="list"></div>
+
+    <div class="footer">
+      <div style="flex:1">
+        <strong>Selected JSON</strong>
+        <textarea id="output" readonly placeholder='Selected handles will appear here as JSON array'></textarea>
+      </div>
+    </div>
+    <p class="meta">Once you have the JSON, open <code>shopParts.js</code> and set <code>COLLECTIONS_WHITELIST</code> to the exported array (or paste it directly in place of the dynamic assignment).</p>
+  </div>
+
+  <script>
+    // Shopify config (matches the site's client token)
+    const SHOPIFY_DOMAIN = 'nightmareracing.myshopify.com';
+    const STOREFRONT_API_VERSION = '2024-01';
+    // NOTE: this page will re-use the same public storefront token as other pages.
+    const STOREFRONT_ACCESS_TOKEN = '01ebdb40d541cc7fda967406889dc1b4';
+
+    const listEl = document.getElementById('list');
+    const statusEl = document.getElementById('status');
+    const searchEl = document.getElementById('search');
+    const outputEl = document.getElementById('output');
+
+    let collections = [];
+
+    async function fetchCollections() {
+      statusEl.textContent = 'Fetching collections...';
+      collections = [];
+      let hasNext = true;
+      let after = null;
+      const pageSize = 100;
+
+      const query = `query GetCollections($first:Int!,$after:String){collections(first:$first,after:$after){pageInfo{hasNextPage,endCursor}edges{node{id,title,handle,description,image{url}}}}}`;
+
+      while (hasNext) {
+        try {
+          const resp = await fetch(`https://${SHOPIFY_DOMAIN}/api/${STOREFRONT_API_VERSION}/graphql.json`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Shopify-Storefront-Access-Token': STOREFRONT_ACCESS_TOKEN
+            },
+            body: JSON.stringify({ query, variables: { first: pageSize, after } })
+          });
+
+          const json = await resp.json();
+          if (json.errors) throw new Error(JSON.stringify(json.errors));
+
+          const data = json.data.collectionByHandles;
+          const edges = data.edges || [];
+          collections.push(...edges.map(e => e.node));
+
+          hasNext = data.pageInfo.hasNextPage;
+          after = data.pageInfo.endCursor;
+          // safety
+          if (collections.length > 2000) break;
+        } catch (err) {
+          console.error(err);
+          statusEl.textContent = 'Failed to fetch collections. Check token/console.';
+          return;
+        }
+      }
+
+      statusEl.textContent = `Loaded ${collections.length} collections`;
+      renderList();
+    }
+
+    function renderList(filter = '') {
+      const f = filter.trim().toLowerCase();
+      listEl.innerHTML = '';
+      const visible = collections.filter(c => {
+        if (!f) return true;
+        return (c.title||'').toLowerCase().includes(f) || (c.handle||'').toLowerCase().includes(f);
+      });
+
+      visible.forEach(c => {
+        const item = document.createElement('div');
+        item.className = 'item';
+        item.innerHTML = `
+          <input type="checkbox" data-handle="${c.handle}" id="cb_${c.handle}">
+          <label for="cb_${c.handle}"><strong>${escapeHtml(c.title||c.handle)}</strong> <span class="meta">${escapeHtml(c.handle)}</span></label>
+        `;
+        listEl.appendChild(item);
+      });
+    }
+
+    function escapeHtml(s){return String(s).replace(/[&<>\"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));}
+
+    function getSelectedHandles(){
+      const checks = Array.from(listEl.querySelectorAll('input[type=checkbox]'));
+      return checks.filter(cb => cb.checked).map(cb => cb.dataset.handle).filter(Boolean);
+    }
+
+    document.getElementById('selectAll').addEventListener('click', ()=>{
+      listEl.querySelectorAll('input[type=checkbox]').forEach(cb=>cb.checked=true);
+      outputEl.value = JSON.stringify(getSelectedHandles(),null,2);
+    });
+    document.getElementById('clearAll').addEventListener('click', ()=>{
+      listEl.querySelectorAll('input[type=checkbox]').forEach(cb=>cb.checked=false);
+      outputEl.value = '';
+    });
+
+    document.getElementById('export').addEventListener('click', ()=>{
+      const arr = getSelectedHandles();
+      const blob = new Blob([JSON.stringify(arr,null,2)],{type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'collections-whitelist.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    document.getElementById('copy').addEventListener('click', async ()=>{
+      const arr = getSelectedHandles();
+      const txt = JSON.stringify(arr,null,2);
+      try { await navigator.clipboard.writeText(txt); outputEl.value = txt; statusEl.textContent='Copied JSON to clipboard'; }
+      catch(e){ outputEl.value = txt; statusEl.textContent='Clipboard failed — JSON placed in output box'; }
+    });
+
+    document.getElementById('refresh').addEventListener('click', ()=>fetchCollections());
+    searchEl.addEventListener('input', (e)=>renderList(e.target.value));
+
+    // initial load
+    fetchCollections();
+  </script>
+</body>
+</html>

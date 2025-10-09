@@ -262,7 +262,7 @@ function viewCarDetails(carName) {
     
     if (hasImages) {
         // Redirect to featured cars page with car details
-        window.location.href = `featured-cars.html#${encodeURIComponent(carName)}`;
+        window.location.href = `src/pages/featured-cars.html#${encodeURIComponent(carName)}`;
     } else {
         // Show basic info if no images
         const statusText = car.status || 'COMPLETED';

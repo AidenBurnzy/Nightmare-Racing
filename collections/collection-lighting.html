@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop Accessories | Nightmare Racing</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="../indexStyles.css">
+    <link rel="stylesheet" href="../navStyles.css">
+    <link rel="stylesheet" href="collection.css">
+    <link rel="stylesheet" href="../footer.css">
+</head>
+<body>
+    <!-- Video Background -->
+    <video autoplay muted loop playsinline preload="auto" id="bg-video"
+        style="position: fixed; right: 0; bottom: 0; min-width: 100vw; min-height: 100vh; z-index: -1; object-fit: cover; pointer-events: none; opacity: 0.3;">
+        <source src="../bg-video.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="../index.html"><img src="../pictures/logoImage1.png" alt="Nightmare Racing Logo"></a>
+                <h2>NIGHTMARE<span class="text-accent">RACING</span></h2>
+            </div>
+
+            <ul class="nav-menu">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="../index.html#services">Services</a></li>
+                <li><a href="../featured-cars.html">Featured Cars</a></li>
+                <li><a href="../shopParts.html" class="active">Shop Parts</a></li>
+                <li><a href="../index.html#contact">Contact</a></li>
+            </ul>
+
+            <div class="nav-actions">
+                <a href="/admin" target="_blank" class="admin-btn">Admin</a>
+            </div>
+
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu-overlay"></div>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu">
+        <div class="mobile-menu-content">
+            <div class="mobile-menu-header">
+                <h2>NIGHTMARE<span class="text-accent">RACING</span></h2>
+                <button class="mobile-menu-close">&times;</button>
+            </div>
+
+            <ul class="mobile-nav-links">
+                <li><a href="/admin" target="_blank">Admin Portal</a></li>
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="../index.html#services">Services</a></li>
+                <li><a href="../featured-cars.html">Featured Cars</a></li>
+                <li><a href="../shopParts.html" class="active">Shop Parts</a></li>
+                <li><a href="../index.html#contact">Contact</a></li>
+            </ul>
+
+            <div class="mobile-menu-footer">
+                <p>© 2025 Nightmare Racing</p>
+                <p>Premium Auto Services</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Collection Page -->
+    <section class="collection-page">
+        <div class="container">
+            <!-- Collection Header -->
+            <div class="collection-header">
+                <h1 id="collection-title">SHOP <span class="text-accent">ACCESSORIES</span></h1>
+                <p id="collection-description" class="collection-description">Premium automotive accessories and parts</p>
+                <p id="collection-count" class="collection-count">Loading products...</p>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="search-section">
+                <div class="search-bar">
+                    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+                    <input type="text" id="collection-search" placeholder="Search accessories...">
+                    <button class="search-btn" id="search-btn">Search</button>
+                </div>
+                <div id="search-results" class="search-results hidden"></div>
+            </div>
+
+            <!-- Products Section -->
+            <div class="products-section">
+                <!-- Loading State -->
+                <div id="products-loading" class="loading-state">
+                    <div class="spinner"></div>
+                    <p>Loading products...</p>
+                </div>
+
+                <!-- Products Grid -->
+                <div id="products-grid" class="products-grid hidden">
+                    <!-- Products will be loaded here -->
+                </div>
+
+                <!-- Empty State -->
+                <div id="empty-state" class="empty-state hidden">
+                    <div class="empty-icon">📦</div>
+                    <h3>No Products Found</h3>
+                    <p>Check back soon for new accessories!</p>
+                    <a href="../shopParts.html" class="btn-primary">Browse All Parts</a>
+                </div>
+
+                <!-- Load More Button -->
+                <div class="load-more-section hidden" id="load-more-section">
+                    <button class="btn btn-primary" id="load-more-btn">Load More Products</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <div id="footer-section"></div>
+
+    <!-- Load Footer -->
+    <script>
+        async function loadFooter() {
+            try {
+                const response = await fetch('../footer.html');
+                const html = await response.text();
+                document.getElementById('footer-section').innerHTML = html;
+            } catch (error) {
+                console.error('Error loading footer:', error);
+            }
+        }
+        loadFooter();
+    </script>
+
+    <!-- Scripts -->
+    <script src="../index.js"></script>
+    <script>
+        // Collection Configuration - CHANGE THIS FOR EACH COLLECTION
+        const COLLECTION_HANDLE = 'lighting'; // ← Change this for different collections
+        
+        // Shopify Storefront API Configuration
+        const SHOPIFY_DOMAIN = 'nightmareracing.myshopify.com';
+        const STOREFRONT_ACCESS_TOKEN = '01ebdb40d541cc7fda967406889dc1b4';
+        const STOREFRONT_API_VERSION = '2024-01';
+
+        // GraphQL Queries
+        const COLLECTION_QUERY = `
+        query GetCollection($handle: String!, $first: Int!, $after: String) {
+            collectionByHandle(handle: $handle) {
+                id
+                title
+                description
+                products(first: $first, after: $after) {
+                    pageInfo {
+                        hasNextPage
+                        endCursor
+                    }
+                    edges {
+                        node {
+                            id
+                            title
+                            description
+                            handle
+                            priceRange {
+                                minVariantPrice {
+                                    amount
+                                    currencyCode
+                                }
+                            }
+                            images(first: 1) {
+                                edges {
+                                    node {
+                                        url
+                                        altText
+                                    }
+                                }
+                            }
+                            variants(first: 1) {
+                                edges {
+                                    node {
+                                        id
+                                        availableForSale
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }`;
+
+        const SEARCH_COLLECTION_QUERY = `
+        query SearchInCollection($query: String!, $first: Int!) {
+            products(first: $first, query: $query) {
+                edges {
+                    node {
+                        id
+                        title
+                        handle
+                        priceRange {
+                            minVariantPrice {
+                                amount
+                                currencyCode
+                            }
+                        }
+                        images(first: 1) {
+                            edges {
+                                node {
+                                    url
+                                    altText
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }`;
+
+        // API call function
+        async function shopifyStorefrontAPI(query, variables = {}) {
+            const response = await fetch(`https://${SHOPIFY_DOMAIN}/api/${STOREFRONT_API_VERSION}/graphql.json`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Shopify-Storefront-Access-Token': STOREFRONT_ACCESS_TOKEN
+                },
+                body: JSON.stringify({ query, variables })
+            });
+
+            const data = await response.json();
+            
+            if (data.errors) {
+                console.error('Shopify API Error:', data.errors);
+                throw new Error(data.errors[0].message);
+            }
+
+            return data.data;
+        }
+
+        // Format price
+        function formatPrice(amount, currencyCode) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: currencyCode
+            }).format(amount);
+        }
+
+        // View product function
+        window.viewProduct = function(handle) {
+            window.open(`https://${SHOPIFY_DOMAIN}/products/${handle}`, '_blank');
+        };
+
+        // Load collection products
+        let collectionData = null;
+        let productsData = [];
+        let productsEndCursor = null;
+        let hasNextPage = false;
+
+        async function loadCollection(loadMore = false) {
+            try {
+                const variables = {
+                    handle: COLLECTION_HANDLE,
+                    first: 12,
+                    after: loadMore ? productsEndCursor : null
+                };
+
+                const data = await shopifyStorefrontAPI(COLLECTION_QUERY, variables);
+                
+                if (!data.collectionByHandle) {
+                    showEmptyState();
+                    return;
+                }
+
+                collectionData = data.collectionByHandle;
+
+                if (!loadMore) {
+                    productsData = [];
+                    updateCollectionHeader();
+                }
+
+                productsData.push(...collectionData.products.edges.map(edge => edge.node));
+                productsEndCursor = collectionData.products.pageInfo.endCursor;
+                hasNextPage = collectionData.products.pageInfo.hasNextPage;
+
+                if (productsData.length === 0) {
+                    showEmptyState();
+                    return;
+                }
+
+                displayProducts();
+                
+                document.getElementById('products-loading').classList.add('hidden');
+                document.getElementById('products-grid').classList.remove('hidden');
+                
+                const loadMoreSection = document.getElementById('load-more-section');
+                if (loadMoreSection) {
+                    if (hasNextPage) {
+                        loadMoreSection.classList.remove('hidden');
+                    } else {
+                        loadMoreSection.classList.add('hidden');
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading collection:', error);
+                document.getElementById('products-loading').innerHTML = 
+                    '<p class="error">Failed to load products. Please try again later.</p>';
+            }
+        }
+
+        function updateCollectionHeader() {
+            if (!collectionData) return;
+
+            document.getElementById('collection-title').innerHTML = 
+                `${collectionData.title.toUpperCase()} <span class="text-accent">COLLECTION</span>`;
+            
+            if (collectionData.description) {
+                document.getElementById('collection-description').textContent = collectionData.description;
+            }
+
+            const totalProducts = productsData.length;
+            const countText = totalProducts === 1 ? '1 product' : `${totalProducts} products`;
+            document.getElementById('collection-count').textContent = countText;
+        }
+
+        function displayProducts() {
+            const grid = document.getElementById('products-grid');
+            if (!grid) return;
+            
+            grid.innerHTML = '';
+
+            productsData.forEach(product => {
+                const card = createProductCard(product);
+                grid.appendChild(card);
+            });
+        }
+
+        function createProductCard(product) {
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            
+            const imageUrl = product.images.edges[0]?.node.url || 'https://via.placeholder.com/300x300/0a0a0a/e50000?text=No+Image';
+            const price = formatPrice(
+                product.priceRange.minVariantPrice.amount,
+                product.priceRange.minVariantPrice.currencyCode
+            );
+            const isAvailable = product.variants.edges[0]?.node.availableForSale ?? true;
+
+            card.innerHTML = `
+                <div class="product-image">
+                    <img src="${imageUrl}" alt="${product.title}">
+                    ${!isAvailable ? '<div class="sold-out-badge">Sold Out</div>' : ''}
+                </div>
+                <div class="product-info">
+                    <h3>${product.title}</h3>
+                    <div class="product-price">${price}</div>
+                    <button class="btn-view-product" onclick="viewProduct('${product.handle}')" ${!isAvailable ? 'disabled' : ''}>
+                        ${isAvailable ? 'View Product' : 'Out of Stock'}
+                    </button>
+                </div>
+            `;
+
+            return card;
+        }
+
+        function showEmptyState() {
+            document.getElementById('products-loading').classList.add('hidden');
+            document.getElementById('products-grid').classList.add('hidden');
+            document.getElementById('empty-state').classList.remove('hidden');
+        }
+
+        // Search functionality - searches within collection only
+        let searchTimeout;
+        const searchInput = document.getElementById('collection-search');
+        const searchBtn = document.getElementById('search-btn');
+        const searchResults = document.getElementById('search-results');
+
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    if (e.target.value.trim().length >= 3) {
+                        performSearch(e.target.value.trim());
+                    } else {
+                        if (searchResults) searchResults.classList.add('hidden');
+                    }
+                }, 500);
+            });
+        }
+
+        if (searchBtn) {
+            searchBtn.addEventListener('click', () => {
+                if (searchInput) {
+                    const query = searchInput.value.trim();
+                    if (query.length >= 3) {
+                        performSearch(query);
+                    }
+                }
+            });
+        }
+
+        async function performSearch(query) {
+            if (!searchResults) return;
+            
+            try {
+                searchResults.innerHTML = '<div class="search-loading"><div class="spinner-small"></div>Searching...</div>';
+                searchResults.classList.remove('hidden');
+
+                // Search with collection filter
+                const searchQuery = `${query} AND collection:${COLLECTION_HANDLE}`;
+                const data = await shopifyStorefrontAPI(SEARCH_COLLECTION_QUERY, { 
+                    query: searchQuery, 
+                    first: 10 
+                });
+                
+                const results = data.products.edges.map(edge => edge.node);
+
+                if (results.length === 0) {
+                    searchResults.innerHTML = '<div class="no-results">No products found in this collection</div>';
+                    return;
+                }
+
+                displaySearchResults(results);
+            } catch (error) {
+                console.error('Search error:', error);
+                searchResults.innerHTML = '<div class="search-error">Search failed. Please try again.</div>';
+            }
+        }
+
+        function displaySearchResults(results) {
+            if (!searchResults) return;
+            
+            searchResults.innerHTML = results.map(product => {
+                const imageUrl = product.images.edges[0]?.node.url || '';
+                const price = formatPrice(
+                    product.priceRange.minVariantPrice.amount,
+                    product.priceRange.minVariantPrice.currencyCode
+                );
+
+                return `
+                    <div class="search-result-item" onclick="viewProduct('${product.handle}')">
+                        ${imageUrl ? `<img src="${imageUrl}" alt="${product.title}">` : ''}
+                        <div class="search-result-info">
+                            <h4>${product.title}</h4>
+                            <span class="search-result-price">${price}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Load more products
+        const loadMoreBtn = document.getElementById('load-more-btn');
+        if (loadMoreBtn) {
+            loadMoreBtn.addEventListener('click', () => {
+                loadCollection(true);
+            });
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            loadCollection();
+        });
+
+        // Close search results when clicking outside
+        document.addEventListener('click', (e) => {
+            if (searchResults && !e.target.closest('.search-section')) {
+                searchResults.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
