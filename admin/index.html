@@ -676,6 +676,242 @@
       transform: scale(1.05);
       transition: transform 0.2s;
     }
+
+    .car-card.highlight {
+      box-shadow: 0 0 0 3px rgba(229, 0, 0, 0.5), 0 20px 45px rgba(229, 0, 0, 0.2);
+      transition: box-shadow 0.3s ease;
+    }
+
+    /* Dashboard Overview */
+    .dashboard-overview {
+      display: grid;
+      gap: 32px;
+      margin-bottom: 40px;
+      padding: 32px;
+      border-radius: 20px;
+      background: radial-gradient(120% 140% at 0% 0%, rgba(229, 0, 0, 0.12) 0%, rgba(10, 10, 10, 0.9) 45%, rgba(10, 10, 10, 1) 100%);
+      border: 1px solid rgba(229, 0, 0, 0.2);
+      box-shadow: 0 25px 80px rgba(229, 0, 0, 0.08);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .dashboard-overview::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(229, 0, 0, 0.22), rgba(10, 10, 10, 0.75));
+      opacity: 0.15;
+      pointer-events: none;
+    }
+
+    .dashboard-overview > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .overview-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .overview-title {
+      font-family: var(--font-primary);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin: 0 0 8px;
+      color: var(--pure-white);
+      font-size: 1.8rem;
+    }
+
+    .overview-subtitle {
+      margin: 0;
+      color: var(--medium-gray);
+      font-size: 1.05rem;
+      max-width: 520px;
+    }
+
+    .overview-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .overview-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 18px;
+    }
+
+    .overview-card {
+      background: rgba(26, 26, 26, 0.85);
+      border: 1px solid rgba(229, 0, 0, 0.15);
+      border-radius: 18px;
+      padding: 20px 24px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .overview-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(229, 0, 0, 0.4);
+    }
+
+    .overview-label {
+      color: var(--medium-gray);
+      font-size: 0.9rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .overview-value {
+      display: block;
+      font-family: var(--font-primary);
+      font-size: 2.4rem;
+      margin: 6px 0;
+      color: var(--pure-white);
+    }
+
+    .overview-meta {
+      color: rgba(229, 229, 229, 0.65);
+      font-size: 0.95rem;
+    }
+
+    .overview-secondary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+    }
+
+    .quick-panel {
+      background: rgba(12, 12, 12, 0.85);
+      border: 1px solid rgba(229, 0, 0, 0.15);
+      border-radius: 16px;
+      padding: 22px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .panel-title {
+      margin: 0;
+      font-family: var(--font-primary);
+      font-size: 1.2rem;
+      color: var(--pure-white);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+    }
+
+    .quick-actions,
+    .activity-feed,
+    .checklist {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 12px;
+    }
+
+    .quick-action {
+      width: 100%;
+      text-align: left;
+      padding: 14px 16px;
+      border-radius: 12px;
+      border: 1px solid rgba(229, 0, 0, 0.2);
+      background: rgba(20, 20, 20, 0.8);
+      color: var(--pure-white);
+      font-size: 1rem;
+      font-family: var(--font-secondary);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .quick-action:hover {
+      border-color: rgba(229, 0, 0, 0.5);
+      background: rgba(229, 0, 0, 0.12);
+      transform: translateY(-3px);
+    }
+
+    .activity-feed {
+      max-height: 180px;
+      overflow-y: auto;
+      padding-right: 6px;
+    }
+
+    .activity-feed::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .activity-feed::-webkit-scrollbar-thumb {
+      background: rgba(229, 0, 0, 0.4);
+      border-radius: 6px;
+    }
+
+    .activity-item {
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: rgba(22, 22, 22, 0.9);
+      border: 1px solid rgba(229, 0, 0, 0.1);
+      font-size: 0.95rem;
+      color: rgba(240, 240, 240, 0.9);
+      line-height: 1.4;
+    }
+
+    .activity-item span {
+      display: block;
+      font-size: 0.75rem;
+      color: rgba(229, 229, 229, 0.5);
+      margin-top: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .checklist label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      color: rgba(240, 240, 240, 0.85);
+    }
+
+    .checklist input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent-red);
+    }
+
+    .btn-secondary.is-refreshing {
+      opacity: 0.6;
+      cursor: wait;
+    }
+
+    @media (max-width: 900px) {
+      .dashboard-overview {
+        padding: 24px;
+      }
+
+      .overview-top {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .overview-actions {
+        width: 100%;
+        justify-content: flex-start;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .overview-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .overview-value {
+        font-size: 2rem;
+      }
+    }
     
   </style>
 </head>
@@ -739,6 +975,71 @@
     <div class="admin-main">
       <!-- Cars Management Section -->
       <div id="section-cars">
+        <section class="dashboard-overview" aria-label="Nightmare Racing operations snapshot">
+          <div class="overview-top">
+            <div>
+              <h2 class="overview-title">Operations Snapshot</h2>
+              <p class="overview-subtitle">Live visibility into active builds, featured showcases, and content approvals.</p>
+            </div>
+            <div class="overview-actions">
+              <button type="button" id="dashboard-refresh" class="btn-secondary">
+                ↻ Refresh Data
+              </button>
+              <a class="btn-secondary" href="../index.html" target="_blank" rel="noopener noreferrer">
+                ↗ View Site
+              </a>
+            </div>
+          </div>
+
+          <div class="overview-stats" role="list">
+            <article class="overview-card" role="listitem">
+              <span class="overview-label">Cars in Database</span>
+              <span id="stat-total-cars" class="overview-value">0</span>
+              <span class="overview-meta">All builds synced</span>
+            </article>
+            <article class="overview-card" role="listitem">
+              <span class="overview-label">Featured Builds</span>
+              <span id="stat-featured-cars" class="overview-value">0</span>
+              <span class="overview-meta">Homepage spotlight ready</span>
+            </article>
+            <article class="overview-card" role="listitem">
+              <span class="overview-label">In Progress</span>
+              <span id="stat-active-cars" class="overview-value">0</span>
+              <span class="overview-meta">Currently on the lift</span>
+            </article>
+            <article class="overview-card" role="listitem">
+              <span class="overview-label">Awaiting Media</span>
+              <span id="stat-missing-media" class="overview-value">0</span>
+              <span class="overview-meta">Add hero imagery</span>
+            </article>
+          </div>
+
+          <div class="overview-secondary">
+            <div class="quick-panel">
+              <h3 class="panel-title">Quick Actions</h3>
+              <ul class="quick-actions">
+                <li><button type="button" class="quick-action" data-action="add-car">➕ Create New Build</button></li>
+                <li><button type="button" class="quick-action" data-action="go-featured">⭐ Review Featured Lineup</button></li>
+                <li><button type="button" class="quick-action" data-action="open-integrations">⚙️ Manage Integrations</button></li>
+              </ul>
+            </div>
+            <div class="quick-panel">
+              <h3 class="panel-title">Latest Activity</h3>
+              <ul id="dashboard-recent" class="activity-feed" aria-live="polite">
+                <li class="activity-item">Loading recent updates…</li>
+              </ul>
+            </div>
+            <div class="quick-panel">
+              <h3 class="panel-title">Operational Checklist</h3>
+              <ul class="checklist">
+                <li><label><input type="checkbox" id="checklist-hero" checked> Homepage hero updated</label></li>
+                <li><label><input type="checkbox" id="checklist-gallery"> Gallery assets uploaded</label></li>
+                <li><label><input type="checkbox" id="checklist-database"> Database connection verified</label></li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
         <div class="admin-card">
           <h2>🏎️ Add New Car</h2>
           
@@ -1119,8 +1420,11 @@
     class AdminApp {
       constructor() {
         this.cars = [];
+        this.dashboardChecklistKey = 'nightmare-admin-checklist';
         this.setupNavigation();
         this.setupForms();
+        this.setupDashboardWidgets();
+        this.setupChecklistPersistence();
       }
       
       init() {
@@ -1156,6 +1460,95 @@
         
         // Gallery upload
         this.setupImageUpload('gallery-upload', 'gallery-input', 'gallery-urls', true);
+      }
+
+      setupDashboardWidgets() {
+        const refreshBtn = document.getElementById('dashboard-refresh');
+        if (refreshBtn) {
+          refreshBtn.addEventListener('click', () => {
+            const originalLabel = refreshBtn.innerHTML;
+            refreshBtn.disabled = true;
+            refreshBtn.classList.add('is-refreshing');
+            refreshBtn.innerHTML = '⏳ Refreshing…';
+            this.loadCars().finally(() => {
+              refreshBtn.classList.remove('is-refreshing');
+              refreshBtn.disabled = false;
+              refreshBtn.innerHTML = originalLabel;
+            });
+          });
+        }
+
+        document.querySelectorAll('.quick-action').forEach(button => {
+          button.addEventListener('click', () => {
+            this.handleQuickAction(button.dataset.action);
+          });
+        });
+      }
+
+      setupChecklistPersistence() {
+        if (typeof window === 'undefined' || !window.localStorage) {
+          return;
+        }
+        const savedState = localStorage.getItem(this.dashboardChecklistKey);
+        if (savedState) {
+          try {
+            const parsed = JSON.parse(savedState);
+            Object.entries(parsed).forEach(([id, value]) => {
+              const checkbox = document.getElementById(id);
+              if (checkbox) {
+                checkbox.checked = Boolean(value);
+              }
+            });
+          } catch (error) {
+            console.warn('⚠️ Checklist state restore failed', error);
+          }
+        }
+
+        document.querySelectorAll('.checklist input[type="checkbox"]').forEach(checkbox => {
+          checkbox.addEventListener('change', () => this.saveChecklistState());
+        });
+      }
+
+      saveChecklistState() {
+        if (typeof window === 'undefined' || !window.localStorage) {
+          return;
+        }
+        const state = {};
+        document.querySelectorAll('.checklist input[type="checkbox"]').forEach(checkbox => {
+          state[checkbox.id] = checkbox.checked;
+        });
+        localStorage.setItem(this.dashboardChecklistKey, JSON.stringify(state));
+      }
+
+      handleQuickAction(action) {
+        switch (action) {
+          case 'add-car':
+            this.showSection('cars');
+            this.setActiveNav('nav-cars');
+            const nameInput = document.getElementById('car-name');
+            if (nameInput) {
+              try {
+                nameInput.focus({ preventScroll: false });
+              } catch (error) {
+                nameInput.focus();
+              }
+            }
+            document.getElementById('section-cars')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            break;
+          case 'go-featured':
+            const featuredCard = document.querySelector('.car-card');
+            if (featuredCard) {
+              featuredCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              featuredCard.classList.add('highlight');
+              setTimeout(() => featuredCard.classList.remove('highlight'), 2000);
+            }
+            break;
+          case 'open-integrations':
+            window.open('https://app.netlify.com/', '_blank', 'noopener');
+            break;
+          default:
+            console.log('ℹ️ Quick action not handled:', action);
+        }
       }
       
       setupImageUpload(uploadAreaId, inputId, urlFieldId, isMultiple) {
@@ -1297,6 +1690,8 @@
             this.cars = await response.json();
             if (Array.isArray(this.cars) && this.cars.length > 0) {
               this.renderCars();
+              this.updateDashboardSummary();
+              this.renderRecentActivity();
               return;
             }
           } else {
@@ -1312,6 +1707,8 @@
           this.cars = window.carsData;
           console.log(`✅ Admin - Loaded ${this.cars.length} cars from carousel fallback`);
           this.renderCars();
+          this.updateDashboardSummary();
+          this.renderRecentActivity();
           return;
         }
         
@@ -1320,6 +1717,8 @@
         this.cars = this.getDefaultCars();
         console.log(`✅ Admin - Loaded ${this.cars.length} demo cars`);
         this.renderCars();
+  this.updateDashboardSummary();
+  this.renderRecentActivity();
         
         // Show helpful message about the fallback data
         const container = document.getElementById('cars-list');
@@ -1405,6 +1804,73 @@
             </div>
           `;
         }).join('');
+      }
+
+      updateDashboardSummary() {
+        const totalCars = this.cars.length;
+        const featuredCars = this.cars.filter(car => car.featured).length;
+        const activeCars = this.cars.filter(car => (car.status || '').toUpperCase().includes('PROGRESS')).length;
+        const missingMedia = this.cars.filter(car => !car.mainImage && !(car.gallery && car.gallery.length)).length;
+
+        const statMap = {
+          'stat-total-cars': totalCars,
+          'stat-featured-cars': featuredCars,
+          'stat-active-cars': activeCars,
+          'stat-missing-media': missingMedia
+        };
+
+        Object.entries(statMap).forEach(([id, value]) => {
+          const el = document.getElementById(id);
+          if (el) {
+            el.textContent = value;
+          }
+        });
+      }
+
+      renderRecentActivity() {
+        const feed = document.getElementById('dashboard-recent');
+        if (!feed) return;
+
+        if (!Array.isArray(this.cars) || this.cars.length === 0) {
+          feed.innerHTML = '<li class="activity-item">Add your first build to populate recent activity.</li>';
+          return;
+        }
+
+        const sorted = [...this.cars].sort((a, b) => {
+          const dateA = new Date(a.dateAdded || a.created_at || 0).getTime();
+          const dateB = new Date(b.dateAdded || b.created_at || 0).getTime();
+          return dateB - dateA;
+        }).slice(0, 5);
+
+        feed.innerHTML = sorted.map(car => {
+          const status = car.status || 'STATUS UNKNOWN';
+          const relative = this.formatRelativeTime(car.dateAdded || car.created_at);
+          return `
+            <li class="activity-item">
+              <strong>${car.name}</strong> · ${status}
+              <span>${relative}</span>
+            </li>
+          `;
+        }).join('');
+      }
+
+      formatRelativeTime(dateInput) {
+        if (!dateInput) return 'Date unavailable';
+        const date = new Date(dateInput);
+        if (Number.isNaN(date.getTime())) return 'Date unavailable';
+
+        const diffMs = Date.now() - date.getTime();
+        const diffMinutes = Math.floor(diffMs / 60000);
+        if (diffMinutes < 1) return 'Just now';
+        if (diffMinutes < 60) return `${diffMinutes} min ago`;
+
+        const diffHours = Math.floor(diffMinutes / 60);
+        if (diffHours < 24) return `${diffHours} hr${diffHours === 1 ? '' : 's'} ago`;
+
+        const diffDays = Math.floor(diffHours / 24);
+        if (diffDays < 7) return `${diffDays} day${diffDays === 1 ? '' : 's'} ago`;
+
+        return date.toLocaleDateString();
       }
       
       getStatusEmoji(status) {
