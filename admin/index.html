@@ -70,6 +70,11 @@
       padding: 24px;
     }
 
+    .auth-overlay.inactive {
+      pointer-events: none;
+      opacity: 0.75;
+    }
+
     .auth-card {
       width: min(420px, 100%);
       background: rgba(15, 15, 15, 0.92);
@@ -805,6 +810,12 @@
           window.netlifyIdentity.on('init', user => this.handleInit(user));
           window.netlifyIdentity.on('login', user => this.handleLogin(user));
           window.netlifyIdentity.on('logout', () => this.handleLogout());
+          window.netlifyIdentity.on('open', () => this.setOverlayInteractive(false));
+          window.netlifyIdentity.on('close', () => {
+            if (!window.netlifyIdentity.currentUser()) {
+              this.setOverlayInteractive(true);
+            }
+          });
           window.netlifyIdentity.init();
         } catch (error) {
           this.setStatus('Unable to contact identity service. Please refresh.', true);
@@ -848,8 +859,10 @@
 
       login() {
         try {
+          this.setOverlayInteractive(false);
           window.netlifyIdentity.open('login');
         } catch (error) {
+          this.setOverlayInteractive(true);
           this.setStatus('Unable to open login. Please refresh.', true);
         }
       }
@@ -864,11 +877,13 @@
 
       showAdmin() {
         this.overlay.classList.add('hidden');
+        this.setOverlayInteractive(false);
         this.adminAppShell.classList.add('show');
         window.adminApp?.loadCars();
       }
 
       showLogin() {
+        this.setOverlayInteractive(true);
         this.loadingBlock.classList.add('hidden');
         this.loginBlock.classList.remove('hidden');
         this.overlay.classList.remove('hidden');
@@ -879,6 +894,11 @@
         this.statusBlock.textContent = message;
         this.statusBlock.classList.remove('hidden');
         this.statusBlock.style.color = isError ? '#ff6b6b' : '#9fa6ad';
+      }
+
+      setOverlayInteractive(isInteractive) {
+        if (!this.overlay) return;
+        this.overlay.classList.toggle('inactive', !isInteractive);
       }
     }
 
