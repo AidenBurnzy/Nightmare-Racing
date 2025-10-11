@@ -93,87 +93,166 @@ function displayAllCars() {
 function createCarCard(car, index) {
     const card = document.createElement('div');
     card.className = 'featured-car-card';
-    card.onclick = () => openCarModal(car);
-    
-    // Prepare images array from database structure
-    const images = [];
-    if (car.mainImage && car.mainImage !== 'null' && car.mainImage !== null) {
-        images.push(car.mainImage);
+
+    const images = buildImageArray(car);
+    const previewDescription = getOverviewPreview(car.description);
+    const statusLabel = (car.status || 'COMPLETED').toUpperCase();
+    const formattedDate = formatBuildDate(car.dateAdded);
+
+    const metaChips = [];
+    if (formattedDate) {
+        metaChips.push(`<span class="meta-chip">${formattedDate}</span>`);
     }
-    if (car.gallery && Array.isArray(car.gallery)) {
-        car.gallery.forEach(item => {
-            if (typeof item === 'string' && item && item !== 'null') {
-                images.push(item);
-            } else if (item && item.url && item.url !== 'null') {
-                images.push(item.url);
-            } else if (item && item.image && item.image !== 'null') {
-                images.push(item.image);
-            }
-        });
+    if (car.featured) {
+        metaChips.push('<span class="meta-chip meta-chip-featured">Featured</span>');
     }
-    
-    // Create specs HTML
-    let specsHTML = '';
-    if (car.specs) {
-        const specs = car.specs;
-        if (specs.zeroToSixty) {
-            specsHTML += createSpecItem('0-60', specs.zeroToSixty);
-        }
-        if (specs.topSpeed) {
-            specsHTML += createSpecItem('Top Speed', specs.topSpeed);
-        }
-        if (specs.horsepower) {
-            specsHTML += createSpecItem('Horsepower', specs.horsepower);
-        }
-        if (specs.engine) {
-            specsHTML += createSpecItem('Engine', specs.engine);
-        }
-        if (specs.weight) {
-            specsHTML += createSpecItem('Weight', specs.weight);
-        }
-        if (specs.custom1) {
-            specsHTML += createSpecItem('', specs.custom1);
-        }
-        if (specs.custom2) {
-            specsHTML += createSpecItem('', specs.custom2);
-        }
-    }
-    
+    const metaHTML = metaChips.length ? `<div class="car-card-meta">${metaChips.join('')}</div>` : '';
+
+    const specsHTML = buildSpecsPreview(car.specs);
+
     card.innerHTML = `
-        <div class="car-status-badge">${car.status || 'COMPLETED'}</div>
-        
+        <div class="car-status-badge">${statusLabel}</div>
         <div class="car-image-gallery" id="gallery-${index}">
-            ${images.length > 0 
-                ? `<img src="${images[0]}" alt="${car.name}" class="gallery-main-image">`
+            ${images.length > 0
+                ? `<img src="${images[0]}" alt="${car.name || 'Featured build'}" class="gallery-main-image">`
                 : `<div class="gallery-placeholder">🏎️</div>`
             }
             ${images.length > 1 ? `
+                <div class="gallery-count">${images.length} photos</div>
                 <div class="gallery-controls">
                     ${images.map((_, i) => `<div class="gallery-dot ${i === 0 ? 'active' : ''}" data-index="${i}"></div>`).join('')}
                 </div>
             ` : ''}
         </div>
-        
         <div class="car-info-section">
-            <h3 class="car-name">${car.name || 'Unnamed Build'}</h3>
-            <p class="car-description">${car.description || 'No description available'}</p>
-            
+            <div class="car-card-header">
+                <h3 class="car-name">${car.name || 'Unnamed Build'}</h3>
+                ${metaHTML}
+            </div>
+            <p class="car-description">${previewDescription}</p>
             ${specsHTML ? `
                 <div class="car-specs-grid">
                     ${specsHTML}
                 </div>
             ` : ''}
-            
-            <button class="view-details-btn">View Full Details</button>
+            <div class="car-card-footer">
+                <button type="button" class="view-details-btn">View Full Details</button>
+            </div>
         </div>
     `;
-    
-    // Setup image gallery if multiple images
+
     if (images.length > 1) {
         setupCardGallery(card, images, index);
     }
-    
+
+    card.addEventListener('click', () => openCarModal(car));
+
+    const detailsButton = card.querySelector('.view-details-btn');
+    if (detailsButton) {
+        detailsButton.addEventListener('click', (event) => {
+            event.stopPropagation();
+            openCarModal(car);
+        });
+    }
+
     return card;
+}
+
+function buildImageArray(car) {
+    const images = [];
+    if (car.mainImage && car.mainImage !== 'null') {
+        images.push(car.mainImage);
+    }
+    if (Array.isArray(car.gallery)) {
+        car.gallery.forEach((item) => {
+            if (!item) return;
+            if (typeof item === 'string' && item !== 'null') {
+                images.push(item);
+                return;
+            }
+            if (typeof item === 'object') {
+                if (typeof item.url === 'string' && item.url !== 'null') {
+                    images.push(item.url);
+                    return;
+                }
+                if (typeof item.image === 'string' && item.image !== 'null') {
+                    images.push(item.image);
+                }
+            }
+        });
+    }
+    return images;
+}
+
+function buildSpecsPreview(specs) {
+    if (!specs) return '';
+    const specEntries = [];
+
+    if (specs.zeroToSixty) specEntries.push({ label: '0-60', value: specs.zeroToSixty });
+    if (specs.topSpeed) specEntries.push({ label: 'Top Speed', value: specs.topSpeed });
+    if (specs.horsepower) specEntries.push({ label: 'Horsepower', value: specs.horsepower });
+    if (specs.engine) specEntries.push({ label: 'Engine', value: specs.engine });
+    if (specs.weight) specEntries.push({ label: 'Weight', value: specs.weight });
+    if (specs.custom1) specEntries.push({ label: '', value: specs.custom1 });
+    if (specs.custom2) specEntries.push({ label: '', value: specs.custom2 });
+
+    const limitedSpecs = specEntries.slice(0, 4);
+    return limitedSpecs.map((spec) => createSpecItem(spec.label, spec.value)).join('');
+}
+
+function getOverviewPreview(text, options = {}) {
+    const { maxSentences = 2, maxChars = 220 } = options;
+    if (!text) {
+        return 'Overview coming soon.';
+    }
+
+    const normalized = String(text).replace(/\s+/g, ' ').trim();
+    if (!normalized) {
+        return 'Overview coming soon.';
+    }
+
+    const sentences = normalized.match(/[^.!?]+[.!?]?/g) || [normalized];
+    let preview = '';
+
+    for (const sentence of sentences) {
+        const trimmed = sentence.trim();
+        if (!trimmed) continue;
+
+        const candidate = preview ? `${preview} ${trimmed}` : trimmed;
+        if (preview && candidate.length > maxChars) {
+            break;
+        }
+
+        preview = candidate;
+
+        const sentenceCount = (preview.match(/[.!?]/g) || []).length;
+        if (sentenceCount >= maxSentences || preview.length >= maxChars) {
+            break;
+        }
+    }
+
+    if (preview.length > maxChars) {
+        preview = preview.slice(0, maxChars);
+    }
+
+    const needsEllipsis = preview.length < normalized.length;
+    if (needsEllipsis) {
+        preview = preview.replace(/\s[^\s]*$/, '').replace(/[.,;:\-\s]*$/, '');
+        preview += '…';
+    }
+
+    return preview;
+}
+
+function formatBuildDate(dateInput) {
+    if (!dateInput) return '';
+    const date = new Date(dateInput);
+    if (Number.isNaN(date.getTime())) return '';
+    return date.toLocaleDateString(undefined, {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+    });
 }
 
 // Create spec item HTML
@@ -243,23 +322,13 @@ function openCarModal(car) {
     const modal = document.getElementById('car-modal');
     if (!modal) return;
     
-    // Prepare images
-    const images = [];
-    if (car.mainImage) images.push(car.mainImage);
-    if (car.gallery && Array.isArray(car.gallery)) {
-        car.gallery.forEach(item => {
-            if (typeof item === 'string') {
-                images.push(item);
-            } else if (item.image) {
-                images.push(item.image);
-            }
-        });
-    }
+    const images = buildImageArray(car);
+    const statusLabel = (car.status || 'COMPLETED').toUpperCase();
     
     // Update modal content
     document.getElementById('modal-car-name').textContent = car.name || 'Unnamed Build';
     document.getElementById('modal-car-description').textContent = car.description || 'No description available';
-    document.getElementById('modal-status').textContent = car.status || 'COMPLETED';
+    document.getElementById('modal-status').textContent = statusLabel;
     
     // Update main image
     const mainImage = document.getElementById('modal-main-image');
