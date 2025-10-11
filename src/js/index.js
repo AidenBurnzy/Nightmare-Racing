@@ -422,7 +422,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <li><a class="mobile-sub-link" href="services/suspension-repair-tuning.html">Suspension Repair & Tuning</a></li>
                         <li><a class="mobile-sub-link" href="services/fluid-service.html">Fluid Service</a></li>
                         <li><a class="mobile-sub-link" href="services/camshaft-swaps-upgrades.html">Camshaft Swaps & Upgrades</a></li>
-                        <li><a href="src/pages/featured-cars.html">Featured Cars</a></li>
+                        <li><a href="src/pages/featured-cars.html">Our Projects</a></li>
                         <li><a href="src/pages/shopParts.html">Shop Parts</a></li>
                         <li><a href="#contact">Contact</a></li>
                         <li class="mobile-sign-in">

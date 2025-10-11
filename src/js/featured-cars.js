@@ -1,4 +1,4 @@
-// featured-cars.js - Dynamic car loading for Featured Cars page
+// featured-cars.js - Dynamic project loading for Our Projects page
 
 let carsData = [];
 let currentModalCar = null;
@@ -6,7 +6,7 @@ let currentImageIndex = 0;
 
 // Initialize when DOM loads
 document.addEventListener('DOMContentLoaded', function() {
-    // Featured Cars Page JavaScript
+    // Our Projects Page JavaScript
     loadAllCars();
     setupModalEvents();
     
@@ -31,7 +31,7 @@ function handleDirectCarLink() {
     }
 }
 
-// Load all featured cars from database
+// Load all projects from database
 async function loadAllCars() {
     try {
         showLoadingState(true);
@@ -114,7 +114,7 @@ function createCarCard(car, index) {
         <div class="car-status-badge">${statusLabel}</div>
         <div class="car-image-gallery" id="gallery-${index}">
             ${images.length > 0
-                ? `<img src="${images[0]}" alt="${car.name || 'Featured build'}" class="gallery-main-image">`
+                ? `<img src="${images[0]}" alt="${car.name || 'Project build'}" class="gallery-main-image">`
                 : `<div class="gallery-placeholder">🏎️</div>`
             }
             ${images.length > 1 ? `
