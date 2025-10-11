@@ -492,49 +492,76 @@
 
     .car-grid {
       display: grid;
-      gap: 20px;
+      gap: 18px;
     }
 
     .car-card {
       border-radius: 16px;
       border: 1px solid rgba(229, 0, 0, 0.1);
-      background: rgba(12, 12, 12, 0.8);
+      background: rgba(12, 12, 12, 0.75);
       display: grid;
-      gap: 16px;
-      padding: 20px;
-      transition: border 0.2s ease;
+      grid-template-columns: minmax(0, 160px) 1fr;
+      gap: 18px;
+      padding: 18px 22px;
+      transition: border 0.2s ease, transform 0.2s ease;
+      align-items: stretch;
     }
 
     .car-card:hover {
       border-color: rgba(229, 0, 0, 0.35);
+      transform: translateY(-4px);
     }
 
-    .car-card img {
-      width: 100%;
-      height: 180px;
-      object-fit: cover;
+    .car-thumb {
       border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+      background: rgba(229, 0, 0, 0.08);
+      min-height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .car-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .car-thumb-placeholder {
+      font-size: 2rem;
+      color: rgba(255, 255, 255, 0.32);
+      letter-spacing: 0.12em;
+    }
+
+    .car-content {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
 
     .car-header {
       display: flex;
-      justify-content: space-between;
+      flex-wrap: wrap;
       align-items: baseline;
-      gap: 12px;
+      justify-content: space-between;
+      gap: 10px;
     }
 
     .car-title {
       margin: 0;
-      font-size: 1.25rem;
+      font-size: 1.1rem;
       font-weight: 700;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.06em;
     }
 
     .car-meta {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px 16px;
-      font-size: 0.9rem;
+      gap: 8px 14px;
+      font-size: 0.85rem;
       color: var(--gray-400);
     }
 
@@ -542,17 +569,31 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 6px 12px;
+      padding: 5px 12px;
       border-radius: 999px;
-      background: rgba(229, 0, 0, 0.16);
-      font-size: 0.85rem;
-      letter-spacing: 0.05em;
+      background: rgba(229, 0, 0, 0.18);
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .car-summary {
+      color: var(--gray-400);
+      font-size: 0.92rem;
+      line-height: 1.6;
+      margin: 0;
+      line-clamp: 3;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
     }
 
     .car-actions {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
+      margin-top: auto;
     }
 
     .car-button {
@@ -561,7 +602,7 @@
       border: 1px solid rgba(229, 0, 0, 0.28);
       background: transparent;
       color: var(--white);
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       cursor: pointer;
       transition: border 0.2s ease, background 0.2s ease;
     }
@@ -574,6 +615,33 @@
     .car-button.danger:hover {
       border-color: #ff5b5b;
       background: rgba(255, 60, 60, 0.12);
+    }
+
+    @media (max-width: 900px) {
+      .car-card {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      .car-thumb {
+        height: 200px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .car-card {
+        padding: 18px;
+      }
+
+      .car-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .car-button {
+        width: 100%;
+        text-align: center;
+      }
     }
 
     .empty-state {
@@ -1120,25 +1188,72 @@
 
       buildCardMarkup(car) {
         const galleryCount = Array.isArray(car.gallery) ? car.gallery.length : 0;
+        const summary = this.getOverviewPreview(car.description);
+        const hasMainImage = Boolean(car.mainImage);
+        const featuredLabel = car.featured ? '⭐ Featured' : '➖ Hidden from hero';
+        const galleryLabel = `${galleryCount} gallery item${galleryCount === 1 ? '' : 's'}`;
+        const addedLabel = `Added ${this.formatRelative(car.dateAdded || car.created_at)}`;
+
         return `
           <article class="car-card">
-            ${car.mainImage ? `<img src="${car.mainImage}" alt="${car.name}" />` : ''}
-            <header class="car-header">
-              <h3 class="car-title">${car.name || 'Untitled Build'}</h3>
-              <span class="badge">${this.getStatusEmoji(car.status)} ${car.status || 'Status unknown'}</span>
-            </header>
-            <div class="car-meta">
-              <span>${car.featured ? '⭐ Featured' : '➖ Hidden from hero'}</span>
-              <span>${galleryCount} gallery item${galleryCount === 1 ? '' : 's'}</span>
-              <span>Added ${this.formatRelative(car.dateAdded || car.created_at)}</span>
+            <div class="car-thumb">
+              ${hasMainImage 
+                ? `<img src="${car.mainImage}" alt="${car.name || 'Build photo'}" loading="lazy" />`
+                : '<div class="car-thumb-placeholder">🏁</div>'}
             </div>
-            <p>${car.description || 'No description provided.'}</p>
-            <footer class="car-actions">
-              <button type="button" class="car-button" onclick="window.adminApp.editCar(${car.id})">Edit</button>
-              <button type="button" class="car-button danger" onclick="window.adminApp.deleteCar(${car.id})">Delete</button>
-              <button type="button" class="car-button" onclick="window.adminApp.viewCar(${car.id})">Preview</button>
-            </footer>
+            <div class="car-content">
+              <header class="car-header">
+                <h3 class="car-title">${car.name || 'Untitled Build'}</h3>
+                <span class="badge">${this.getStatusEmoji(car.status)} ${car.status || 'Status unknown'}</span>
+              </header>
+              <div class="car-meta">
+                <span>${featuredLabel}</span>
+                <span>${galleryLabel}</span>
+                <span>${addedLabel}</span>
+              </div>
+              <p class="car-summary">${summary}</p>
+              <footer class="car-actions">
+                <button type="button" class="car-button" onclick="window.adminApp.editCar(${car.id})">Edit</button>
+                <button type="button" class="car-button danger" onclick="window.adminApp.deleteCar(${car.id})">Delete</button>
+                <button type="button" class="car-button" onclick="window.adminApp.viewCar(${car.id})">Preview</button>
+              </footer>
+            </div>
           </article>`;
+      }
+
+      getOverviewPreview(text, options = {}) {
+        const { maxSentences = 2, maxChars = 180 } = options;
+        if (!text) return 'Overview coming soon.';
+
+        const normalized = String(text).replace(/\s+/g, ' ').trim();
+        if (!normalized) return 'Overview coming soon.';
+
+        const sentences = normalized.match(/[^.!?]+[.!?]?/g) || [normalized];
+        let preview = '';
+
+        for (const sentence of sentences) {
+          const trimmed = sentence.trim();
+          if (!trimmed) continue;
+
+          const candidate = preview ? `${preview} ${trimmed}` : trimmed;
+          if (preview && candidate.length > maxChars) break;
+
+          preview = candidate;
+
+          const sentenceCount = (preview.match(/[.!?]/g) || []).length;
+          if (sentenceCount >= maxSentences || preview.length >= maxChars) break;
+        }
+
+        if (preview.length > maxChars) {
+          preview = preview.slice(0, maxChars);
+        }
+
+        if (preview.length < normalized.length) {
+          preview = preview.replace(/\s[^\s]*$/, '').replace(/[.,;:\-\s]*$/, '');
+          preview += '…';
+        }
+
+        return preview;
       }
 
       getStatusEmoji(status) {
