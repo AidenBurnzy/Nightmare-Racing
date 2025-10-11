@@ -35,8 +35,7 @@
             title: 'Need parts you can trust?',
             description: 'Share your current mod list and future goals. We will assemble a components roadmap that keeps the car balanced and reliable.',
             actions: [
-                { label: 'Request Parts Quote', href: '../src/pages/request-quote.html', className: 'primary' },
-                { label: 'Shop Catalog', href: 'https://nmrauto.com/collections', className: 'secondary' }
+                { label: 'Contact us about your build', href: '../src/pages/contact.html', className: 'primary' }
             ]
         }
     };

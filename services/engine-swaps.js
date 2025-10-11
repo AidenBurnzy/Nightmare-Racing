@@ -35,8 +35,7 @@
             title: 'Swap vision ready to execute?',
             description: 'Share your chassis, desired powerplant, and driving goals. We will map the parts, timeline, and investment required to make it happen.',
             actions: [
-                { label: 'Book A Consultation', href: '../src/pages/request-quote.html', className: 'primary' },
-                { label: 'Email Build Sheet', href: 'mailto:nightmareracing1@gmail.com', className: 'secondary' }
+                { label: 'Contact us about your build', href: '../src/pages/contact.html', className: 'primary' }
             ]
         }
     };

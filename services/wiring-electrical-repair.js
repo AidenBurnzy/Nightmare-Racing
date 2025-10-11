@@ -35,8 +35,7 @@
             title: 'Chasing an electrical ghost?',
             description: 'Bring your diagnostic logs or symptoms and we will map out a repair strategy that restores confidence in every circuit.',
             actions: [
-                { label: 'Schedule Diagnostics', href: '../src/pages/request-quote.html', className: 'primary' },
-                { label: 'Email The Shop', href: 'mailto:nightmareracing1@gmail.com', className: 'secondary' }
+                { label: 'Contact us about your build', href: '../src/pages/contact.html', className: 'primary' }
             ]
         }
     };

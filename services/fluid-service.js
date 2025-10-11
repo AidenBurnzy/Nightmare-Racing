@@ -35,8 +35,7 @@
             title: 'Due for a fluid service?',
             description: 'Tell us which systems need attention and how you drive. We will prep the right products and schedule time in the bay.',
             actions: [
-                { label: 'Schedule Service', href: '../src/pages/request-quote.html', className: 'primary' },
-                { label: 'Call Our Shop', href: 'tel:+16163291939', className: 'secondary' }
+                { label: 'Contact us about your build', href: '../src/pages/contact.html', className: 'primary' }
             ]
         }
     };

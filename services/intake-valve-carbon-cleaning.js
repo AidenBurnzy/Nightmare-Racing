@@ -35,8 +35,7 @@
             title: 'Time for a carbon cleaning?',
             description: 'Drop us a note with your mileage and symptoms. We will confirm availability and get you on the schedule.',
             actions: [
-                { label: 'Book Cleaning', href: '../src/pages/request-quote.html', className: 'primary' },
-                { label: 'Email Photos', href: 'mailto:nightmareracing1@gmail.com', className: 'secondary' }
+                { label: 'Contact us about your build', href: '../src/pages/contact.html', className: 'primary' }
             ]
         }
     };

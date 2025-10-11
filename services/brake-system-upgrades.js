@@ -35,8 +35,7 @@
             title: 'Need more stopping power?',
             description: 'Tell us how and where you drive. We will build a brake plan that balances stopping power, heat capacity, and budget.',
             actions: [
-                { label: 'Book Brake Upgrade', href: '../src/pages/request-quote.html', className: 'primary' },
-                { label: 'Chat With Us', href: 'tel:+16163291939', className: 'secondary' }
+                { label: 'Contact us about your build', href: '../src/pages/contact.html', className: 'primary' }
             ]
         }
     };

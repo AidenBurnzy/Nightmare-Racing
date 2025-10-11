@@ -35,8 +35,7 @@
             title: 'Planning a cam upgrade?',
             description: 'Send over your mod list, intended use, and timeline. We will spec the right cam, supporting parts, and calibration path.',
             actions: [
-                { label: 'Request Camshaft Quote', href: '../src/pages/request-quote.html', className: 'primary' },
-                { label: 'Email Build Sheet', href: 'mailto:nightmareracing1@gmail.com', className: 'secondary' }
+                { label: 'Contact us about your build', href: '../src/pages/contact.html', className: 'primary' }
             ]
         }
     };

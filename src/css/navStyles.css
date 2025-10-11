@@ -88,12 +88,22 @@
 
 .nav-menu li {
     position: relative;
+    display: flex;
+    align-items: center;
 }
 
 .nav-menu li.has-dropdown > .dropdown-trigger {
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
+    padding: 0.5rem 0;
+    background: none;
+    border: none;
+    font: inherit;
+    color: inherit;
+    text-transform: inherit;
+    letter-spacing: inherit;
+    cursor: pointer;
 }
 
 .nav-menu li.has-dropdown > .dropdown-trigger::before {
@@ -189,6 +199,9 @@
 
 .nav-menu a,
 .nav-menu button {
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
     color: var(--pure-white);
     text-decoration: none;
     font-family: var(--font-secondary);

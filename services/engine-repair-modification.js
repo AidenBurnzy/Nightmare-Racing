@@ -35,8 +35,7 @@
             title: 'Plan your next engine build',
             description: 'Let’s talk about power goals, fuel choice, and use case so we can tailor an engine program that keeps you on boost and on schedule.',
             actions: [
-                { label: 'Start A Build Sheet', href: '../src/pages/request-quote.html', className: 'primary' },
-                { label: 'Call The Shop', href: 'tel:+16163291939', className: 'secondary' }
+                { label: 'Contact us about your build', href: '../src/pages/contact.html', className: 'primary' }
             ]
         }
     };

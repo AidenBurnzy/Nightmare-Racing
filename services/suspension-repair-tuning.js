@@ -35,8 +35,7 @@
             title: 'Ready to tighten up the chassis?',
             description: 'Share your current suspension setup and how you drive. We will map out repairs, upgrades, and tuning steps.',
             actions: [
-                { label: 'Book Suspension Work', href: '../src/pages/request-quote.html', className: 'primary' },
-                { label: 'Discuss Goals', href: 'mailto:nightmareracing1@gmail.com', className: 'secondary' }
+                { label: 'Contact us about your build', href: '../src/pages/contact.html', className: 'primary' }
             ]
         }
     };

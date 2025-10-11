@@ -35,8 +35,7 @@
             title: 'Elevate your build',
             description: 'Tell us about your terrain, tire size, and payload. We will recommend the ideal lift solution and supporting upgrades.',
             actions: [
-                { label: 'Request Lift Quote', href: '../src/pages/request-quote.html', className: 'primary' },
-                { label: 'Call Suspension Desk', href: 'tel:+16163291939', className: 'secondary' }
+                { label: 'Contact us about your build', href: '../src/pages/contact.html', className: 'primary' }
             ]
         }
     };

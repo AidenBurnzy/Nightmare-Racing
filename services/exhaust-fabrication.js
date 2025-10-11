@@ -35,8 +35,7 @@
             title: 'Let’s build your exhaust',
             description: 'Provide your current setup, power goals, and sound preference. We will design an exhaust that performs and makes the right kind of noise.',
             actions: [
-                { label: 'Start Exhaust Project', href: '../src/pages/request-quote.html', className: 'primary' },
-                { label: 'Hear Sample Builds', href: 'https://www.instagram.com/nightmareracing/', className: 'secondary' }
+                { label: 'Contact us about your build', href: '../src/pages/contact.html', className: 'primary' }
             ]
         }
     };

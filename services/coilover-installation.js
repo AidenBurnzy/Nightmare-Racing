@@ -35,8 +35,7 @@
             title: 'Ready to dial in your suspension?',
             description: 'Book dedicated time with our suspension specialists and leave with a car that turns in, brakes, and puts power down exactly the way you want.',
             actions: [
-                { label: 'Request a Quote', href: '../src/pages/request-quote.html', className: 'primary' },
-                { label: 'Talk With a Tech', href: 'tel:+16163291939', className: 'secondary' }
+                { label: 'Contact us about your build', href: '../src/pages/contact.html', className: 'primary' }
             ]
         }
     };
