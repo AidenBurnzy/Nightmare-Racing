@@ -28,21 +28,35 @@
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-logo">
-                <a href="../../index.html"><img src="../../assets/logoImage1.png" alt="Nightmare Racing Logo"></a>
+                <a href="../../index.html">
+                    <img src="../../assets/logoImage1.png" alt="Nightmare Racing Logo" class="nav-logo" data-logo-target="#home">
+                </a>
                 <h2>NIGHTMARE<span class="text-accent">RACING</span></h2>
             </div>
 
             <ul class="nav-menu">
                 <li><a href="../../index.html">Home</a></li>
-                <li><a href="../../index.html#services">Services</a></li>
+                <li class="has-dropdown">
+                    <button type="button" class="dropdown-trigger" aria-haspopup="true" aria-expanded="false">Services</button>
+                    <div class="dropdown-menu" role="menu" aria-label="Services">
+                        <a class="dropdown-link" href="../../services/coilover-installation.html" role="menuitem">Coilover Installation</a>
+                        <a class="dropdown-link" href="../../services/wiring-electrical-repair.html" role="menuitem">Wiring & Electrical Repair</a>
+                        <a class="dropdown-link" href="../../services/engine-repair-modification.html" role="menuitem">Engine Repair & Modification</a>
+                        <a class="dropdown-link" href="../../services/engine-swaps.html" role="menuitem">Engine Swaps</a>
+                        <a class="dropdown-link" href="../../services/aftermarket-components.html" role="menuitem">Aftermarket Components</a>
+                        <a class="dropdown-link" href="../../services/brake-system-upgrades.html" role="menuitem">Brake System Upgrades</a>
+                        <a class="dropdown-link" href="../../services/lift-kits.html" role="menuitem">Lift Kits</a>
+                        <a class="dropdown-link" href="../../services/exhaust-fabrication.html" role="menuitem">Exhaust Fabrication</a>
+                        <a class="dropdown-link" href="../../services/intake-valve-carbon-cleaning.html" role="menuitem">Intake Valve Carbon Cleaning</a>
+                        <a class="dropdown-link" href="../../services/suspension-repair-tuning.html" role="menuitem">Suspension Repair & Tuning</a>
+                        <a class="dropdown-link" href="../../services/fluid-service.html" role="menuitem">Fluid Service</a>
+                        <a class="dropdown-link" href="../../services/camshaft-swaps-upgrades.html" role="menuitem">Camshaft Swaps & Upgrades</a>
+                    </div>
+                </li>
                 <li><a href="featured-cars.html">Featured Cars</a></li>
                 <li><a href="shopParts.html" class="active">Shop Parts</a></li>
                 <li><a href="../../index.html#contact">Contact</a></li>
             </ul>
-
-            <div class="nav-actions">
-                <a href="/admin" target="_blank" class="admin-btn">Admin</a>
-            </div>
 
             <div class="hamburger">
                 <span></span>
@@ -64,12 +78,32 @@
             </div>
 
             <ul class="mobile-nav-links">
-                <li><a href="/admin" target="_blank">Admin Portal</a></li>
                 <li><a href="../../index.html">Home</a></li>
                 <li><a href="../../index.html#services">Services</a></li>
+                <li class="mobile-submenu-heading">Shop Our Expertise</li>
+                <li><a class="mobile-sub-link" href="../../services/coilover-installation.html">Coilover Installation</a></li>
+                <li><a class="mobile-sub-link" href="../../services/wiring-electrical-repair.html">Wiring & Electrical Repair</a></li>
+                <li><a class="mobile-sub-link" href="../../services/engine-repair-modification.html">Engine Repair & Modification</a></li>
+                <li><a class="mobile-sub-link" href="../../services/engine-swaps.html">Engine Swaps</a></li>
+                <li><a class="mobile-sub-link" href="../../services/aftermarket-components.html">Aftermarket Components</a></li>
+                <li><a class="mobile-sub-link" href="../../services/brake-system-upgrades.html">Brake System Upgrades</a></li>
+                <li><a class="mobile-sub-link" href="../../services/lift-kits.html">Lift Kits</a></li>
+                <li><a class="mobile-sub-link" href="../../services/exhaust-fabrication.html">Exhaust Fabrication</a></li>
+                <li><a class="mobile-sub-link" href="../../services/intake-valve-carbon-cleaning.html">Intake Valve Carbon Cleaning</a></li>
+                <li><a class="mobile-sub-link" href="../../services/suspension-repair-tuning.html">Suspension Repair & Tuning</a></li>
+                <li><a class="mobile-sub-link" href="../../services/fluid-service.html">Fluid Service</a></li>
+                <li><a class="mobile-sub-link" href="../../services/camshaft-swaps-upgrades.html">Camshaft Swaps & Upgrades</a></li>
                 <li><a href="featured-cars.html">Featured Cars</a></li>
                 <li><a href="shopParts.html" class="active">Shop Parts</a></li>
                 <li><a href="../../index.html#contact">Contact</a></li>
+                <li class="mobile-sign-in">
+                    <a href="https://nmrauto.com/" target="_blank" rel="noopener noreferrer">
+                        <svg class="profile-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="currentColor"/>
+                        </svg>
+                        Sign In to Shop
+                    </a>
+                </li>
             </ul>
 
             <div class="mobile-menu-footer">

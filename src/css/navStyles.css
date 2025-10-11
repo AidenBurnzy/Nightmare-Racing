@@ -1,31 +1,4 @@
-.admin-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: linear-gradient(90deg, #e53935 0%, #b71c1c 100%);
-    color: #fff;
-    font-family: var(--font-primary);
-    font-weight: 600;
-    font-size: 1rem;
-    padding: 8px 20px;
-    border-radius: 24px;
-    border: none;
-    text-decoration: none;
-    box-shadow: 0 2px 8px rgba(229, 57, 53, 0.15);
-    transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
-    cursor: pointer;
-    margin-left: 1rem;
-}
-.admin-btn:hover {
-    background: linear-gradient(90deg, #b71c1c 0%, #e53935 100%);
-    box-shadow: 0 4px 16px rgba(229, 57, 53, 0.25);
-    transform: translateY(-2px) scale(1.04);
-}
-.admin-btn:active {
-    background: linear-gradient(90deg, #e53935 0%, #b71c1c 100%);
-    box-shadow: 0 2px 8px rgba(229, 57, 53, 0.15);
-    transform: scale(0.98);
-}
+
 /* ================================
    NAVIGATION STYLES - navStyles.css
    ================================ */
@@ -99,11 +72,16 @@
     padding: 0.5rem 0;
     background: none;
     border: none;
-    font: inherit;
-    color: inherit;
-    text-transform: inherit;
-    letter-spacing: inherit;
+    color: var(--pure-white);
+    font-family: var(--font-secondary);
+    font-weight: 500;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
     cursor: pointer;
+    line-height: 1;
+    transition: color 0.3s ease;
+    position: relative;
 }
 
 .nav-menu li.has-dropdown > .dropdown-trigger::before {
@@ -160,41 +138,14 @@
     transform: translate(-50%, 0);
 }
 
-.dropdown-link {
-    color: rgba(255, 255, 255, 0.85);
-    text-decoration: none;
-    font-family: var(--font-secondary);
-    font-size: 0.9rem;
-    letter-spacing: 0.4px;
-    position: relative;
-    padding-left: 0.75rem;
-    transition: color 0.25s ease, transform 0.25s ease;
-}
-
 .dropdown-link::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 6px;
-    height: 6px;
-    border-radius: 999px;
-    background: rgba(229, 0, 0, 0.65);
-    opacity: 0.6;
-    transition: opacity 0.25s ease, transform 0.25s ease;
+    content: none;
 }
 
 .dropdown-link:hover,
 .dropdown-link:focus {
     color: var(--accent-red);
     transform: translateX(4px);
-}
-
-.dropdown-link:hover::before,
-.dropdown-link:focus::before {
-    opacity: 1;
-    transform: translate(2px, -50%);
 }
 
 .nav-menu a,
@@ -833,13 +784,6 @@
         display: block;
     }
 }
-
-/* REMOVED: Smooth scroll behavior that was causing auto-scroll issues */
-/* 
-html {
-    scroll-behavior: smooth;
-}
-*/
 
 /* Navigation logo text selection prevention */
 .nav-logo h2 {
