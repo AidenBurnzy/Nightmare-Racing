@@ -68,8 +68,17 @@ function ensureVideoAutoplay() {
 
 // Nightmare Racing - Enhanced Responsive JavaScript with Slow Smooth Scrolling
 document.addEventListener('DOMContentLoaded', function() {
+    const navigationEntries = typeof performance !== 'undefined' && performance.getEntriesByType
+        ? performance.getEntriesByType('navigation')
+        : [];
+    const navigationType = navigationEntries.length > 0 ? navigationEntries[0].type : '';
+
+    if (navigationType === 'reload' && window.location.hash) {
+        history.replaceState(null, '', window.location.pathname + window.location.search);
+        window.scrollTo(0, 0);
+    }
     // Handle anchor links from other pages (like index.html#services)
-    if (window.location.hash && document.referrer && !document.referrer.includes(window.location.hostname)) {
+    else if (window.location.hash && document.referrer && !document.referrer.includes(window.location.hostname)) {
         // Coming from external site with hash - allow scroll
         const targetId = window.location.hash.substring(1);
         const targetElement = document.getElementById(targetId);
@@ -378,47 +387,66 @@ document.addEventListener('DOMContentLoaded', function() {
     let mobileNavLinks = null;
     
     function createMobileMenu() {
-        // Create overlay
-        mobileMenuOverlay = document.createElement('div');
-        mobileMenuOverlay.className = 'mobile-menu-overlay';
-        document.body.appendChild(mobileMenuOverlay);
-        
-        // Create mobile menu
-        mobileMenu = document.createElement('div');
-        mobileMenu.className = 'mobile-menu';
-        mobileMenu.innerHTML = `
-            <div class="mobile-menu-content">
-                <div class="mobile-menu-header">
-                    <h2>NIGHTMARE <span class="text-accent">RACING</span></h2>
-                    <button class="mobile-menu-close" aria-label="Close menu">&times;</button>
+        mobileMenuOverlay = document.querySelector('.mobile-menu-overlay');
+        mobileMenu = document.querySelector('.mobile-menu');
+
+        if (!mobileMenuOverlay) {
+            mobileMenuOverlay = document.createElement('div');
+            mobileMenuOverlay.className = 'mobile-menu-overlay';
+            document.body.appendChild(mobileMenuOverlay);
+        }
+
+        if (!mobileMenu) {
+            mobileMenu = document.createElement('div');
+            mobileMenu.className = 'mobile-menu';
+            mobileMenu.innerHTML = `
+                <div class="mobile-menu-content">
+                    <div class="mobile-menu-header">
+                        <h2>NIGHTMARE<span class="text-accent">RACING</span></h2>
+                        <button class="mobile-menu-close" aria-label="Close menu">&times;</button>
+                    </div>
+
+                    <ul class="mobile-nav-links">
+                        <li><a href="/">Home</a></li>
+                        <li><a href="#services">Services</a></li>
+                        <li class="mobile-submenu-heading">Shop Our Expertise</li>
+                        <li><a class="mobile-sub-link" href="services/coilover-installation.html">Coilover Installation</a></li>
+                        <li><a class="mobile-sub-link" href="services/wiring-electrical-repair.html">Wiring & Electrical Repair</a></li>
+                        <li><a class="mobile-sub-link" href="services/engine-repair-modification.html">Engine Repair & Modification</a></li>
+                        <li><a class="mobile-sub-link" href="services/engine-swaps.html">Engine Swaps</a></li>
+                        <li><a class="mobile-sub-link" href="services/aftermarket-components.html">Aftermarket Components</a></li>
+                        <li><a class="mobile-sub-link" href="services/brake-system-upgrades.html">Brake System Upgrades</a></li>
+                        <li><a class="mobile-sub-link" href="services/lift-kits.html">Lift Kits</a></li>
+                        <li><a class="mobile-sub-link" href="services/exhaust-fabrication.html">Exhaust Fabrication</a></li>
+                        <li><a class="mobile-sub-link" href="services/intake-valve-carbon-cleaning.html">Intake Valve Carbon Cleaning</a></li>
+                        <li><a class="mobile-sub-link" href="services/suspension-repair-tuning.html">Suspension Repair & Tuning</a></li>
+                        <li><a class="mobile-sub-link" href="services/fluid-service.html">Fluid Service</a></li>
+                        <li><a class="mobile-sub-link" href="services/camshaft-swaps-upgrades.html">Camshaft Swaps & Upgrades</a></li>
+                        <li><a href="src/pages/featured-cars.html">Featured Cars</a></li>
+                        <li><a href="src/pages/shopParts.html">Shop Parts</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                        <li class="mobile-sign-in">
+                            <a href="https://nmrauto.com/" target="_blank" rel="noopener noreferrer">
+                                <svg class="profile-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="currentColor"/>
+                                </svg>
+                                Sign In to Shop
+                            </a>
+                        </li>
+                    </ul>
+
+                    <div class="mobile-menu-footer">
+                        <p>© 2025 Nightmare Racing</p>
+                        <p>Premium Auto Services</p>
+                    </div>
                 </div>
-                <ul class="mobile-nav-links">
-                    <li><a href="#home">Home</a></li>
-                    <li><a href="#services">Services</a></li>
-                    <li><a href="#cars">Our Cars</a></li>
-                    <li><a href="#parts">Parts & Merch</a></li>
-                    <li><a href="#contact">Contact</a></li>
-                    <li class="mobile-sign-in">
-                        <a href="https://nmrauto.com/" target="_blank" rel="noopener noreferrer">
-                            <svg class="profile-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="currentColor"/>
-                            </svg>
-                            Sign In to Shop
-                        </a>
-                    </li>
-                </ul>
-                <div class="mobile-menu-footer">
-                    <p>📞 616-329-1939</p>
-                    <p>📧 nightmareracing1@gmail.com</p>
-                </div>
-            </div>
-        `;
-        document.body.appendChild(mobileMenu);
-        
-        // Get references to created elements
+            `;
+            document.body.appendChild(mobileMenu);
+        }
+
         mobileMenuClose = mobileMenu.querySelector('.mobile-menu-close');
         mobileNavLinks = mobileMenu.querySelectorAll('.mobile-nav-links a');
-        
+
         setupMobileMenuEvents();
     }
     
@@ -439,18 +467,23 @@ document.addEventListener('DOMContentLoaded', function() {
             mobileNavLinks.forEach(link => {
                 link.addEventListener('click', (e) => {
                     const href = link.getAttribute('href');
-                    // Close menu for internal navigation links only
-                    if (href && href.startsWith('#')) {
+
+                    if (!href) {
+                        return;
+                    }
+
+                    if (href.startsWith('#')) {
                         e.preventDefault();
                         closeMobileMenu();
                         // Only scroll if user has interacted and it's not initial load
                         if (hasUserInteracted && !isInitialLoad) {
                             setTimeout(() => smoothScroll(href), 300);
                         }
-                    } else if (href && href.startsWith('https://nmrauto.com')) {
-                        // For external shop links, just close the menu
-                        closeMobileMenu();
+                        return;
                     }
+
+                    // Close menu for any other navigation target so the overlay clears before navigation
+                    closeMobileMenu();
                 });
             });
         }
@@ -553,6 +586,101 @@ document.addEventListener('DOMContentLoaded', function() {
         }, { passive: true });
     }
     
+    function setupDropdownAccessibility() {
+        const dropdown = document.querySelector('.nav-menu .has-dropdown');
+        if (!dropdown) return;
+
+        const trigger = dropdown.querySelector('.dropdown-trigger');
+        const submenu = dropdown.querySelector('.dropdown-menu');
+
+        if (!trigger || !submenu) return;
+
+        const firstMenuItem = submenu.querySelector('a, button');
+
+        const openDropdown = () => {
+            if (dropdown.classList.contains('open')) return;
+            dropdown.classList.add('open');
+            trigger.setAttribute('aria-expanded', 'true');
+        };
+
+        const closeDropdown = () => {
+            if (!dropdown.classList.contains('open')) return;
+            dropdown.classList.remove('open');
+            trigger.setAttribute('aria-expanded', 'false');
+        };
+
+        const toggleDropdown = () => {
+            if (dropdown.classList.contains('open')) {
+                closeDropdown();
+            } else {
+                openDropdown();
+            }
+        };
+
+        trigger.addEventListener('click', (event) => {
+            event.stopPropagation();
+            toggleDropdown();
+        });
+
+        submenu.querySelectorAll('a, button').forEach(item => {
+            item.addEventListener('click', () => {
+                closeDropdown();
+            });
+        });
+
+        trigger.addEventListener('keydown', (event) => {
+            if (event.key === 'ArrowDown') {
+                openDropdown();
+                if (firstMenuItem) {
+                    event.preventDefault();
+                    firstMenuItem.focus();
+                }
+            }
+
+            if (event.key === 'Escape') {
+                closeDropdown();
+            }
+        });
+
+        submenu.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                closeDropdown();
+                trigger.focus();
+            }
+        });
+
+        const handleFocusOut = (event) => {
+            if (!dropdown.contains(event.relatedTarget)) {
+                closeDropdown();
+            }
+        };
+
+        trigger.addEventListener('blur', handleFocusOut);
+        submenu.addEventListener('focusout', handleFocusOut);
+
+        document.addEventListener('click', (event) => {
+            if (!dropdown.contains(event.target)) {
+                closeDropdown();
+            }
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                const activeElement = document.activeElement;
+                closeDropdown();
+                if (activeElement && dropdown.contains(activeElement)) {
+                    trigger.focus();
+                }
+            }
+        });
+
+        window.addEventListener('resize', () => {
+            if (window.innerWidth <= 900) {
+                closeDropdown();
+            }
+        });
+    }
+
     // ================================
     // RESPONSIVE VIEWPORT HANDLING
     // ================================
@@ -1232,6 +1360,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Setup all functionality
         setupSmoothScrolling(); // Setup smooth scrolling with fixes
+        setupDropdownAccessibility();
         setupFormHandling();
         setupScrollAnimations();
         setupTouchFeedback();
