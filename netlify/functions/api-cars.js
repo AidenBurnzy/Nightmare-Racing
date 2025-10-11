@@ -54,11 +54,7 @@ exports.handler = async (event, context) => {
                     c.id,
                     c.name,
                     c.description,
-                    CASE 
-                        WHEN c.main_image LIKE 'http%' THEN c.main_image
-                        WHEN LENGTH(c.main_image) > 200 THEN NULL
-                        ELSE c.main_image
-                    END as main_image,
+                    c.main_image as main_image,
                     c.status,
                     c.featured,
                     c.date_added,
@@ -79,16 +75,38 @@ exports.handler = async (event, context) => {
             `;
             
             // Transform data to match frontend format
-            const transformedCars = cars.map(car => ({
-                id: car.id,
-                name: car.name,
-                description: car.description,
-                mainImage: car.main_image,
-                gallery: car.gallery || [],
-                status: car.status,
-                featured: car.featured,
-                dateAdded: car.date_added
-            }));
+            const transformedCars = cars.map(car => {
+                let galleryItems = [];
+                if (Array.isArray(car.gallery)) {
+                    galleryItems = car.gallery;
+                } else if (typeof car.gallery === 'string' && car.gallery.trim()) {
+                    try {
+                        galleryItems = JSON.parse(car.gallery);
+                    } catch (error) {
+                        galleryItems = [];
+                    }
+                }
+
+                const galleryUrls = galleryItems
+                    .map(item => {
+                        if (!item) return null;
+                        if (typeof item === 'string') return item;
+                        if (typeof item.url === 'string') return item.url;
+                        return null;
+                    })
+                    .filter(Boolean);
+
+                return {
+                    id: car.id,
+                    name: car.name,
+                    description: car.description,
+                    mainImage: car.main_image,
+                    gallery: galleryUrls,
+                    status: car.status,
+                    featured: car.featured,
+                    dateAdded: car.date_added
+                };
+            });
             
             console.log(`✅ Successfully fetched ${transformedCars.length} cars`);
             
@@ -144,7 +162,7 @@ exports.handler = async (event, context) => {
                     mainImage: newCar.main_image,
                     status: newCar.status,
                     featured: newCar.featured,
-                    dateAdded: newCar.created_at
+                    dateAdded: newCar.date_added
                 })
             };
         }
@@ -168,7 +186,22 @@ exports.handler = async (event, context) => {
                 WHERE id = ${carId}
             `;
             
-            // Update gallery images if provided
+            // Replace gallery images with latest set
+            await sql`DELETE FROM car_gallery WHERE car_id = ${carId}`;
+
+            if (carData.gallery && Array.isArray(carData.gallery) && carData.gallery.length > 0) {
+                for (let i = 0; i < carData.gallery.length; i++) {
+                    const image = carData.gallery[i];
+                    const imageUrl = typeof image === 'string' ? image : image?.url;
+                    const caption = typeof image === 'object' ? image.caption : null;
+                    if (!imageUrl) continue;
+
+                    await sql`
+                        INSERT INTO car_gallery (car_id, image_url, image_order, caption)
+                        VALUES (${carId}, ${imageUrl}, ${i}, ${caption})
+                    `;
+                }
+            }
             
             console.log(`✅ Successfully updated car ${carId}`);
             

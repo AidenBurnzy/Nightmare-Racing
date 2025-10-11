@@ -434,7 +434,11 @@
       margin-top: 16px;
     }
 
-    .gallery-preview img {
+    .gallery-thumb {
+      position: relative;
+    }
+
+    .gallery-thumb img {
       width: 92px;
       height: 92px;
       object-fit: cover;
@@ -442,9 +446,18 @@
       border: 1px solid rgba(229, 0, 0, 0.4);
     }
 
-    .gallery-preview button {
-      position: relative;
-      margin-top: 6px;
+    .gallery-thumb .remove-thumb {
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      padding: 4px 8px;
+    }
+
+    .dropzone-preview .remove-main {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      padding: 6px 12px;
     }
 
     .form-actions {
@@ -739,7 +752,7 @@
                 </div>
                 <div class="dropzone-preview">
                   <img src="" alt="Main build" class="image-preview" />
-                  <button type="button" class="car-button" style="position:absolute;top:12px;right:12px;padding:6px 12px;" onclick="event.stopPropagation(); window.adminApp.removeMainImage()">Remove</button>
+                  <button type="button" class="car-button remove-main" onclick="event.stopPropagation(); window.adminApp.removeMainImage()">Remove</button>
                 </div>
               </div>
               <input type="hidden" id="main-image-url" name="mainImage" />
@@ -912,6 +925,7 @@
         this.submitButton = document.getElementById('submit-button');
         this.cancelButton = document.getElementById('cancel-edit');
         this.toast = document.getElementById('toast');
+        this.maxImageBytes = 6 * 1024 * 1024;
 
         this.bindEvents();
         this.setupImageUploads();
@@ -936,6 +950,8 @@
         const input = document.getElementById(inputId);
         const hidden = document.getElementById(hiddenId);
 
+        if (!zone || !input || !hidden) return;
+
         zone.addEventListener('click', () => input.click());
 
         zone.addEventListener('dragover', event => {
@@ -951,78 +967,122 @@
           event.preventDefault();
           zone.style.borderColor = 'rgba(229, 0, 0, 0.45)';
           const files = Array.from(event.dataTransfer.files).filter(file => file.type.startsWith('image/'));
-          if (files.length) this.handleImageFiles(files, zone, hidden, multiple, input);
+          if (files.length) {
+            this.handleImageFiles(files, zone, hidden, multiple, input).catch(error => this.handleImageError(error));
+          }
         });
 
         input.addEventListener('change', event => {
           const files = Array.from(event.target.files).filter(file => file.type.startsWith('image/'));
-          if (files.length) this.handleImageFiles(files, zone, hidden, multiple, input);
+          if (files.length) {
+            this.handleImageFiles(files, zone, hidden, multiple, input).catch(error => this.handleImageError(error));
+          }
         });
       }
 
-      handleImageFiles(files, zone, hidden, multiple, input) {
+      async handleImageFiles(files, zone, hidden, multiple, input) {
+        if (!files.length) return;
+
         if (multiple) {
-          const galleryPreview = document.getElementById('gallery-preview');
-          const galleryZone = document.getElementById('gallery-upload');
-          const placeholder = galleryZone?.querySelector('.dropzone-content');
           const existing = hidden.value ? JSON.parse(hidden.value) : [];
-          const placeholders = files.map((file, index) => `https://via.placeholder.com/600x400/0b0b0b/e50000?text=Gallery+${existing.length + index + 1}`);
-          const urls = [...existing, ...placeholders];
+          const uploads = [];
+
+          for (const file of files) {
+            if (file.size > this.maxImageBytes) {
+              this.toastMessage(`${file.name} is too large. Max 6MB per image.`);
+              continue;
+            }
+            const dataUrl = await this.readFileAsDataUrl(file);
+            uploads.push(dataUrl);
+          }
+
+          if (!uploads.length) return;
+
+          const urls = [...existing, ...uploads];
           hidden.value = JSON.stringify(urls);
-          if (placeholder) placeholder.classList.add('hidden');
-          galleryPreview.innerHTML = urls.map((url, index) => `
-            <div style="position: relative;">
-              <img src="${url}" alt="Gallery image ${index + 1}" />
-              <button type="button" class="car-button" style="position:absolute;top:-10px;right:-10px;padding:4px 8px;" onclick="window.adminApp.removeGalleryImage(${index})">×</button>
-            </div>
-          `).join('');
+          this.renderGalleryPreview(urls);
           if (input) input.value = '';
         } else {
-          const url = `https://via.placeholder.com/1200x700/0b0b0b/e50000?text=Main+Image`;
-          hidden.value = url;
+          const [file] = files;
+          if (!file) return;
+          if (file.size > this.maxImageBytes) {
+            this.toastMessage('Main image is too large. Max 6MB.');
+            return;
+          }
+
+          const dataUrl = await this.readFileAsDataUrl(file);
+          hidden.value = dataUrl;
+
           zone.classList.add('has-image');
-          zone.innerHTML = `
-            <div style="position: relative;">
-              <img src="${url}" alt="Main build" class="image-preview" />
-              <button type="button" class="car-button" style="position:absolute;top:12px;right:12px;padding:6px 12px;" onclick="window.adminApp.removeMainImage()">Remove</button>
-            </div>`;
-          zone.appendChild(input);
-          input.classList.add('hidden');
+          const placeholder = zone.querySelector('.dropzone-content');
+          const preview = zone.querySelector('.dropzone-preview');
+          const previewImg = preview?.querySelector('.image-preview');
+          if (placeholder) placeholder.classList.add('hidden');
+          if (previewImg) previewImg.src = dataUrl;
+          if (preview) preview.classList.remove('hidden');
+          if (input) input.value = '';
         }
+      }
+
+      renderGalleryPreview(urls) {
+        const galleryPreview = document.getElementById('gallery-preview');
+        const placeholder = document.querySelector('#gallery-upload .dropzone-content');
+        if (!galleryPreview) return;
+
+        if (!urls.length) {
+          galleryPreview.innerHTML = '';
+          if (placeholder) placeholder.classList.remove('hidden');
+          return;
+        }
+
+        galleryPreview.innerHTML = urls.map((url, index) => `
+          <div class="gallery-thumb">
+            <img src="${url}" alt="Gallery image ${index + 1}" />
+            <button type="button" class="car-button remove-thumb" onclick="window.adminApp.removeGalleryImage(${index})">×</button>
+          </div>
+        `).join('');
+
+        if (placeholder) placeholder.classList.add('hidden');
+      }
+
+      handleImageError(error) {
+        console.error(error);
+        this.toastMessage(error?.message || 'Unable to process image');
+      }
+
+      readFileAsDataUrl(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = () => reject(new Error(`Unable to read ${file.name}`));
+          reader.readAsDataURL(file);
+        });
       }
 
       removeGalleryImage(index) {
         const hidden = document.getElementById('gallery-urls');
-        const galleryPreview = document.getElementById('gallery-preview');
         const current = hidden.value ? JSON.parse(hidden.value) : [];
         current.splice(index, 1);
         hidden.value = JSON.stringify(current);
-        galleryPreview.innerHTML = current.map((url, idx) => `
-          <div style="position: relative;">
-            <img src="${url}" alt="Gallery image ${idx + 1}" />
-            <button type="button" class="car-button" style="position:absolute;top:-10px;right:-10px;padding:4px 8px;" onclick="window.adminApp.removeGalleryImage(${idx})">×</button>
-          </div>
-        `).join('');
-        if (!current.length) {
-          const galleryZone = document.getElementById('gallery-upload');
-          const placeholder = galleryZone?.querySelector('.dropzone-content');
-          if (placeholder) placeholder.classList.remove('hidden');
-        }
+        this.renderGalleryPreview(current);
         this.toastMessage('Gallery image removed');
       }
 
       removeMainImage(silent = false) {
-        document.getElementById('main-image-url').value = '';
+        const hidden = document.getElementById('main-image-url');
+        if (hidden) hidden.value = '';
         const zone = document.getElementById('main-image-upload');
+        if (!zone) return;
         zone.classList.remove('has-image');
-        zone.innerHTML = `
-          <input type="file" id="main-image-input" class="hidden" accept="image/*" />
-          <div class="dropzone-content">
-            <span class="dropzone-icon">📷</span>
-            <strong>Main showcase image</strong>
-            <small>Recommended 1920×1080 JPG/PNG</small>
-          </div>`;
-        this.setupImageUpload('main-image-upload', 'main-image-input', 'main-image-url', false);
+
+        const placeholder = zone.querySelector('.dropzone-content');
+        const preview = zone.querySelector('.dropzone-preview');
+        const previewImg = preview?.querySelector('.image-preview');
+        if (placeholder) placeholder.classList.remove('hidden');
+        if (preview) preview.classList.add('hidden');
+        if (previewImg) previewImg.src = '';
+        const input = document.getElementById('main-image-input');
+        if (input) input.value = '';
         if (!silent) this.toastMessage('Main image cleared');
       }
 
@@ -1154,7 +1214,6 @@
           this.toastMessage(this.editingId ? 'Build updated' : 'Build created');
           this.form.reset();
           document.getElementById('car-featured').checked = true;
-          document.getElementById('gallery-preview').innerHTML = '';
           this.resetDropzones();
           this.cancelEdit(true);
           await this.loadCars();
@@ -1169,12 +1228,7 @@
       resetDropzones() {
         this.removeMainImage(true);
         document.getElementById('gallery-urls').value = '';
-        document.getElementById('gallery-preview').innerHTML = '';
-        const galleryZone = document.getElementById('gallery-upload');
-        if (galleryZone) {
-          const placeholder = galleryZone.querySelector('.dropzone-content');
-          if (placeholder) placeholder.classList.remove('hidden');
-        }
+        this.renderGalleryPreview([]);
         const galleryInput = document.getElementById('gallery-input');
         if (galleryInput) galleryInput.value = '';
       }
@@ -1206,19 +1260,10 @@
         if (car.gallery?.length) {
           const urls = car.gallery.map(entry => typeof entry === 'string' ? entry : entry.url).filter(Boolean);
           document.getElementById('gallery-urls').value = JSON.stringify(urls);
-          document.getElementById('gallery-preview').innerHTML = urls.map((url, index) => `
-            <div style="position: relative;">
-              <img src="${url}" alt="Gallery image ${index + 1}" />
-              <button type="button" class="car-button" style="position:absolute;top:-10px;right:-10px;padding:4px 8px;" onclick="window.adminApp.removeGalleryImage(${index})">×</button>
-            </div>
-          `).join('');
-          const galleryPlaceholder = document.querySelector('#gallery-upload .dropzone-content');
-          if (galleryPlaceholder) galleryPlaceholder.classList.add('hidden');
+          this.renderGalleryPreview(urls);
         } else {
           document.getElementById('gallery-urls').value = '';
-          document.getElementById('gallery-preview').innerHTML = '';
-          const galleryPlaceholder = document.querySelector('#gallery-upload .dropzone-content');
-          if (galleryPlaceholder) galleryPlaceholder.classList.remove('hidden');
+          this.renderGalleryPreview([]);
         }
 
         document.getElementById('form-title').textContent = 'Edit Build';
@@ -1237,9 +1282,7 @@
         document.getElementById('car-featured').checked = true;
         this.removeMainImage(true);
         document.getElementById('gallery-urls').value = '';
-        document.getElementById('gallery-preview').innerHTML = '';
-        const galleryPlaceholder = document.querySelector('#gallery-upload .dropzone-content');
-        if (galleryPlaceholder) galleryPlaceholder.classList.remove('hidden');
+        this.renderGalleryPreview([]);
         if (!skipToast) this.toastMessage('Edit cancelled');
       }
 
