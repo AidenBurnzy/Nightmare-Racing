@@ -47,6 +47,11 @@ body {
     overflow-x: hidden;
 }
 
+#bg-video {
+    opacity: 0.32;
+    transition: opacity 0.3s ease;
+}
+
 body.menu-open {
     overflow: hidden;
 }
@@ -252,5 +257,62 @@ textarea:focus {
 @media (max-width: 319px) {
     .container {
         padding: 0 10px;
+    }
+}
+
+/* Fixed CTA widget on home page */
+.build-widget {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--red-gradient);
+    color: var(--pure-white);
+    padding: 14px 24px;
+    border-radius: 18px;
+    font-family: var(--font-primary);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    text-decoration: none;
+    box-shadow: 0 10px 30px rgba(229, 0, 0, 0.35);
+    z-index: 1000;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.build-widget:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 40px rgba(229, 0, 0, 0.45);
+}
+
+.build-widget:focus {
+    outline: 3px solid rgba(229, 0, 0, 0.6);
+    outline-offset: 3px;
+}
+
+.build-widget::after {
+    content: "";
+    position: absolute;
+    bottom: -10px;
+    right: 22px;
+    width: 20px;
+    height: 20px;
+    background: var(--red-gradient);
+    transform: rotate(45deg);
+    box-shadow: 0 10px 30px rgba(229, 0, 0, 0.35);
+    border-radius: 3px;
+}
+
+@media (max-width: 600px) {
+    .build-widget {
+        bottom: 16px;
+        right: 16px;
+        padding: 12px 18px;
+        font-size: 0.9rem;
+    }
+    .build-widget::after {
+        bottom: -8px;
+        right: 18px;
+        width: 16px;
+        height: 16px;
     }
 }

@@ -27,7 +27,7 @@
 <body>
     <!-- Video Background -->
         <video autoplay muted loop playsinline preload="auto" id="bg-video"
-    style="position: fixed; right: 0; bottom: 0; min-width: 100vw; min-height: 100vh; z-index: -1; object-fit: cover; pointer-events: none; opacity: 0.3;">
+    style="position: fixed; right: 0; bottom: 0; min-width: 100vw; min-height: 100vh; z-index: -1; object-fit: cover; pointer-events: none;">
             <source src="assets/bg-video.mp4" type="video/mp4">
     Your browser does not support the video tag.
 </video>
@@ -406,11 +406,20 @@
     </section>
 
     <!-- Contact Section -->
-    <section id="contact" class="contact">
-        <div style="max-width: 900px; margin: 0 auto; padding: 40px 20px 0 20px; text-align: center;">
-            <h2 style="color: #e50000; margin-bottom: 12px; font-size: 2.2rem;">Get In Touch</h2>
-            <p style="color: #fff; margin-bottom: 32px; font-size: 1.1rem;">Click below to request a quote or contact us.</p>
-            <a href="src/pages/request-quote.html" style="display: inline-block; padding: 18px 48px; background: #e50000; color: #fff; font-size: 1.3rem; font-weight: 600; border-radius: 8px; text-decoration: none; margin-top: 24px; transition: background 0.2s;">Request a Quote</a>
+    <section id="contact" class="contact-section">
+        <div class="contact-container">
+            <div class="contact-content">
+                <h2 class="contact-title">Get In Contact</h2>
+                <p class="contact-description">                    Ready to start your next project? Need expert advice or a custom quote? Need something fixed ASAP? Our team is here to help you turn your automotive dreams into reality. Reach out today and let's make it happen!
+</p>
+                <a class="contact-button" href="src/pages/request-quote.html">
+                    Tell us about your build
+                    <span class="button-arrow">→</span>
+                </a>
+            </div>
+            <div class="contact-decoration" aria-hidden="true">
+                <img class="contact-decoration-image" src="assets/contactSectionImage.png" alt="Performance tools and wheel illustration">
+            </div>
         </div>
     </section>
 
@@ -446,5 +455,9 @@
             });
         }
     </script>
+
+    <a class="build-widget" href="src/pages/request-quote.html" aria-label="Tell us about your build">
+        Tell us about your build!
+    </a>
 </body>
 </html>

@@ -4,7 +4,7 @@
 .shop-parts-page {
     min-height: 100vh;
     padding: 100px 0 80px;
-    background: transparent;
+    background: rgba(0, 0, 0, 0.27);
 }
 
 .container {
