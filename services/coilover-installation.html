@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="../src/css/indexStyles.css">
     <link rel="stylesheet" href="../src/css/navStyles.css">
     <link rel="stylesheet" href="services.css">
+    <link rel="stylesheet" href="../src/css/footer.css">
 </head>
 <body class="service-page">
     <nav class="navbar">
@@ -129,9 +130,20 @@
         </section>
     </main>
 
-    <footer>
-        © <span id="service-year"></span> Nightmare Racing. All rights reserved.
-    </footer>
+    <div id="footer-section"></div>
+
+    <script>
+        async function loadFooter() {
+            try {
+                const response = await fetch('../src/pages/footer.html');
+                const html = await response.text();
+                document.getElementById('footer-section').innerHTML = html;
+            } catch (error) {
+                console.error('Error loading footer:', error);
+            }
+        }
+        loadFooter();
+    </script>
 
     <script src="../src/js/index.js"></script>
     <script src="coilover-installation.js"></script>
