@@ -3,6 +3,8 @@
 
 const { neon } = require('@neondatabase/serverless');
 
+let carVideosSupported = true;
+
 const sanitizeMediaUrl = (rawUrl) => {
     if (typeof rawUrl !== 'string') return null;
 
@@ -26,6 +28,85 @@ const parseGalleryItems = (rawGallery) => {
         }
     }
     return [];
+};
+
+const fetchCarsQuery = async (sql) => {
+    if (carVideosSupported) {
+        try {
+            return await sql`
+                SELECT
+                    c.id,
+                    c.name,
+                    c.description,
+                    c.main_image,
+                    c.status,
+                    c.featured,
+                    c.date_added,
+                    COALESCE(g.gallery, '[]'::json) AS gallery,
+                    COALESCE(v.videos, '[]'::json) AS videos
+                FROM cars c
+                LEFT JOIN LATERAL (
+                    SELECT json_agg(
+                        json_build_object(
+                            'url', cg.image_url,
+                            'order', cg.image_order,
+                            'caption', cg.caption
+                        )
+                        ORDER BY cg.image_order
+                    ) FILTER (WHERE cg.image_url IS NOT NULL) AS gallery
+                    FROM car_gallery cg
+                    WHERE cg.car_id = c.id
+                ) g ON TRUE
+                LEFT JOIN LATERAL (
+                    SELECT json_agg(
+                        json_build_object(
+                            'url', cv.video_url,
+                            'order', cv.video_order,
+                            'caption', cv.caption
+                        )
+                        ORDER BY cv.video_order
+                    ) FILTER (WHERE cv.video_url IS NOT NULL) AS videos
+                    FROM car_videos cv
+                    WHERE cv.car_id = c.id
+                ) v ON TRUE
+                ORDER BY c.date_added DESC
+            `;
+        } catch (error) {
+            if (error?.code === '42P01') {
+                console.warn('car_videos table missing; continuing without video support');
+                carVideosSupported = false;
+            } else {
+                throw error;
+            }
+        }
+    }
+
+    return await sql`
+        SELECT
+            c.id,
+            c.name,
+            c.description,
+            c.main_image,
+            c.status,
+            c.featured,
+            c.date_added,
+            COALESCE(g.gallery, '[]'::json) AS gallery,
+            '[]'::json AS videos
+        FROM cars c
+        LEFT JOIN LATERAL (
+            SELECT json_agg(
+                json_build_object(
+                    'url', cg.image_url,
+                    'order', cg.image_order,
+                    'caption', cg.caption
+                )
+                ORDER BY cg.image_order
+            ) FILTER (WHERE cg.image_url IS NOT NULL) AS gallery
+            FROM car_gallery cg
+            WHERE cg.car_id = c.id
+        ) g ON TRUE
+        ORDER BY c.date_added DESC
+    `;
 };
 
 exports.handler = async (event) => {
@@ -64,44 +145,7 @@ exports.handler = async (event) => {
         const sql = neon(databaseUrl);
 
         if (event.httpMethod === 'GET') {
-            const cars = await sql`
-                SELECT
-                    c.id,
-                    c.name,
-                    c.description,
-                    c.main_image,
-                    c.status,
-                    c.featured,
-                    c.date_added,
-                    COALESCE(g.gallery, '[]'::json) AS gallery,
-                    COALESCE(v.videos, '[]'::json) AS videos
-                FROM cars c
-                LEFT JOIN LATERAL (
-                    SELECT json_agg(
-                        json_build_object(
-                            'url', cg.image_url,
-                            'order', cg.image_order,
-                            'caption', cg.caption
-                        )
-                        ORDER BY cg.image_order
-                    ) FILTER (WHERE cg.image_url IS NOT NULL) AS gallery
-                    FROM car_gallery cg
-                    WHERE cg.car_id = c.id
-                ) g ON TRUE
-                LEFT JOIN LATERAL (
-                    SELECT json_agg(
-                        json_build_object(
-                            'url', cv.video_url,
-                            'order', cv.video_order,
-                            'caption', cv.caption
-                        )
-                        ORDER BY cv.video_order
-                    ) FILTER (WHERE cv.video_url IS NOT NULL) AS videos
-                    FROM car_videos cv
-                    WHERE cv.car_id = c.id
-                ) v ON TRUE
-                ORDER BY c.date_added DESC
-            `;
+            const cars = await fetchCarsQuery(sql);
 
             const transformedCars = cars.map(car => {
                 const galleryItems = parseGalleryItems(car.gallery);
@@ -189,20 +233,31 @@ exports.handler = async (event) => {
                 }
             }
 
-            if (Array.isArray(carData.videos) && carData.videos.length > 0) {
-                for (let i = 0; i < carData.videos.length; i++) {
-                    const video = carData.videos[i];
-                    if (!video) continue;
-                    const videoUrl = typeof video === 'string' ? video : video.url;
-                    const caption = typeof video === 'object' ? video.caption : null;
-                    const sanitizedVideoUrl = sanitizeMediaUrl(videoUrl);
-                    if (!sanitizedVideoUrl) continue;
+            if (carVideosSupported && Array.isArray(carData.videos) && carData.videos.length > 0) {
+                try {
+                    for (let i = 0; i < carData.videos.length; i++) {
+                        const video = carData.videos[i];
+                        if (!video) continue;
+                        const videoUrl = typeof video === 'string' ? video : video.url;
+                        const caption = typeof video === 'object' ? video.caption : null;
+                        const sanitizedVideoUrl = sanitizeMediaUrl(videoUrl);
+                        if (!sanitizedVideoUrl) continue;
 
-                    await sql`
-                        INSERT INTO car_videos (car_id, video_url, video_order, caption)
-                        VALUES (${newCar.id}, ${sanitizedVideoUrl}, ${i}, ${caption})
-                    `;
+                        await sql`
+                            INSERT INTO car_videos (car_id, video_url, video_order, caption)
+                            VALUES (${newCar.id}, ${sanitizedVideoUrl}, ${i}, ${caption})
+                        `;
+                    }
+                } catch (insertError) {
+                    if (insertError?.code === '42P01') {
+                        console.warn('car_videos table missing during insert; skipping video persistence');
+                        carVideosSupported = false;
+                    } else {
+                        throw insertError;
+                    }
                 }
+            } else if (!carVideosSupported && Array.isArray(carData.videos) && carData.videos.length > 0) {
+                console.warn('Skipping video persistence because car_videos table is unavailable');
             }
 
             return {
@@ -253,22 +308,35 @@ exports.handler = async (event) => {
                 }
             }
 
-            await sql`DELETE FROM car_videos WHERE car_id = ${carId}`;
+            if (carVideosSupported) {
+                try {
+                    await sql`DELETE FROM car_videos WHERE car_id = ${carId}`;
 
-            if (Array.isArray(carData.videos) && carData.videos.length > 0) {
-                for (let i = 0; i < carData.videos.length; i++) {
-                    const video = carData.videos[i];
-                    if (!video) continue;
-                    const videoUrl = typeof video === 'string' ? video : video.url;
-                    const caption = typeof video === 'object' ? video.caption : null;
-                    const sanitizedVideoUrl = sanitizeMediaUrl(videoUrl);
-                    if (!sanitizedVideoUrl) continue;
+                    if (Array.isArray(carData.videos) && carData.videos.length > 0) {
+                        for (let i = 0; i < carData.videos.length; i++) {
+                            const video = carData.videos[i];
+                            if (!video) continue;
+                            const videoUrl = typeof video === 'string' ? video : video.url;
+                            const caption = typeof video === 'object' ? video.caption : null;
+                            const sanitizedVideoUrl = sanitizeMediaUrl(videoUrl);
+                            if (!sanitizedVideoUrl) continue;
 
-                    await sql`
-                        INSERT INTO car_videos (car_id, video_url, video_order, caption)
-                        VALUES (${carId}, ${sanitizedVideoUrl}, ${i}, ${caption})
-                    `;
+                            await sql`
+                                INSERT INTO car_videos (car_id, video_url, video_order, caption)
+                                VALUES (${carId}, ${sanitizedVideoUrl}, ${i}, ${caption})
+                            `;
+                        }
+                    }
+                } catch (videoError) {
+                    if (videoError?.code === '42P01') {
+                        console.warn('car_videos table missing during update; skipping video persistence');
+                        carVideosSupported = false;
+                    } else {
+                        throw videoError;
+                    }
                 }
+            } else if (Array.isArray(carData.videos) && carData.videos.length > 0) {
+                console.warn('Skipping video persistence because car_videos table is unavailable');
             }
 
             return {
