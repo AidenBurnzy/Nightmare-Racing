@@ -117,11 +117,61 @@ class DatabaseBackend {
     }
 
     formatCarForDatabase(cmsData) {
+        const sanitizeImageValue = (value) => {
+            if (typeof value !== 'string') {
+                return value;
+            }
+
+            const trimmed = value.trim();
+            if (!trimmed) {
+                return null;
+            }
+
+            if (trimmed.startsWith('data:image')) {
+                console.warn('Image data URL detected in CMS entry; skipping to avoid oversized database payloads. Please upload images to the media library or provide a hosted URL.');
+                return null;
+            }
+
+            return trimmed;
+        };
+
+        const sanitizeGallery = (gallery) => {
+            if (!Array.isArray(gallery)) {
+                return [];
+            }
+
+            return gallery
+                .map((item) => {
+                    if (!item) return null;
+
+                    if (typeof item === 'string') {
+                        const sanitized = sanitizeImageValue(item);
+                        return sanitized ? sanitized : null;
+                    }
+
+                    if (typeof item === 'object') {
+                        const sanitizedUrl = sanitizeImageValue(item.url || item.image);
+                        if (!sanitizedUrl) {
+                            return null;
+                        }
+
+                        return {
+                            ...item,
+                            url: sanitizedUrl,
+                            image: undefined
+                        };
+                    }
+
+                    return null;
+                })
+                .filter(Boolean);
+        };
+
         return {
             name: cmsData.basic_info?.name || '',
             description: cmsData.basic_info?.description || '',
-            mainImage: cmsData.photos?.mainImage || null,
-            gallery: cmsData.photos?.gallery || [],
+            mainImage: sanitizeImageValue(cmsData.photos?.mainImage) || null,
+            gallery: sanitizeGallery(cmsData.photos?.gallery),
             specs: cmsData.specs || {},
             status: cmsData.basic_info?.status || 'COMPLETED',
             featured: cmsData.basic_info?.featured || true

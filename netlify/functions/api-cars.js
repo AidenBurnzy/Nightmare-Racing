@@ -45,6 +45,20 @@ exports.handler = async (event, context) => {
         console.log('✅ Database URL found, connecting...');
         const sql = neon(databaseUrl);
         
+        const sanitizeImageUrl = (rawUrl) => {
+            if (typeof rawUrl !== 'string') return null;
+
+            const trimmed = rawUrl.trim();
+            if (!trimmed) return null;
+
+            // Filter data URLs of images – they bloat the response and exceed Netlify limits
+            if (trimmed.startsWith('data:image')) {
+                return null;
+            }
+
+            return trimmed;
+        };
+
         // Handle GET request - fetch all cars
         if (event.httpMethod === 'GET') {
             console.log('📡 Fetching cars from database...');
@@ -96,12 +110,18 @@ exports.handler = async (event, context) => {
                     })
                     .filter(Boolean);
 
+                const sanitizedMainImage = sanitizeImageUrl(car.main_image);
+
+                const sanitizedGallery = galleryUrls
+                    .map(sanitizeImageUrl)
+                    .filter(Boolean);
+
                 return {
                     id: car.id,
                     name: car.name,
                     description: car.description,
-                    mainImage: car.main_image,
-                    gallery: galleryUrls,
+                    mainImage: sanitizedMainImage,
+                    gallery: sanitizedGallery,
                     status: car.status,
                     featured: car.featured,
                     dateAdded: car.date_added
