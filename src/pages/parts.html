@@ -3,59 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Parts & Merchandise Section</title>
-    <link rel="stylesheet" href="parts.css">
+    <title>Parts & Merch Section</title>
+    <link rel="stylesheet" href="parts-merch.css">
 </head>
 <body>
-    <!-- Parts & Merch Section -->
-    <section id="parts" class="parts">
-        <div class="container">
+    <section class="parts-merch-section">
+        <div class="section-container">
             <div class="section-header">
-                <h2>PARTS & <span class="text-accent">MERCHANDISE</span></h2>
-                <p>High-performance parts and exclusive Nightmare Racing gear</p>
+                <div class="header-accent"></div>
+                <h2 class="section-title">FUEL YOUR PASSION</h2>
+                <p class="section-subtitle">Premium performance parts and exclusive merch, delivered straight to your door</p>
             </div>
-            <div class="parts-categories">
-                <div class="category-card">
-                    <div class="category-icon performance-parts-bg"></div>
-                    <h3>Performance Parts</h3>
-                    <p>Turbochargers, exhausts, intakes, and more</p>
-                    <a href="https://nmrauto.com/collections" class="btn btn-outline">Shop Now</a>
-                </div>
-                <div class="category-card">
-                    <div class="category-icon apparel-bg"></div>
-                    <h3>Apparel</h3>
-                    <p>T-shirts, hoodies, and racing gear</p>
-                    <a href="https://nmrauto.com/collections/merchandise" class="btn btn-outline">Shop Now</a>
-                </div>
-                <div class="category-card">
-                    <div class="category-icon accessories-bg"></div>
-                    <h3>Accessories</h3>
-                    <p>Stickers, keychains, and collectibles</p>
-                    <a href="https://nmrauto.com/collections/shop-accessories" class="btn btn-outline">Shop Now</a>
-                </div>
+
+            <div class="cards-container">
+                <a href="/parts" class="product-card parts-card">
+                    <div class="card-background"></div>
+                    <div class="card-content">
+                        <div class="card-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                                <path d="M2 17l10 5 10-5"/>
+                                <path d="M2 12l10 5 10-5"/>
+                            </svg>
+                        </div>
+                        <h3 class="card-title">PERFORMANCE PARTS</h3>
+                        <p class="card-description">High-quality components engineered for speed. From engine upgrades to suspension systems.</p>
+                        <span class="card-link">
+                            Shop Parts
+                            <span class="link-arrow">→</span>
+                        </span>
+                    </div>
+                    <div class="card-shine"></div>
+                </a>
+
+                <a href="/merch" class="product-card merch-card">
+                    <div class="card-background"></div>
+                    <div class="card-content">
+                        <div class="card-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+                                <line x1="7" y1="7" x2="7.01" y2="7"/>
+                            </svg>
+                        </div>
+                        <h3 class="card-title">EXCLUSIVE MERCH</h3>
+                        <p class="card-description">Rep the Nightmare Racing brand with premium apparel and accessories for true enthusiasts.</p>
+                        <span class="card-link">
+                            Shop Merch
+                            <span class="link-arrow">→</span>
+                        </span>
+                    </div>
+                    <div class="card-shine"></div>
+                </a>
             </div>
-            <div class="featured-products">
-                <a href="https://nmrauto.com/products/nmr-t-shirt?variant=44499624984716" class="product-card tee-bg">
-                    <div class="product-badge"></div>
-                    <div class="card-overlay">
-                        <h4>Nightmare Racing Tee</h4>
-                        <div class="product-price">$20</div>
-                    </div>
-                </a>
-                <a href="https://nmrauto.com/products/nmr-hoodie-sweatshirt?variant=44499685965964" class="product-card filter-bg">
-                    <div class="product-badge"></div>
-                    <div class="card-overlay">
-                        <h4>Nightmare Racing Hoodie</h4>
-                        <div class="product-price">$60</div>
-                    </div>
-                </a>
-                <a href="https://nmrauto.com/products/nmr-trucker-hat-1?variant=44499695468684" class="product-card sticker-bg">
-                    <div class="product-badge"></div>
-                    <div class="card-overlay">
-                        <h4>Nightmare Racing Trucker Hat</h4>
-                        <div class="product-price">$30</div>
-                    </div>
-                </a>
+
+            <div class="shipping-banner">
+                <div class="banner-icon">⚡</div>
+                <p class="banner-text">
+                    <strong>Fast Shipping Nationwide</strong> — Nightmare Racing delivers premium car parts directly to your garage. No hassle, just performance.
+                </p>
             </div>
         </div>
     </section>
