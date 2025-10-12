@@ -397,6 +397,32 @@
     gap: 1rem;
 }
 
+.thumbnail-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    max-height: 170px;
+    overflow-y: auto;
+    padding-bottom: 0.25rem;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(229, 0, 0, 0.65) rgba(255, 255, 255, 0.08);
+}
+
+.thumbnail-strip::-webkit-scrollbar {
+    height: 6px;
+    width: 6px;
+}
+
+.thumbnail-strip::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 999px;
+}
+
+.thumbnail-strip::-webkit-scrollbar-thumb {
+    background: rgba(229, 0, 0, 0.65);
+    border-radius: 999px;
+}
+
 .main-image-container {
     position: relative;
     width: 100%;
@@ -491,8 +517,9 @@
 }
 
 .thumbnail {
-    min-width: 100px;
-    height: 72px;
+    flex: 0 0 120px;
+    width: 120px;
+    height: 80px;
     border-radius: 12px;
     overflow: hidden;
     cursor: pointer;
@@ -729,7 +756,8 @@
     }
     
     .thumbnail {
-        min-width: 80px;
+        flex: 0 0 90px;
+        width: 90px;
         height: 60px;
     }
 }
