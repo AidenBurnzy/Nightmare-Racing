@@ -16,6 +16,13 @@ collections:
       - {label: "Description", name: "description", widget: "string", hint: "e.g., 1200HP Beast • Custom Build"}
       - {label: "Main Photo", name: "mainImage", widget: "image", hint: "Primary car photo"}
       - {label: "Additional Photos", name: "gallery", widget: "list", field: {label: "Photo", name: "image", widget: "image"}, required: false}
+      - label: "Project Videos"
+        name: "videos"
+        widget: "list"
+        required: false
+        fields:
+          - {label: "Video URL", name: "url", widget: "string", hint: "YouTube, Vimeo, or direct MP4 link"}
+          - {label: "Caption", name: "caption", widget: "string", required: false}
       - label: "Performance Specs"
         name: "specs"
         widget: "object"

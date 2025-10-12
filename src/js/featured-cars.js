@@ -4,6 +4,15 @@ let carsData = [];
 let currentModalCar = null;
 let currentImageIndex = 0;
 
+const sanitizeFrontendMediaUrl = (rawUrl) => {
+    if (typeof rawUrl !== 'string') return null;
+    const trimmed = rawUrl.trim();
+    if (!trimmed || trimmed.startsWith('data:')) {
+        return null;
+    }
+    return trimmed;
+};
+
 // Initialize when DOM loads
 document.addEventListener('DOMContentLoaded', function() {
     // Our Projects Page JavaScript
@@ -376,6 +385,8 @@ function openCarModal(car) {
             specsContainer.innerHTML += createSpecItem('', specs.custom2);
         }
     }
+
+    renderModalVideos(car);
     
     // Show modal
     modal.classList.add('active');
@@ -432,6 +443,127 @@ function setupModalNavigation(images) {
         currentImageIndex = (currentImageIndex + 1) % images.length;
         setModalImage(currentImageIndex, images);
     };
+}
+
+function renderModalVideos(car) {
+    const container = document.getElementById('modal-videos');
+    const grid = document.getElementById('modal-video-grid');
+
+    if (!container || !grid) {
+        return;
+    }
+
+    grid.innerHTML = '';
+    container.style.display = 'none';
+
+    const videos = Array.isArray(car.videos) ? car.videos : [];
+    const normalizedVideos = videos
+        .map((video) => {
+            if (!video) return null;
+            if (typeof video === 'string') {
+                const sanitizedUrl = sanitizeFrontendMediaUrl(video);
+                return sanitizedUrl ? { url: sanitizedUrl, caption: null } : null;
+            }
+            if (typeof video.url === 'string') {
+                const sanitizedUrl = sanitizeFrontendMediaUrl(video.url);
+                return sanitizedUrl ? { url: sanitizedUrl, caption: video.caption || null } : null;
+            }
+            return null;
+        })
+        .filter(Boolean);
+
+    if (normalizedVideos.length === 0) {
+        return;
+    }
+
+    normalizedVideos.forEach(({ url, caption }) => {
+        const card = document.createElement('div');
+        card.className = 'modal-video-card';
+
+        const embedWrapper = document.createElement('div');
+        embedWrapper.className = 'modal-video-embed';
+        const embedElement = createVideoEmbedElement(url);
+        if (embedElement) {
+            embedWrapper.appendChild(embedElement);
+            card.appendChild(embedWrapper);
+
+            if (caption) {
+                const captionEl = document.createElement('p');
+                captionEl.className = 'modal-video-caption';
+                captionEl.textContent = caption;
+                card.appendChild(captionEl);
+            }
+
+            grid.appendChild(card);
+        }
+    });
+
+    if (grid.childNodes.length > 0) {
+        container.style.display = '';
+    }
+}
+
+function createVideoEmbedElement(url) {
+    const youTubeId = extractYouTubeId(url);
+    if (youTubeId) {
+        const iframe = document.createElement('iframe');
+        iframe.src = `https://www.youtube.com/embed/${youTubeId}?rel=0&modestbranding=1`;
+        iframe.setAttribute('title', 'Project video');
+        iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
+        iframe.setAttribute('allowfullscreen', '');
+        return iframe;
+    }
+
+    const vimeoId = extractVimeoId(url);
+    if (vimeoId) {
+        const iframe = document.createElement('iframe');
+        iframe.src = `https://player.vimeo.com/video/${vimeoId}`;
+        iframe.setAttribute('title', 'Project video');
+        iframe.setAttribute('allow', 'autoplay; fullscreen; picture-in-picture');
+        iframe.setAttribute('allowfullscreen', '');
+        return iframe;
+    }
+
+    if (url.toLowerCase().endsWith('.mp4') || url.toLowerCase().endsWith('.webm')) {
+        const videoEl = document.createElement('video');
+        videoEl.controls = true;
+        videoEl.preload = 'metadata';
+        const sourceEl = document.createElement('source');
+        sourceEl.src = url;
+        const extension = url.split('.').pop().toLowerCase();
+        sourceEl.type = `video/${extension === 'mp4' ? 'mp4' : extension}`;
+        videoEl.appendChild(sourceEl);
+        return videoEl;
+    }
+
+    const fallbackLink = document.createElement('a');
+    fallbackLink.href = url;
+    fallbackLink.target = '_blank';
+    fallbackLink.rel = 'noopener noreferrer';
+    fallbackLink.textContent = 'View project video';
+    fallbackLink.className = 'modal-video-caption';
+    return fallbackLink;
+}
+
+function extractYouTubeId(url) {
+    const patterns = [
+        /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})/i,
+        /youtube\.com\/live\/([\w-]{11})/i
+    ];
+
+    for (const pattern of patterns) {
+        const match = url.match(pattern);
+        if (match && match[1]) {
+            return match[1];
+        }
+    }
+
+    return null;
+}
+
+function extractVimeoId(url) {
+    const match = url.match(/vimeo\.com\/(?:video\/)?(\d+)/i);
+    return match && match[1] ? match[1] : null;
 }
 
 // Setup modal events

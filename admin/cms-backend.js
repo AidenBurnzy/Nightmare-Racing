@@ -111,6 +111,12 @@ class DatabaseBackend {
                 mainImage: car.mainImage,
                 gallery: car.gallery || []
             },
+            videos: Array.isArray(car.videos)
+                ? car.videos.map(video => ({
+                    url: typeof video === 'string' ? video : video?.url,
+                    caption: video?.caption || ''
+                })).filter(video => typeof video.url === 'string' && video.url.trim())
+                : [],
             specs: car.specs || {},
             dateAdded: car.dateAdded
         };
@@ -129,6 +135,24 @@ class DatabaseBackend {
 
             if (trimmed.startsWith('data:image')) {
                 console.warn('Image data URL detected in CMS entry; skipping to avoid oversized database payloads. Please upload images to the media library or provide a hosted URL.');
+                return null;
+            }
+
+            return trimmed;
+        };
+
+        const sanitizeVideoValue = (value) => {
+            if (typeof value !== 'string') {
+                return value;
+            }
+
+            const trimmed = value.trim();
+            if (!trimmed) {
+                return null;
+            }
+
+            if (trimmed.startsWith('data:video')) {
+                console.warn('Video data URL detected in CMS entry; skipping. Please upload videos to the media library or provide a hosted URL.');
                 return null;
             }
 
@@ -167,11 +191,43 @@ class DatabaseBackend {
                 .filter(Boolean);
         };
 
+        const sanitizeVideos = (videos) => {
+            if (!Array.isArray(videos)) {
+                return [];
+            }
+
+            return videos
+                .map((item) => {
+                    if (!item) return null;
+
+                    if (typeof item === 'string') {
+                        const sanitized = sanitizeVideoValue(item);
+                        return sanitized ? { url: sanitized, caption: null } : null;
+                    }
+
+                    if (typeof item === 'object') {
+                        const sanitizedUrl = sanitizeVideoValue(item.url || item.video);
+                        if (!sanitizedUrl) {
+                            return null;
+                        }
+
+                        return {
+                            url: sanitizedUrl,
+                            caption: item.caption || null
+                        };
+                    }
+
+                    return null;
+                })
+                .filter(Boolean);
+        };
+
         return {
             name: cmsData.basic_info?.name || '',
             description: cmsData.basic_info?.description || '',
             mainImage: sanitizeImageValue(cmsData.photos?.mainImage) || null,
             gallery: sanitizeGallery(cmsData.photos?.gallery),
+            videos: sanitizeVideos(cmsData.videos),
             specs: cmsData.specs || {},
             status: cmsData.basic_info?.status || 'COMPLETED',
             featured: cmsData.basic_info?.featured || true

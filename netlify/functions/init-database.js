@@ -29,7 +29,7 @@ exports.handler = async (event, context) => {
             SELECT table_name 
             FROM information_schema.tables 
             WHERE table_schema = 'public' 
-            AND table_name IN ('cars', 'car_specs', 'car_gallery')
+            AND table_name IN ('cars', 'car_specs', 'car_gallery', 'car_videos')
         `;
         
         let message = [];
@@ -83,11 +83,25 @@ exports.handler = async (event, context) => {
                 )
             `;
             message.push('✅ Created car_gallery table');
+
+            await sql`
+                CREATE TABLE IF NOT EXISTS car_videos (
+                    id SERIAL PRIMARY KEY,
+                    car_id INTEGER REFERENCES cars(id) ON DELETE CASCADE,
+                    video_url TEXT NOT NULL,
+                    video_order INTEGER DEFAULT 0,
+                    caption TEXT,
+                    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+                )
+            `;
+            message.push('✅ Created car_videos table');
             
             // Create indexes
             await sql`CREATE INDEX IF NOT EXISTS idx_cars_featured ON cars(featured)`;
             await sql`CREATE INDEX IF NOT EXISTS idx_cars_date_added ON cars(date_added DESC)`;
             await sql`CREATE INDEX IF NOT EXISTS idx_car_gallery_car_id ON car_gallery(car_id)`;
+            await sql`CREATE INDEX IF NOT EXISTS idx_car_videos_car_id ON car_videos(car_id)`;
+            await sql`CREATE INDEX IF NOT EXISTS idx_car_videos_order ON car_videos(car_id, video_order)`;
             
             message.push('✅ Created indexes');
         } else {
