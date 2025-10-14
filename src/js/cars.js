@@ -1,85 +1,116 @@
-const CARD_PIXEL_WIDTH = 352; // card width (320) + gap (32)
-const MIN_SWIPE_DISTANCE = 50;
-const EMOJI_PLACEHOLDERS = ['🏎️', '🚗', '🏁', '🚙', '⚡'];
+// cars.js - Carousel for Nightmare Racing Featured Cars
+// Uses same data structure as featured-cars.js for database consistency
 
 let carsData = [];
 let currentSlide = 0;
 let cardsPerView = 1;
 let totalSlides = 0;
 
+// Make carsData globally accessible for other pages
 window.carsData = carsData;
 
+// Load car data from database API
 async function loadCarsData() {
     try {
+        // Fetch cars from database API
         const response = await fetch('/.netlify/functions/api-cars');
-
+        
         if (response.ok) {
             const data = await response.json();
             if (Array.isArray(data) && data.length > 0) {
                 carsData = data.filter(car => car.featured !== false);
-                window.carsData = carsData;
+                window.carsData = carsData; // Make globally accessible
                 initializeCarousel();
-                return;
+                return; // Exit early if database worked
+            } else {
+                console.warn('Database returned no cars, using fallback data');
             }
-
-            console.warn('Database returned no cars, using fallback data');
         } else {
             console.warn(`Database API error (${response.status}), using fallback data`);
-
+            
+            // If it's a 500 error, likely a database connection issue
             if (response.status === 500) {
                 console.error('Database connection error - check Netlify environment variables');
             }
         }
     } catch (error) {
         console.error('Error loading cars from database:', error);
+        // No fallback data - carousel will be empty if database fails
         carsData = [];
         window.carsData = carsData;
         initializeCarousel();
     }
 }
 
+
+
+
+
+// Initialize carousel
 function initializeCarousel() {
     displayCars();
     setupCarouselNavigation();
     setupResponsiveCarousel();
+    
+    // Auto-play carousel (optional)
     startAutoPlay();
 }
 
+// Display cars in carousel
 function displayCars() {
     const carouselTrack = document.getElementById('carousel-track');
     if (!carouselTrack) return;
-
+    
+    // Clear existing cards
     carouselTrack.innerHTML = '';
-
-    const featuredCars = getFeaturedCars();
+    
+    // Add featured cars
+    const featuredCars = carsData.filter(car => car.featured);
+    
     featuredCars.forEach(car => {
-        carouselTrack.appendChild(createCarCard(car));
+        const carCard = createCarCard(car);
+        carouselTrack.appendChild(carCard);
     });
-
+    
     totalSlides = Math.max(1, featuredCars.length - cardsPerView + 1);
     createCarouselIndicators();
     updateCarouselPosition();
 }
 
-function getFeaturedCars() {
-    return carsData.filter(car => car.featured);
-}
-
+// Create car card matching the existing style but with consistent data structure
 function createCarCard(car) {
-    const card = document.createElement('div');
-    card.className = 'car-card';
-
-    const specsHTML = [
-        car.specs?.zeroToSixty && `0-60: ${car.specs.zeroToSixty}`,
-        car.specs?.topSpeed && `Top Speed: ${car.specs.topSpeed}`,
-        car.specs?.horsepower,
-        car.specs?.custom1,
-        car.specs?.custom2
-    ].filter(Boolean).map(value => `<span>${value}</span>`).join('');
-
-    card.innerHTML = `
+    const carCard = document.createElement('div');
+    carCard.className = 'car-card';
+    
+    let specsHTML = '';
+    if (car.specs) {
+        const specs = car.specs;
+        if (specs.zeroToSixty) specsHTML += `<span>0-60: ${specs.zeroToSixty}</span>`;
+        if (specs.topSpeed) specsHTML += `<span>Top Speed: ${specs.topSpeed}</span>`;
+        if (specs.horsepower) specsHTML += `<span>${specs.horsepower}</span>`;
+        if (specs.custom1) specsHTML += `<span>${specs.custom1}</span>`;
+        if (specs.custom2) specsHTML += `<span>${specs.custom2}</span>`;
+    }
+    
+    // Use different emoji placeholders for variety or actual images
+    const emojis = ['🏎️', '🚗', '🏁', '🚙', '⚡'];
+    const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+    
+    // Determine which image to use
+    let imageHTML;
+    if (car.mainImage) {
+        imageHTML = `<img src="${car.mainImage}" alt="${car.name}" style="width: 100%; height: 100%; object-fit: cover;">`;
+    } else if (car.gallery && car.gallery.length > 0) {
+        // Use first gallery image if no main image
+        const firstImage = typeof car.gallery[0] === 'string' ? car.gallery[0] : car.gallery[0].image;
+        imageHTML = `<img src="${firstImage}" alt="${car.name}" style="width: 100%; height: 100%; object-fit: cover;">`;
+    } else {
+        imageHTML = `<div class="car-placeholder">${randomEmoji}</div>`;
+    }
+    
+    carCard.innerHTML = `
         <div class="car-image">
-            ${buildImageHTML(car)}
+            ${imageHTML}
             <div class="car-overlay">
                 <button class="btn btn-small" onclick="viewCarDetails('${car.name}')">View Details</button>
             </div>
@@ -92,44 +123,41 @@ function createCarCard(car) {
             </div>
         </div>
     `;
-
-    return card;
+    
+    return carCard;
 }
 
-function buildImageHTML(car) {
-    if (car.mainImage) {
-        return `<img src="${car.mainImage}" alt="${car.name}" style="width: 100%; height: 100%; object-fit: cover;">`;
-    }
-
-    if (car.gallery && car.gallery.length > 0) {
-        const firstImage = typeof car.gallery[0] === 'string' ? car.gallery[0] : car.gallery[0].image;
-        return `<img src="${firstImage}" alt="${car.name}" style="width: 100%; height: 100%; object-fit: cover;">`;
-    }
-
-    const randomEmoji = EMOJI_PLACEHOLDERS[Math.floor(Math.random() * EMOJI_PLACEHOLDERS.length)];
-    return `<div class="car-placeholder">${randomEmoji}</div>`;
-}
-
+// Setup carousel navigation
 function setupCarouselNavigation() {
     const prevBtn = document.getElementById('prev-btn');
     const nextBtn = document.getElementById('next-btn');
-
-    prevBtn?.addEventListener('click', previousSlide);
-    nextBtn?.addEventListener('click', nextSlide);
+    
+    if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+            previousSlide();
+        });
+    }
+    
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            nextSlide();
+        });
+    }
 }
 
+// Create carousel indicators
 function createCarouselIndicators() {
     const indicatorsContainer = document.getElementById('carousel-indicators');
     if (!indicatorsContainer) return;
-
+    
     indicatorsContainer.innerHTML = '';
-
-    Array.from({ length: totalSlides }).forEach((_, index) => {
+    
+    for (let i = 0; i < totalSlides; i++) {
         const dot = document.createElement('div');
-        dot.className = `carousel-dot ${index === 0 ? 'active' : ''}`;
-        dot.addEventListener('click', () => goToSlide(index));
+        dot.className = `carousel-dot ${i === 0 ? 'active' : ''}`;
+        dot.addEventListener('click', () => goToSlide(i));
         indicatorsContainer.appendChild(dot);
-    });
+    }
 }
 
 // Navigation functions
@@ -148,24 +176,28 @@ function goToSlide(index) {
     updateCarouselPosition();
 }
 
+// Update carousel position
 function updateCarouselPosition() {
     const carouselTrack = document.getElementById('carousel-track');
     const indicators = document.querySelectorAll('.carousel-dot');
-
+    
     if (carouselTrack) {
-        const offset = currentSlide * CARD_PIXEL_WIDTH;
+        const cardWidth = 320 + 32; // card width + gap
+        const offset = currentSlide * cardWidth;
         carouselTrack.style.transform = `translateX(-${offset}px)`;
     }
-
+    
+    // Update indicators
     indicators.forEach((dot, index) => {
         dot.classList.toggle('active', index === currentSlide);
     });
 }
 
+// Setup responsive carousel
 function setupResponsiveCarousel() {
     function updateCardsPerView() {
         const containerWidth = document.querySelector('.carousel-container')?.offsetWidth || 1200;
-
+        
         if (containerWidth >= 1024) {
             cardsPerView = 3;
         } else if (containerWidth >= 768) {
@@ -173,30 +205,33 @@ function setupResponsiveCarousel() {
         } else {
             cardsPerView = 1;
         }
-
-        const featuredCars = getFeaturedCars();
+        
+        // Recalculate total slides
+        const featuredCars = carsData.filter(car => car.featured);
         totalSlides = Math.max(1, featuredCars.length - cardsPerView + 1);
-
+        
+        // Reset to first slide if current slide is out of bounds
         if (currentSlide >= totalSlides) {
             currentSlide = 0;
         }
-
+        
         createCarouselIndicators();
         updateCarouselPosition();
     }
-
+    
+    // Update on resize
     window.addEventListener('resize', updateCardsPerView);
-    updateCardsPerView();
+    updateCardsPerView(); // Initial call
 }
 
 // Auto-play functionality
 let autoPlayInterval;
 
 function startAutoPlay() {
-    stopAutoPlay();
+    stopAutoPlay(); // Clear any existing interval
     autoPlayInterval = setInterval(() => {
         nextSlide();
-    }, 5000);
+    }, 5000); // Change slide every 5 seconds
 }
 
 function stopAutoPlay() {
@@ -208,10 +243,10 @@ function stopAutoPlay() {
 // Pause auto-play on hover
 function setupAutoPlayControls() {
     const carouselContainer = document.querySelector('.carousel-container');
-    if (!carouselContainer) return;
-
-    carouselContainer.addEventListener('mouseenter', stopAutoPlay);
-    carouselContainer.addEventListener('mouseleave', startAutoPlay);
+    if (carouselContainer) {
+        carouselContainer.addEventListener('mouseenter', stopAutoPlay);
+        carouselContainer.addEventListener('mouseleave', startAutoPlay);
+    }
 }
 
 // View car details - Updated for database structure
@@ -223,7 +258,7 @@ function viewCarDetails(carName) {
     }
     
     // Check if car has images
-    const hasImages = car.mainImage || (car.gallery?.length > 0);
+    const hasImages = car.mainImage || (car.gallery && car.gallery.length > 0);
     
     if (hasImages) {
         // Redirect to featured cars page with car details
@@ -245,15 +280,15 @@ function setupTouchSupport() {
     let currentX = 0;
     let isDragging = false;
     
-    carouselTrack.addEventListener('touchstart', event => {
-        startX = event.touches[0].clientX;
+    carouselTrack.addEventListener('touchstart', (e) => {
+        startX = e.touches[0].clientX;
         isDragging = true;
         stopAutoPlay();
     });
     
-    carouselTrack.addEventListener('touchmove', event => {
+    carouselTrack.addEventListener('touchmove', (e) => {
         if (!isDragging) return;
-        currentX = event.touches[0].clientX;
+        currentX = e.touches[0].clientX;
     });
     
     carouselTrack.addEventListener('touchend', () => {
@@ -262,7 +297,7 @@ function setupTouchSupport() {
         
         const diffX = startX - currentX;
         
-        if (Math.abs(diffX) > MIN_SWIPE_DISTANCE) {
+        if (Math.abs(diffX) > 50) { // Minimum swipe distance
             if (diffX > 0) {
                 nextSlide();
             } else {

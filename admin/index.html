@@ -1,1454 +1,1904 @@
 <!doctype html>
-<html lang="en">
+<html>
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex" />
-  <title>Nightmare Racing · Admin Console</title>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Rajdhani:wght@400;500;700&display=swap" rel="stylesheet">
-
+  <title>Nightmare Racing - Admin</title>
+  
+  <!-- Site Styles -->
+  <link rel="stylesheet" href="../src/css/indexStyles.css">
+  <link rel="stylesheet" href="../src/css/navStyles.css">
+  <link rel="stylesheet" href="../src/css/footer.css">
+  <link rel="stylesheet" href="styles.css">
+  
+  <!-- Auctus Identity Widget -->
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  
   <style>
+    /* Import Google Fonts to match main site */
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap');
+    
     :root {
-      --black-900: #050505;
-      --black-800: #0e0e0e;
-      --black-700: #141414;
-      --black-600: #1f1f1f;
-      --gray-500: #888;
-      --gray-400: #aaa;
-      --gray-300: #ccc;
-      --white: #ffffff;
-      --accent: #e50000;
-      --accent-soft: rgba(229, 0, 0, 0.14);
-      --font-display: 'Orbitron', monospace;
-      --font-body: 'Rajdhani', sans-serif;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    html, body {
-      margin: 0;
-      padding: 0;
-      font-family: var(--font-body);
-      background: var(--black-900);
-      color: var(--white);
-      min-height: 100vh;
+      /* Colors matching main site */
+      --primary-black: #0a0a0a;
+      --secondary-black: #1a1a1a;
+      --accent-red: #e50000;
+      --accent-red-hover: #ff1a1a;
+      --pure-white: #ffffff;
+      --light-gray: #f5f5f5;
+      --medium-gray: #888;
+      --dark-gray: #333;
+      
+      /* Gradients */
+      --red-gradient: linear-gradient(135deg, #e50000, #ff4444);
+      --dark-gradient: linear-gradient(135deg, #0a0a0a, #1a1a1a);
+      
+      /* Typography */
+      --font-primary: 'Orbitron', monospace;
+      --font-secondary: 'Rajdhani', sans-serif;
     }
 
     body {
+      background: var(--primary-black);
+      color: var(--pure-white);
+      font-family: var(--font-secondary);
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+    
+    /* Authentication Styles */
+    .auth-container {
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: var(--dark-gradient);
+      text-align: center;
+      padding: 20px;
+      position: relative;
     }
-
-    a {
-      color: inherit;
-      text-decoration: none;
+    
+    .auth-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('../assets/backgroundImage1.png') center/cover;
+      opacity: 0.1;
+      z-index: 0;
     }
-
-    button {
-      font-family: inherit;
+    
+    .auth-box {
+      background: rgba(26, 26, 26, 0.95);
+      border: 1px solid var(--dark-gray);
+      border-radius: 20px;
+      padding: 50px;
+      max-width: 450px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(10px);
+      position: relative;
+      z-index: 1;
     }
-
+    
+    .auth-logo {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 25px auto;
+      display: block;
+      border-radius: 50%;
+      border: 2px solid var(--accent-red);
+      padding: 10px;
+      background: rgba(229, 0, 0, 0.1);
+    }
+    
+    .auth-title {
+      color: var(--accent-red);
+      font-family: var(--font-primary);
+      font-size: 2.5rem;
+      margin-bottom: 15px;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      font-weight: 900;
+      background: var(--red-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .auth-subtitle {
+      color: var(--medium-gray);
+      margin-bottom: 35px;
+      font-size: 1.2rem;
+      font-weight: 300;
+    }
+    
+    .auth-button {
+      background: var(--red-gradient);
+      color: white;
+      padding: 18px 35px;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      font-family: var(--font-secondary);
+      font-size: 1.1rem;
+      font-weight: 600;
+      width: 100%;
+      margin: 12px 0;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      box-shadow: 0 8px 25px rgba(229, 0, 0, 0.3);
+    }
+    
+    .auth-button:hover {
+      background: linear-gradient(135deg, #ff1a1a, #e50000);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 35px rgba(229, 0, 0, 0.4);
+    }
+    
+    .auth-button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .auth-button.secondary {
+      background: transparent;
+      border: 2px solid var(--accent-red);
+      color: var(--accent-red);
+    }
+    
+    .auth-button.secondary:hover {
+      background: var(--accent-red);
+      color: white;
+    }
+    
+    .status-message {
+      margin: 25px 0;
+      padding: 15px;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 500;
+    }
+    
+    .status-success {
+      background: rgba(76, 175, 80, 0.2);
+      border: 1px solid #4caf50;
+      color: #4caf50;
+    }
+    
+    .status-error {
+      background: rgba(244, 67, 54, 0.2);
+      border: 1px solid #f44336;
+      color: #f44336;
+    }
+    
+    .status-info {
+      background: rgba(33, 150, 243, 0.2);
+      border: 1px solid #2196f3;
+      color: #2196f3;
+    }
+    
     .hidden {
       display: none !important;
     }
-
-    /* Auth overlay */
-    .auth-overlay {
-      position: fixed;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: radial-gradient(circle at top left, rgba(229, 0, 0, 0.35), transparent 55%),
-                  radial-gradient(circle at bottom right, rgba(229, 0, 0, 0.25), rgba(5, 5, 5, 0.95));
-      z-index: 1000;
-      padding: 24px;
-      transition: opacity 0.25s ease, visibility 0.25s ease;
-    }
-
-    .auth-overlay.inactive {
-      pointer-events: none;
-      opacity: 0;
-      visibility: hidden;
-    }
-
-    .auth-card {
-      width: min(420px, 100%);
-      background: rgba(15, 15, 15, 0.92);
-      border: 1px solid rgba(229, 0, 0, 0.25);
-      border-radius: 20px;
-      padding: 48px 40px;
-      text-align: center;
-      box-shadow: 0 35px 70px rgba(0, 0, 0, 0.45);
-    }
-
-    .auth-logo {
-      width: 90px;
-      height: 90px;
+    
+    .spinner {
+      border: 4px solid rgba(229, 0, 0, 0.3);
       border-radius: 50%;
-      border: 3px solid rgba(229, 0, 0, 0.55);
-      padding: 10px;
-      margin-bottom: 20px;
-      background: rgba(229, 0, 0, 0.12);
-      object-fit: contain;
+      border-top: 4px solid var(--accent-red);
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin: 25px auto;
     }
-
-    .auth-title {
-      font-family: var(--font-display);
-      font-size: 2.1rem;
-      letter-spacing: 4px;
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .back-link {
+      color: var(--accent-red);
+      text-decoration: none;
+      margin-top: 25px;
+      display: inline-block;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+    
+    .back-link:hover {
+      color: var(--accent-red-hover);
+      text-decoration: underline;
+    }
+    
+    /* Admin Content Styles */
+    .admin-content {
+      display: none;
+      min-height: 100vh;
+      background: var(--primary-black);
+    }
+    
+    .admin-content.show {
+      display: block;
+    }
+    
+    .admin-header {
+      background: var(--red-gradient);
+      color: white;
+      padding: 30px 0;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(229, 0, 0, 0.3);
+    }
+    
+    .admin-header h1 {
+      font-family: var(--font-primary);
+      font-size: 2.5rem;
+      margin: 0;
       text-transform: uppercase;
-      margin: 0 0 12px;
+      letter-spacing: 2px;
     }
-
-    .auth-subtitle {
-      margin: 0 0 36px;
-      color: var(--gray-400);
-      font-size: 1.1rem;
+    
+    .admin-header p {
+      margin: 10px 0 0 0;
+      font-size: 1.2rem;
+      opacity: 0.9;
     }
-
-    .auth-button {
-      width: 100%;
-      padding: 16px;
-      border: none;
-      border-radius: 12px;
-      background: linear-gradient(120deg, #ff5555, #e50000);
-      color: var(--white);
-      font-size: 1.05rem;
-      font-weight: 600;
+    
+    .admin-nav {
+      background: var(--secondary-black);
+      padding: 20px 0;
+      border-bottom: 1px solid var(--dark-gray);
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+    
+    .admin-nav button {
+      background: transparent;
+      border: 2px solid var(--accent-red);
+      color: var(--accent-red);
+      padding: 12px 25px;
+      margin: 0 10px;
+      border-radius: 25px;
       cursor: pointer;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      font-family: var(--font-secondary);
+      font-weight: 600;
+      font-size: 1rem;
+      transition: all 0.3s ease;
       text-transform: uppercase;
       letter-spacing: 1px;
     }
-
-    .auth-button:hover {
+    
+    .admin-nav button:hover,
+    .admin-nav button.active {
+      background: var(--accent-red);
+      color: white;
       transform: translateY(-2px);
-      box-shadow: 0 14px 24px rgba(229, 0, 0, 0.35);
+      box-shadow: 0 6px 20px rgba(229, 0, 0, 0.3);
     }
-
-    .auth-button.secondary {
-      margin-top: 14px;
-      background: transparent;
-      border: 1px solid rgba(229, 0, 0, 0.4);
-      color: var(--gray-300);
+    
+    .admin-main {
+      padding: 40px;
+      max-width: 1400px;
+      margin: 0 auto;
     }
-
-    .auth-status {
-      margin-top: 24px;
-      font-size: 0.95rem;
-      color: var(--gray-400);
+    
+    /* Card Styles */
+    .admin-card {
+      background: var(--secondary-black);
+      border: 1px solid var(--dark-gray);
+      border-radius: 15px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+      transition: all 0.3s ease;
     }
-
-    /* Admin shell */
-    .admin-app {
-      display: flex;
-      flex-direction: column;
-      flex: 1;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.35s ease;
+    
+    .admin-card:hover {
+      border-color: var(--accent-red);
+      box-shadow: 0 12px 40px rgba(229, 0, 0, 0.2);
+      transform: translateY(-5px);
     }
-
-    .admin-app.show {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .app-header {
+    
+    .admin-card h2, .admin-card h3 {
+      color: var(--accent-red);
+      font-family: var(--font-primary);
+      margin-bottom: 20px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      padding: 28px clamp(20px, 4vw, 48px);
-      border-bottom: 1px solid rgba(229, 0, 0, 0.14);
-      background: linear-gradient(120deg, rgba(229, 0, 0, 0.18), rgba(5, 5, 5, 0.9));
+      gap: 10px;
     }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .brand img {
-      width: 42px;
-      height: 42px;
-      border-radius: 8px;
-      border: 1px solid rgba(229, 0, 0, 0.5);
-      background: rgba(229, 0, 0, 0.12);
-      object-fit: cover;
-    }
-
-    .brand h1 {
-      margin: 0;
-      font-family: var(--font-display);
-      font-size: 1.4rem;
-      letter-spacing: 3px;
-    }
-
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .pill-button {
-      padding: 10px 18px;
-      border-radius: 999px;
-      border: 1px solid rgba(229, 0, 0, 0.35);
-      background: rgba(229, 0, 0, 0.12);
-      color: var(--white);
-      font-size: 0.95rem;
-      cursor: pointer;
-      transition: background 0.2s ease;
-    }
-
-    .pill-button:hover {
-      background: rgba(229, 0, 0, 0.25);
-    }
-
-    .logout-button {
-      padding: 10px 18px;
-      border-radius: 999px;
-      border: 1px solid rgba(229, 0, 0, 0.6);
-      background: transparent;
-      color: var(--white);
-      font-size: 0.95rem;
-      cursor: pointer;
-      transition: background 0.2s ease, color 0.2s ease;
-    }
-
-    .logout-button:hover {
-      background: rgba(229, 0, 0, 0.9);
-      color: #fff;
-    }
-
-    .app-main {
-      flex: 1;
-      padding: clamp(24px, 4vw, 48px);
+    
+    /* Form Styles */
+    .form-grid {
       display: grid;
-      gap: clamp(24px, 3vw, 40px);
-      background: linear-gradient(180deg, rgba(229, 0, 0, 0.12), transparent 40%), var(--black-900);
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 25px;
+      margin-bottom: 25px;
     }
-
-    .stat-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 18px;
+    
+    .form-group {
+      margin-bottom: 20px;
     }
-
-    .stat-card {
-      padding: 22px;
-      border-radius: 16px;
-      background: rgba(20, 20, 20, 0.86);
-      border: 1px solid rgba(229, 0, 0, 0.12);
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      transition: transform 0.2s ease;
-    }
-
-    .stat-card:hover {
-      transform: translateY(-4px);
-    }
-
-    .stat-label {
-      letter-spacing: 0.08em;
-      font-size: 0.9rem;
-      text-transform: uppercase;
-      color: var(--gray-400);
-    }
-
-    .stat-value {
-      font-family: var(--font-display);
-      font-size: 2.6rem;
-      line-height: 1;
-    }
-
-    .stat-meta {
-      font-size: 0.9rem;
-      color: var(--gray-500);
-    }
-
-    .content-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: clamp(24px, 3vw, 36px);
-      align-items: flex-start;
-    }
-
-    .panel {
-      background: rgba(15, 15, 15, 0.85);
-      border-radius: 18px;
-      border: 1px solid rgba(229, 0, 0, 0.12);
-      padding: clamp(20px, 3vw, 32px);
-      box-shadow: 0 24px 45px rgba(0, 0, 0, 0.35);
-    }
-
-    .panel-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      gap: 12px;
-      margin-bottom: 24px;
-    }
-
-    .panel-title {
-      margin: 0;
-      font-family: var(--font-display);
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      font-size: 1.2rem;
-    }
-
-    .panel-subtitle {
-      margin: 0;
-      color: var(--gray-500);
-      font-size: 0.95rem;
-    }
-
-    form .field-row {
-      display: grid;
-      gap: 18px;
-      margin-bottom: 18px;
-    }
-
-    @media (min-width: 720px) {
-      form .field-row.two {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-    }
-
-    label {
+    
+    .form-group label {
       display: block;
-      font-size: 0.85rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--gray-400);
+      color: var(--accent-red);
       margin-bottom: 8px;
+      font-weight: 600;
+      font-family: var(--font-secondary);
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
-
-    input[type="text"], textarea, select {
+    
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
       width: 100%;
-      padding: 14px;
-      border-radius: 12px;
-      border: 1px solid rgba(229, 0, 0, 0.18);
-      background: rgba(10, 10, 10, 0.9);
-      color: var(--white);
+      padding: 15px;
+      background: var(--primary-black);
+      border: 2px solid var(--dark-gray);
+      border-radius: 10px;
+      color: var(--pure-white);
       font-size: 1rem;
-      transition: border 0.2s ease, box-shadow 0.2s ease;
+      font-family: var(--font-secondary);
+      transition: all 0.3s ease;
+    }
+    
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      border-color: var(--accent-red);
+      outline: none;
+      box-shadow: 0 0 15px rgba(229, 0, 0, 0.3);
+      background: rgba(26, 26, 26, 0.8);
+    }
+    
+    .form-group textarea {
+      min-height: 100px;
       resize: vertical;
     }
-
-    input:focus, textarea:focus, select:focus {
-      outline: none;
-      border-color: rgba(229, 0, 0, 0.55);
-      box-shadow: 0 0 0 3px rgba(229, 0, 0, 0.18);
-    }
-
-    textarea {
-      min-height: 110px;
-    }
-
-    .toggle-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin: 18px 0 24px;
-      font-weight: 600;
-    }
-
-    .toggle-row input {
-      width: 20px;
-      height: 20px;
-      accent-color: var(--accent);
-    }
-
-    .dropzone {
-      border: 1px dashed rgba(229, 0, 0, 0.45);
-      border-radius: 14px;
-      padding: 24px;
-      background: rgba(229, 0, 0, 0.08);
-      text-align: center;
-      cursor: pointer;
-      transition: border 0.2s ease, background 0.2s ease;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .dropzone:hover {
-      border-color: rgba(229, 0, 0, 0.75);
-      background: rgba(229, 0, 0, 0.14);
-    }
-
-    .dropzone.has-image {
-      padding: 0;
-      border-style: solid;
-      background: rgba(0, 0, 0, 0.4);
-    }
-
-    .dropzone.has-image .dropzone-content {
-      display: none;
-    }
-
-    .dropzone-preview {
-      display: none;
-      position: relative;
-    }
-
-    .dropzone.has-image .dropzone-preview {
-      display: block;
-    }
-
-    .dropzone .dropzone-content {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      align-items: center;
-      justify-content: center;
-      color: var(--gray-400);
-    }
-
-    .dropzone .dropzone-icon {
-      font-size: 2rem;
-    }
-
-    .image-preview {
-      width: 100%;
-      height: 220px;
-      object-fit: cover;
-      border-radius: 14px;
-      display: block;
-    }
-
-    .gallery-preview {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 16px;
-    }
-
-    .gallery-thumb {
-      position: relative;
-    }
-
-    .gallery-thumb img {
-      width: 92px;
-      height: 92px;
-      object-fit: cover;
-      border-radius: 10px;
-      border: 1px solid rgba(229, 0, 0, 0.4);
-    }
-
-    .gallery-thumb .remove-thumb {
-      position: absolute;
-      top: -10px;
-      right: -10px;
-      padding: 4px 8px;
-    }
-
-    .dropzone-preview .remove-main {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      padding: 6px 12px;
-    }
-
-    .form-actions {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-top: 24px;
-    }
-
-    .primary-action {
-      padding: 14px 22px;
-      border-radius: 12px;
-      border: none;
-      background: linear-gradient(120deg, #ff5555, #e50000);
-      color: var(--white);
-      font-size: 1rem;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      cursor: pointer;
-      text-transform: uppercase;
-    }
-
-    .secondary-action {
-      padding: 14px 22px;
-      border-radius: 12px;
-      border: 1px solid rgba(229, 0, 0, 0.4);
-      background: transparent;
-      color: var(--gray-300);
-      font-size: 0.95rem;
-      cursor: pointer;
-    }
-
-    .car-grid {
-      display: grid;
-      gap: 18px;
-    }
-
-    .car-card {
-      border-radius: 16px;
-      border: 1px solid rgba(229, 0, 0, 0.1);
-      background: rgba(12, 12, 12, 0.75);
-      display: grid;
-      grid-template-columns: minmax(0, 160px) 1fr;
-      gap: 18px;
-      padding: 18px 22px;
-      transition: border 0.2s ease, transform 0.2s ease;
-      align-items: stretch;
-    }
-
-    .car-card:hover {
-      border-color: rgba(229, 0, 0, 0.35);
-      transform: translateY(-4px);
-    }
-
-    .car-thumb {
-      border-radius: 12px;
-      overflow: hidden;
-      position: relative;
-      background: rgba(229, 0, 0, 0.08);
-      min-height: 120px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .car-thumb img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-    .car-thumb-placeholder {
-      font-size: 2rem;
-      color: rgba(255, 255, 255, 0.32);
-      letter-spacing: 0.12em;
-    }
-
-    .car-content {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .car-header {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: baseline;
-      justify-content: space-between;
-      gap: 10px;
-    }
-
-    .car-title {
-      margin: 0;
-      font-size: 1.1rem;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-    }
-
-    .car-meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px 14px;
-      font-size: 0.85rem;
-      color: var(--gray-400);
-    }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 5px 12px;
-      border-radius: 999px;
-      background: rgba(229, 0, 0, 0.18);
-      font-size: 0.75rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-
-    .car-summary {
-      color: var(--gray-400);
-      font-size: 0.92rem;
-      line-height: 1.6;
-      margin: 0;
-      line-clamp: 3;
-      display: -webkit-box;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-
-    .car-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: auto;
-    }
-
-    .car-button {
-      padding: 10px 16px;
-      border-radius: 10px;
-      border: 1px solid rgba(229, 0, 0, 0.28);
-      background: transparent;
-      color: var(--white);
-      font-size: 0.9rem;
-      cursor: pointer;
-      transition: border 0.2s ease, background 0.2s ease;
-    }
-
-    .car-button:hover {
-      border-color: rgba(229, 0, 0, 0.6);
-      background: rgba(229, 0, 0, 0.14);
-    }
-
-    .car-button.danger:hover {
-      border-color: #ff5b5b;
-      background: rgba(255, 60, 60, 0.12);
-    }
-
-    @media (max-width: 900px) {
-      .car-card {
-        grid-template-columns: 1fr;
-        gap: 16px;
-      }
-
-      .car-thumb {
-        height: 200px;
-      }
-    }
-
-    @media (max-width: 600px) {
-      .car-card {
-        padding: 18px;
-      }
-
-      .car-actions {
-        flex-direction: column;
-        align-items: stretch;
-      }
-
-      .car-button {
-        width: 100%;
-        text-align: center;
-      }
-    }
-
-    .empty-state {
+    
+    /* Image Upload Styles */
+    .image-upload-area {
+      border: 2px dashed var(--accent-red);
+      border-radius: 15px;
       padding: 40px;
       text-align: center;
-      color: var(--gray-400);
-      border: 1px dashed rgba(229, 0, 0, 0.25);
-      border-radius: 16px;
+      background: rgba(229, 0, 0, 0.05);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
     }
-
-    .toast {
-      position: fixed;
-      right: 24px;
-      bottom: 24px;
-      padding: 16px 24px;
-      border-radius: 14px;
-      background: rgba(20, 20, 20, 0.92);
-      border: 1px solid rgba(229, 0, 0, 0.35);
-      color: var(--white);
-      font-size: 0.95rem;
-      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.4);
-      opacity: 0;
-      transform: translateY(20px);
-      transition: opacity 0.3s ease, transform 0.3s ease;
-      z-index: 900;
-      max-width: 320px;
+    
+    .image-upload-area:hover {
+      background: rgba(229, 0, 0, 0.1);
+      border-color: var(--accent-red-hover);
     }
-
-    .toast.show {
-      opacity: 1;
-      transform: translateY(0);
+    
+    .image-upload-area.has-image {
+      border: 2px solid var(--accent-red);
+      background: rgba(229, 0, 0, 0.1);
     }
-
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.92);
+    
+    .upload-placeholder {
+      color: var(--medium-gray);
+      font-size: 1.1rem;
+      margin-bottom: 10px;
+    }
+    
+    .upload-icon {
+      font-size: 3rem;
+      color: var(--accent-red);
+      margin-bottom: 15px;
+    }
+    
+    .image-preview {
+      max-width: 100%;
+      max-height: 200px;
+      border-radius: 10px;
+      margin-top: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+    
+    .hidden-input {
+      display: none;
+    }
+    
+    /* Checkbox Styles */
+    .checkbox-wrapper {
       display: flex;
       align-items: center;
-      justify-content: center;
-      z-index: 1200;
-      padding: 32px;
+      gap: 12px;
+      margin: 20px 0;
     }
-
-    .modal-card {
-      max-width: 640px;
-      width: 100%;
-      background: #111;
-      padding: 28px;
-      border-radius: 18px;
-      border: 1px solid rgba(229, 0, 0, 0.25);
+    
+    .checkbox-wrapper input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--accent-red);
+    }
+    
+    .checkbox-wrapper label {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 500;
+    }
+    
+    /* Cars Grid */
+    .cars-grid {
       display: grid;
-      gap: 18px;
+      grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+      gap: 25px;
+      margin-top: 30px;
     }
-
-    @media (max-width: 720px) {
-      .app-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 18px;
+    
+    .car-card {
+      background: var(--secondary-black);
+      border: 1px solid var(--dark-gray);
+      border-radius: 15px;
+      padding: 25px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .car-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--red-gradient);
+    }
+    
+    .car-card:hover {
+      border-color: var(--accent-red);
+      box-shadow: 0 8px 25px rgba(229, 0, 0, 0.2);
+      transform: translateY(-5px);
+    }
+    
+    .car-card h3 {
+      color: var(--accent-red);
+      font-family: var(--font-primary);
+      margin: 0 0 15px 0;
+      font-size: 1.4rem;
+    }
+    
+    .car-card p {
+      color: var(--pure-white);
+      margin: 8px 0;
+      font-size: 1rem;
+    }
+    
+    .car-card .car-meta {
+      color: var(--medium-gray);
+      font-size: 0.9rem;
+    }
+    
+    .car-actions {
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    
+    .car-actions button {
+      background: transparent;
+      border: 1px solid var(--medium-gray);
+      color: var(--medium-gray);
+      padding: 8px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-family: var(--font-secondary);
+      font-weight: 500;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .car-actions button:hover {
+      border-color: var(--accent-red);
+      color: var(--accent-red);
+      background: rgba(229, 0, 0, 0.1);
+    }
+    
+    .car-actions button.danger:hover {
+      border-color: #f44336;
+      color: #f44336;
+      background: rgba(244, 67, 54, 0.1);
+    }
+    
+    /* Test Results */
+    .test-results {
+      background: var(--primary-black);
+      border: 1px solid var(--dark-gray);
+      border-radius: 10px;
+      padding: 20px;
+      margin-top: 20px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    
+    .test-results pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    
+    /* Responsive Design - Improved */
+    @media (max-width: 1200px) {
+      .admin-main {
+        padding: 20px;
       }
-
-      .header-actions {
-        width: 100%;
-        justify-content: flex-start;
-        flex-wrap: wrap;
-      }
-
-      .content-grid {
+      
+      .form-grid {
         grid-template-columns: 1fr;
+        gap: 15px;
       }
     }
+    
+    @media (max-width: 768px) {
+      .admin-main {
+        padding: 15px;
+      }
+      
+      .form-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+      }
+      
+      .cars-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+      }
+      
+      .admin-nav {
+        padding: 15px 10px;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+      
+      .admin-nav button {
+        display: inline-block;
+        margin: 0 5px;
+        font-size: 0.9rem;
+        padding: 10px 15px;
+        min-width: 120px;
+      }
+      
+      .admin-header h1 {
+        font-size: 2rem;
+      }
+      
+      .admin-header {
+        padding: 20px 0;
+      }
+      
+      .admin-card {
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+      
+      .car-card {
+        padding: 15px;
+      }
+      
+      .auth-box {
+        padding: 20px;
+        margin: 10px;
+        width: calc(100% - 20px);
+      }
+      
+      .auth-title {
+        font-size: 1.8rem;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .admin-main {
+        padding: 10px;
+      }
+      
+      .admin-header h1 {
+        font-size: 1.6rem;
+        letter-spacing: 1px;
+      }
+      
+      .admin-card {
+        padding: 15px;
+      }
+      
+      .form-group label {
+        font-size: 0.9rem;
+      }
+      
+      .form-group input,
+      .form-group select,
+      .form-group textarea {
+        font-size: 16px; /* Prevent zoom on iOS */
+      }
+      
+      .auth-box {
+        padding: 15px;
+        margin: 5px;
+        width: calc(100% - 10px);
+      }
+      
+      .auth-title {
+        font-size: 1.5rem;
+      }
+    }
+    
+    /* Loading States */
+    .loading {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+    
+    .loading::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 20px;
+      height: 20px;
+      margin: -10px 0 0 -10px;
+      border: 2px solid var(--accent-red);
+      border-radius: 50%;
+      border-top-color: transparent;
+      animation: spin 1s linear infinite;
+    }
+    
+    /* Image Management Styles */
+    .image-upload-area.has-image {
+      position: relative;
+    }
+    
+    .image-upload-area.has-image:hover .upload-overlay {
+      opacity: 1 !important;
+    }
+    
+    .upload-overlay button:hover {
+      transform: scale(1.05);
+      transition: transform 0.2s;
+    }
+    
   </style>
-
-  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </head>
 <body>
-  <div id="auth-screen" class="auth-overlay">
-    <div class="auth-card">
-      <img src="../assets/logoImage1.png" alt="Nightmare Racing" class="auth-logo" />
+  <!-- Authentication Screen -->
+  <div id="auth-screen" class="auth-container">
+    <div class="auth-box">
+      <img src="../assets/logoImage1.png" alt="Nightmare Racing" class="auth-logo">
       <h1 class="auth-title">Nightmare Racing</h1>
-      <p class="auth-subtitle">Administrator Console</p>
-
+      <p class="auth-subtitle">Admin Portal</p>
+      
+      <!-- Initial Loading -->
       <div id="auth-loading">
-        <button class="auth-button" disabled>Loading…</button>
-        <p class="auth-status">Checking identity services</p>
+        <div class="spinner"></div>
+        <p>Loading authentication...</p>
+        <button id="skip-auth-button" class="auth-button secondary" style="margin-top: 20px; display: none;">Skip Authentication (Debug)</button>
+        <p style="font-size: 0.8rem; color: #666; margin-top: 10px;">
+          Taking too long? <a href="#" id="force-login-link" style="color: #e50000;">Force login screen</a>
+        </p>
       </div>
-
+      
+      <!-- Not Logged In -->
       <div id="auth-login" class="hidden">
-        <button id="login-button" class="auth-button">Sign In</button>
+        <p>Please log in to access the admin panel</p>
+        <button id="login-button" class="auth-button">Login with Auctus</button>
         <button id="refresh-button" class="auth-button secondary">Refresh Page</button>
-        <div class="auth-status">Need help? Email support@nightmareracing.com</div>
+        <a href="../index.html" class="back-link">← Back to Website</a>
       </div>
-
-      <div id="auth-status" class="auth-status hidden"></div>
+      
+      <!-- Setup Required -->
+      <div id="auth-setup" class="hidden">
+        <h3 style="color: #e50000;">Setup Required</h3>
+        <p>Auctus Identity needs to be configured:</p>
+        <ol style="text-align: left; color: #ccc;">
+          <li>Enable Auctus Identity in your site settings</li>
+          <li>Set registration to "Invite only"</li>
+          <li>Enable Git Gateway</li>
+          <li>Add your email as a user</li>
+        </ol>
+        <button id="retry-button" class="auth-button">Retry</button>
+      </div>
+      
+      <!-- Status Messages -->
+      <div id="status-message" class="status-message hidden"></div>
     </div>
   </div>
 
-  <div id="admin-app" class="admin-app">
-    <header class="app-header">
-      <div class="brand">
-        <img src="../assets/logoImage1.png" alt="Nightmare Racing logo" />
-        <h1>Admin Console</h1>
-      </div>
-      <div class="header-actions">
-        <button type="button" id="view-site" class="pill-button">View Website</button>
-        <button type="button" id="refresh-data" class="pill-button">Refresh Data</button>
-        <button type="button" id="logout-button" class="logout-button">Sign Out</button>
-      </div>
-    </header>
-
-    <main class="app-main">
-      <section aria-label="Platform statistics">
-        <div class="stat-grid">
-          <article class="stat-card">
-            <span class="stat-label">Total Builds</span>
-            <span id="stat-total-cars" class="stat-value">0</span>
-            <span class="stat-meta">Stored in database</span>
-          </article>
-          <article class="stat-card">
-            <span class="stat-label">Featured Builds</span>
-            <span id="stat-featured-cars" class="stat-value">0</span>
-            <span class="stat-meta">Visible on homepage carousel</span>
-          </article>
-          <article class="stat-card">
-            <span class="stat-label">In Progress</span>
-            <span id="stat-active-cars" class="stat-value">0</span>
-            <span class="stat-meta">Currently under the knife</span>
-          </article>
-          <article class="stat-card">
-            <span class="stat-label">Needs Media</span>
-            <span id="stat-missing-media" class="stat-value">0</span>
-            <span class="stat-meta">Add hero imagery before publishing</span>
-          </article>
-        </div>
-      </section>
-
-      <section class="content-grid" aria-label="Content management">
-        <section class="panel" id="form-panel">
-          <div class="panel-header">
-            <h2 class="panel-title" id="form-title">Add New Build</h2>
-            <p class="panel-subtitle" id="form-caption">Complete the details and press Save Build to publish.</p>
-          </div>
-
-          <form id="car-form" autocomplete="off">
-            <div class="field-row two">
-              <div>
-                <label for="car-name">Build name</label>
-                <input type="text" id="car-name" name="name" placeholder="Twin Turbo Supra" required />
+  <!-- Admin Content (shown after successful login) -->
+  <div id="admin-content" class="admin-content">
+    <div class="admin-header">
+      <h1>Nightmare Racing Admin</h1>
+      <p>Manage your cars and content</p>
+    </div>
+    
+    <div class="admin-nav">
+      <button id="nav-cars" class="active">🏎️ Manage Cars</button>
+      <button id="nav-test">🔧 Test Database</button>
+      <button id="logout-button">Logout</button>
+    </div>
+    
+    <div class="admin-main">
+      <!-- Cars Management Section -->
+      <div id="section-cars">
+        <div class="admin-card">
+          <h2>🏎️ Add New Car</h2>
+          
+          <form id="add-car-form">
+            <!-- Basic Information -->
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="car-year">Year *</label>
+                <input type="number" id="car-year" name="year" required placeholder="e.g., 2015" min="1900" max="2030">
               </div>
-              <div>
-                <label for="car-status">Status</label>
+              
+              <div class="form-group">
+                <label for="car-make">Make *</label>
+                <input type="text" id="car-make" name="make" required placeholder="e.g., Toyota">
+              </div>
+              
+              <div class="form-group">
+                <label for="car-model">Model *</label>
+                <input type="text" id="car-model" name="model" required placeholder="e.g., Supra">
+              </div>
+            </div>
+            
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="car-name">Car Name *</label>
+                <input type="text" id="car-name" name="name" required placeholder="e.g., Twin-Turbo Supra">
+              </div>
+              
+              <div class="form-group">
+                <label for="car-status">Build Status</label>
                 <select id="car-status" name="status">
-                  <option value="FEATURED BUILD">Featured build</option>
-                  <option value="IN PROGRESS">In progress</option>
-                  <option value="COMPLETED">Completed</option>
-                  <option value="CUSTOMER CAR">Customer car</option>
+                  <option value="COMPLETED">✅ Completed</option>
+                  <option value="IN PROGRESS">🔧 In Progress</option>
+                  <option value="FEATURED BUILD">⭐ Featured Build</option>
+                  <option value="CUSTOMER CAR">👤 Customer Car</option>
                 </select>
               </div>
             </div>
-
-            <div class="field-row">
-              <div>
-                <label for="car-description">Overview</label>
-                <textarea id="car-description" name="description" placeholder="1200HP street car build, EFR twins, Motec management" required></textarea>
-              </div>
+            
+            <div class="form-group">
+              <label for="car-description">Description *</label>
+              <textarea id="car-description" name="description" required placeholder="e.g., 1200HP Beast • Custom Build • Track Ready" rows="3"></textarea>
             </div>
-
-            <div class="field-row">
-              <div class="dropzone" id="main-image-upload">
-                <input type="file" id="main-image-input" class="hidden" accept="image/*" />
-                <div class="dropzone-content">
-                  <span class="dropzone-icon">📷</span>
-                  <strong>Main showcase image</strong>
-                  <small>Recommended 1920×1080 JPG/PNG</small>
-                </div>
-                <div class="dropzone-preview">
-                  <img src="" alt="Main build" class="image-preview" />
-                  <button type="button" class="car-button remove-main" onclick="event.stopPropagation(); window.adminApp.removeMainImage()">Remove</button>
+            
+            <!-- Image Upload Section -->
+            <div class="form-group">
+              <label>Main Car Image</label>
+              <div class="image-upload-area" id="main-image-upload">
+                <input type="file" id="main-image-input" class="hidden-input" accept="image/*">
+                <div class="upload-content">
+                  <div class="upload-icon">📷</div>
+                  <div class="upload-placeholder">Click to upload main car image</div>
+                  <small style="color: var(--medium-gray);">Recommended: 1920x1080px, JPG or PNG</small>
                 </div>
               </div>
-              <input type="hidden" id="main-image-url" name="mainImage" />
+              <input type="hidden" id="main-image-url" name="mainImage">
             </div>
-
-            <div class="field-row">
-              <div>
-                <label>Gallery</label>
-                <div class="dropzone" id="gallery-upload">
-                  <input type="file" id="gallery-input" class="hidden" accept="image/*" multiple />
-                  <div class="dropzone-content">
-                    <span class="dropzone-icon">🖼️</span>
-                    <strong>Add supporting visuals</strong>
-                    <small>Drag in multiple images or click to browse</small>
-                  </div>
+            
+            <!-- Gallery Upload Section -->
+            <div class="form-group">
+              <label>Gallery Images (Optional)</label>
+              <div class="image-upload-area" id="gallery-upload">
+                <input type="file" id="gallery-input" class="hidden-input" accept="image/*" multiple>
+                <div class="upload-content">
+                  <div class="upload-icon">🖼️</div>
+                  <div class="upload-placeholder">Click to upload gallery images</div>
+                  <small style="color: var(--medium-gray);">Select multiple images for car gallery</small>
                 </div>
-                <div id="gallery-preview" class="gallery-preview"></div>
-                <input type="hidden" id="gallery-urls" name="gallery" />
               </div>
+              <div id="gallery-preview" class="gallery-preview"></div>
+              <input type="hidden" id="gallery-urls" name="gallery">
+            </div>
+            
+            <!-- Featured Toggle -->
+            <div class="checkbox-wrapper">
+              <input type="checkbox" id="car-featured" name="featured" checked>
+              <label for="car-featured">⭐ Feature this car on homepage</label>
             </div>
 
-            <div class="toggle-row">
-              <input type="checkbox" id="car-featured" name="featured" checked />
-              <label for="car-featured">Feature this build on the homepage carousel</label>
-            </div>
-
-            <div class="form-actions">
-              <button type="submit" id="submit-button" class="primary-action">Save Build</button>
-              <button type="button" id="cancel-edit" class="secondary-action hidden">Cancel Editing</button>
-            </div>
+            <button type="submit" class="auth-button" style="margin-top: 20px;">
+              🚗 Add Car to Database
+            </button>
           </form>
-        </section>
-
-        <section class="panel" id="list-panel">
-          <div class="panel-header">
-            <h2 class="panel-title">Garage Inventory</h2>
-            <p class="panel-subtitle">Latest entries appear first. Edit or remove with one click.</p>
+        </div>
+        
+        <!-- Cars List -->
+        <div class="admin-card">
+          <h2>🏁 Current Cars</h2>
+          <div id="cars-container">
+            <div id="cars-list" class="cars-grid">
+              <div class="spinner"></div>
+            </div>
           </div>
-          <div id="cars-grid" class="car-grid">
-            <div class="empty-state">Loading builds…</div>
+        </div>
+      </div>
+      
+      <!-- Database Test Section -->
+      <div id="section-test" class="hidden">
+        <div class="admin-card">
+          <h2>🔧 Database Connection Test</h2>
+          <p style="color: var(--medium-gray); margin-bottom: 25px;">
+            Test your database connection and API functionality to ensure everything is working properly.
+          </p>
+          
+          <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 25px;">
+            <button id="test-connection" class="auth-button" style="flex: 1; min-width: 200px;">
+              🔗 Test API Connection
+            </button>
+            <button id="test-cars" class="auth-button" style="flex: 1; min-width: 200px;">
+              🏎️ Load All Cars
+            </button>
           </div>
-        </section>
-      </section>
-    </main>
+          
+          <div id="test-results" class="test-results hidden"></div>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <div id="toast" class="toast" role="status" aria-live="polite"></div>
-
   <script>
+    // Simple, reliable authentication system
     class AdminAuth {
       constructor() {
-        this.overlay = document.getElementById('auth-screen');
-        this.loadingBlock = document.getElementById('auth-loading');
-        this.loginBlock = document.getElementById('auth-login');
-        this.statusBlock = document.getElementById('auth-status');
-        this.adminAppShell = document.getElementById('admin-app');
-
-        document.getElementById('login-button').addEventListener('click', () => this.login());
-        document.getElementById('refresh-button').addEventListener('click', () => window.location.reload());
-        document.getElementById('logout-button').addEventListener('click', () => this.logout());
-        document.getElementById('view-site').addEventListener('click', () => window.open('../index.html', '_blank', 'noopener'));
-        document.getElementById('refresh-data').addEventListener('click', () => window.adminApp?.loadCars());
-
+        this.user = null;
+        this.initialized = false;
+        this.setupElements();
         this.init();
       }
-
-      async init() {
-        try {
-          await this.ensureIdentityLoaded();
-          window.netlifyIdentity.on('init', user => this.handleInit(user));
-          window.netlifyIdentity.on('login', user => this.handleLogin(user));
-          window.netlifyIdentity.on('logout', () => this.handleLogout());
-          window.netlifyIdentity.on('open', () => this.setOverlayInteractive(false));
-          window.netlifyIdentity.on('close', () => {
-            if (!window.netlifyIdentity.currentUser()) {
-              this.setOverlayInteractive(true);
-            }
-          });
-          window.netlifyIdentity.init();
-        } catch (error) {
-          this.setStatus('Unable to contact identity service. Please refresh.', true);
+      
+      setupElements() {
+        // Auth elements
+        this.authScreen = document.getElementById('auth-screen');
+        this.authLoading = document.getElementById('auth-loading');
+        this.authLogin = document.getElementById('auth-login');
+        this.authSetup = document.getElementById('auth-setup');
+        this.adminContent = document.getElementById('admin-content');
+        this.statusMessage = document.getElementById('status-message');
+        
+        // Buttons
+        this.loginButton = document.getElementById('login-button');
+        this.refreshButton = document.getElementById('refresh-button');
+        this.retryButton = document.getElementById('retry-button');
+        this.logoutButton = document.getElementById('logout-button');
+        
+        // Bind events
+        this.loginButton.addEventListener('click', () => this.login());
+        this.refreshButton.addEventListener('click', () => window.location.reload());
+        this.retryButton.addEventListener('click', () => this.init());
+        this.logoutButton.addEventListener('click', () => this.logout());
+        
+        // Additional fallback buttons
+        document.getElementById('skip-auth-button').addEventListener('click', () => this.skipAuth());
+        document.getElementById('force-login-link').addEventListener('click', (e) => {
+          e.preventDefault();
           this.showLogin();
+        });
+        
+        // Show skip button after 5 seconds
+        setTimeout(() => {
+          const skipBtn = document.getElementById('skip-auth-button');
+          if (skipBtn && !this.initialized) {
+            skipBtn.style.display = 'block';
+          }
+        }, 5000);
+      }
+      
+      async init() {
+        console.log('🚀 Initializing Nightmare Racing Admin...');
+        this.showLoading();
+        
+        try {
+          // Wait for Auctus Identity to load
+          if (!window.netlifyIdentity) {
+            await this.waitForAuctusIdentity();
+          }
+          
+          // Set up event listeners first
+          window.netlifyIdentity.on('init', (user) => {
+            console.log('🔄 Netlify Identity initialized');
+            this.initialized = true;
+            this.handleInit(user);
+          });
+          window.netlifyIdentity.on('login', (user) => this.handleLogin(user));
+          window.netlifyIdentity.on('logout', () => this.handleLogout());
+          window.netlifyIdentity.on('error', (err) => this.handleError(err));
+          
+          // Initialize Auctus Identity
+          window.netlifyIdentity.init();
+          
+          // Add multiple timeouts to handle different scenarios
+          setTimeout(() => {
+            if (!this.initialized) {
+              console.log('⚠️ Init event timeout, checking current user...');
+              this.checkAndInitialize();
+            }
+          }, 2000); // First check at 2 seconds
+          
+          setTimeout(() => {
+            if (!this.initialized) {
+              console.log('⚠️ Second timeout, force checking current user...');
+              this.checkAndInitialize();
+            }
+          }, 5000); // Second check at 5 seconds
+          
+          console.log('✅ Authentication system setup complete');
+          
+        } catch (error) {
+          console.error('❌ Failed to initialize:', error);
+          this.showStatus('Failed to load authentication. Please refresh the page.', 'error');
+          setTimeout(() => this.showLogin(), 2000);
         }
       }
-
-      ensureIdentityLoaded() {
+      
+      checkAndInitialize() {
+        try {
+          const currentUser = window.netlifyIdentity.currentUser();
+          if (currentUser) {
+            console.log('✅ Found existing user:', currentUser.email);
+            this.user = currentUser;
+            this.initialized = true;
+            this.showAdmin();
+          } else {
+            console.log('ℹ️ No current user, showing login');
+            this.showLogin();
+            this.initialized = true;
+          }
+        } catch (err) {
+          console.error('❌ Error checking current user:', err);
+          this.showLogin();
+          this.initialized = true;
+        }
+      }
+      
+      waitForAuctusIdentity() {
         return new Promise((resolve, reject) => {
-          const start = Date.now();
-          const poll = () => {
+          let attempts = 0;
+          const maxAttempts = 30; // 3 seconds
+          
+          const checkIdentity = () => {
+            attempts++;
+            console.log(`🔄 Checking for Auctus Identity... (${attempts}/${maxAttempts})`);
+            
             if (window.netlifyIdentity) {
+              console.log('✅ Auctus Identity loaded');
               resolve();
-            } else if (Date.now() - start > 5000) {
-              reject(new Error('identity widget timeout'));
+            } else if (attempts >= maxAttempts) {
+              console.error('❌ Auctus Identity failed to load after 3 seconds');
+              this.showStatus('Auctus Identity widget failed to load. Please check your internet connection and refresh.', 'error');
+              setTimeout(() => this.showLogin(), 2000);
+              reject(new Error('Auctus Identity failed to load'));
             } else {
-              setTimeout(poll, 120);
+              setTimeout(checkIdentity, 100);
             }
           };
-          poll();
+          
+          checkIdentity();
         });
       }
-
+      
       handleInit(user) {
         if (user) {
+          console.log('✅ User already logged in:', user.email);
+          this.user = user;
           this.showAdmin();
         } else {
+          console.log('ℹ️ No user logged in');
           this.showLogin();
         }
       }
-
+      
       handleLogin(user) {
-        this.setStatus(`Welcome back, ${user.email}`, false);
-        this.showAdmin();
+        console.log('✅ User logged in:', user.email);
+        this.user = user;
+        this.showStatus('Login successful!', 'success');
+        setTimeout(() => this.showAdmin(), 1000);
       }
-
+      
       handleLogout() {
-        this.setStatus('Signed out successfully', false);
+        console.log('ℹ️ User logged out');
+        this.user = null;
+        this.initialized = false;
+        // Reset admin content and show auth screen
+        this.adminContent.classList.remove('show');
+        this.authScreen.style.display = 'flex';
         this.showLogin();
+        this.showStatus('Logged out successfully', 'info');
       }
-
-      login() {
-        try {
-          this.setOverlayInteractive(false);
-          window.netlifyIdentity.open('login');
-        } catch (error) {
-          this.setOverlayInteractive(true);
-          this.setStatus('Unable to open login. Please refresh.', true);
-        }
-      }
-
-      logout() {
-        if (window.netlifyIdentity?.currentUser()) {
-          window.netlifyIdentity.logout();
+      
+      handleError(error) {
+        console.error('❌ Authentication error:', error);
+        if (error.message.includes('not enabled')) {
+          this.showSetup();
         } else {
+          this.showStatus('Authentication error: ' + error.message, 'error');
           this.showLogin();
         }
       }
-
-      showAdmin() {
-        this.overlay.classList.add('hidden');
-        this.setOverlayInteractive(false);
-        this.adminAppShell.classList.add('show');
-        window.adminApp?.loadCars();
+      
+      login() {
+        console.log('🔄 Opening Auctus login modal...');
+        this.showStatus('Opening login...', 'info');
+        try {
+          window.netlifyIdentity.open();
+        } catch (error) {
+          console.error('❌ Failed to open login:', error);
+          this.showStatus('Failed to open login. Try refreshing the page.', 'error');
+        }
       }
-
+      
+      logout() {
+        console.log('🔄 Logging out...');
+        this.showStatus('Logging out...', 'info');
+        try {
+          if (window.netlifyIdentity && this.user) {
+            window.netlifyIdentity.logout();
+          } else {
+            // Force logout if no identity or user
+            this.handleLogout();
+          }
+        } catch (error) {
+          console.error('❌ Logout error:', error);
+          // Force logout by clearing user and showing login
+          this.user = null;
+          this.showLogin();
+          this.showStatus('Logged out (forced)', 'info');
+        }
+      }
+      
+      skipAuth() {
+        console.log('⚠️ Skipping authentication (debug mode)');
+        this.user = { email: 'debug@nightmareracing.com', user_metadata: { full_name: 'Debug User' } };
+        this.showStatus('Authentication bypassed - Debug mode active', 'info');
+        setTimeout(() => this.showAdmin(), 1000);
+      }
+      
+      showLoading() {
+        this.hideAll();
+        this.authLoading.classList.remove('hidden');
+      }
+      
       showLogin() {
-        this.setOverlayInteractive(true);
-        this.loadingBlock.classList.add('hidden');
-        this.loginBlock.classList.remove('hidden');
-        this.overlay.classList.remove('hidden');
-        this.adminAppShell.classList.remove('show');
+        this.hideAll();
+        this.authLogin.classList.remove('hidden');
+        this.authScreen.style.display = 'flex';
       }
-
-      setStatus(message, isError) {
-        this.statusBlock.textContent = message;
-        this.statusBlock.classList.remove('hidden');
-        this.statusBlock.style.color = isError ? '#ff6b6b' : '#9fa6ad';
+      
+      showSetup() {
+        this.hideAll();
+        this.authSetup.classList.remove('hidden');
+        this.authScreen.style.display = 'flex';
       }
-
-      setOverlayInteractive(isInteractive) {
-        if (!this.overlay) return;
-        this.overlay.classList.toggle('inactive', !isInteractive);
+      
+      showAdmin() {
+        console.log('🚀 Admin - Showing admin content');
+        this.authScreen.style.display = 'none';
+        this.adminContent.classList.add('show');
+        // Initialize admin functionality
+        if (window.adminApp) {
+          console.log('🚀 Admin - Calling adminApp.init()');
+          window.adminApp.init();
+        } else {
+          console.warn('⚠️ Admin - adminApp not available, retrying...');
+          // Retry after a short delay
+          setTimeout(() => {
+            if (window.adminApp) {
+              console.log('🚀 Admin - Retry successful, calling adminApp.init()');
+              window.adminApp.init();
+            } else {
+              console.error('❌ Admin - adminApp still not available');
+            }
+          }, 500);
+        }
+      }
+      
+      hideAll() {
+        this.authLoading.classList.add('hidden');
+        this.authLogin.classList.add('hidden');
+        this.authSetup.classList.add('hidden');
+        this.statusMessage.classList.add('hidden');
+      }
+      
+      showStatus(message, type = 'info') {
+        this.statusMessage.textContent = message;
+        this.statusMessage.className = `status-message status-${type}`;
+        this.statusMessage.classList.remove('hidden');
+        
+        // Auto-hide after 5 seconds
+        setTimeout(() => {
+          this.statusMessage.classList.add('hidden');
+        }, 5000);
       }
     }
-
+    
+    // Admin functionality
     class AdminApp {
       constructor() {
         this.cars = [];
-        this.editingId = null;
-        this.form = document.getElementById('car-form');
-        this.submitButton = document.getElementById('submit-button');
-        this.cancelButton = document.getElementById('cancel-edit');
-        this.toast = document.getElementById('toast');
-        this.maxImageBytes = 6 * 1024 * 1024;
-
-        this.bindEvents();
-        this.setupImageUploads();
+        this.setupNavigation();
+        this.setupForms();
       }
-
-      bindEvents() {
-        this.form.addEventListener('submit', event => {
-          event.preventDefault();
-          this.saveCar();
+      
+      init() {
+        console.log('🚀 Initializing admin app...');
+        this.loadCars();
+      }
+      
+      setupNavigation() {
+        document.getElementById('nav-cars').addEventListener('click', () => {
+          this.showSection('cars');
+          this.setActiveNav('nav-cars');
         });
-
-        this.cancelButton.addEventListener('click', () => this.cancelEdit());
+        
+        document.getElementById('nav-test').addEventListener('click', () => {
+          this.showSection('test');
+          this.setActiveNav('nav-test');
+        });
+        
+        // Test buttons
+        document.getElementById('test-connection').addEventListener('click', () => this.testConnection());
+        document.getElementById('test-cars').addEventListener('click', () => this.testCars());
       }
-
-      setupImageUploads() {
+      
+      setupForms() {
+        // Main form submission
+        document.getElementById('add-car-form').addEventListener('submit', (e) => {
+          e.preventDefault();
+          this.addCar();
+        });
+        
+        // Main image upload
         this.setupImageUpload('main-image-upload', 'main-image-input', 'main-image-url', false);
+        
+        // Gallery upload
         this.setupImageUpload('gallery-upload', 'gallery-input', 'gallery-urls', true);
       }
-
-      setupImageUpload(zoneId, inputId, hiddenId, multiple) {
-        const zone = document.getElementById(zoneId);
-        const input = document.getElementById(inputId);
-        const hidden = document.getElementById(hiddenId);
-
-        if (!zone || !input || !hidden) return;
-
-        zone.addEventListener('click', () => input.click());
-
-        zone.addEventListener('dragover', event => {
-          event.preventDefault();
-          zone.style.borderColor = 'rgba(229, 0, 0, 0.7)';
+      
+      setupImageUpload(uploadAreaId, inputId, urlFieldId, isMultiple) {
+        const uploadArea = document.getElementById(uploadAreaId);
+        const fileInput = document.getElementById(inputId);
+        const urlField = document.getElementById(urlFieldId);
+        
+        // Click to trigger file selection
+        uploadArea.addEventListener('click', () => {
+          fileInput.click();
         });
-
-        zone.addEventListener('dragleave', () => {
-          zone.style.borderColor = 'rgba(229, 0, 0, 0.45)';
+        
+        // Drag and drop functionality
+        uploadArea.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          uploadArea.style.background = 'rgba(229, 0, 0, 0.15)';
         });
-
-        zone.addEventListener('drop', event => {
-          event.preventDefault();
-          zone.style.borderColor = 'rgba(229, 0, 0, 0.45)';
-          const files = Array.from(event.dataTransfer.files).filter(file => file.type.startsWith('image/'));
-          if (files.length) {
-            this.handleImageFiles(files, zone, hidden, multiple, input).catch(error => this.handleImageError(error));
+        
+        uploadArea.addEventListener('dragleave', (e) => {
+          e.preventDefault();
+          uploadArea.style.background = 'rgba(229, 0, 0, 0.05)';
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+          e.preventDefault();
+          uploadArea.style.background = 'rgba(229, 0, 0, 0.05)';
+          
+          const files = Array.from(e.dataTransfer.files).filter(file => file.type.startsWith('image/'));
+          if (files.length > 0) {
+            this.handleImageFiles(files, uploadArea, urlField, isMultiple);
           }
         });
-
-        input.addEventListener('change', event => {
-          const files = Array.from(event.target.files).filter(file => file.type.startsWith('image/'));
-          if (files.length) {
-            this.handleImageFiles(files, zone, hidden, multiple, input).catch(error => this.handleImageError(error));
+        
+        // File input change
+        fileInput.addEventListener('change', (e) => {
+          const files = Array.from(e.target.files);
+          if (files.length > 0) {
+            this.handleImageFiles(files, uploadArea, urlField, isMultiple);
           }
         });
       }
-
-      async handleImageFiles(files, zone, hidden, multiple, input) {
-        if (!files.length) return;
-
-        if (multiple) {
-          const existing = hidden.value ? JSON.parse(hidden.value) : [];
-          const uploads = [];
-
-          for (const file of files) {
-            if (file.size > this.maxImageBytes) {
-              this.toastMessage(`${file.name} is too large. Max 6MB per image.`);
-              continue;
-            }
-            const dataUrl = await this.readFileAsDataUrl(file);
-            uploads.push(dataUrl);
-          }
-
-          if (!uploads.length) return;
-
-          const urls = [...existing, ...uploads];
-          hidden.value = JSON.stringify(urls);
-          this.renderGalleryPreview(urls);
-          if (input) input.value = '';
-        } else {
-          const [file] = files;
-          if (!file) return;
-          if (file.size > this.maxImageBytes) {
-            this.toastMessage('Main image is too large. Max 6MB.');
-            return;
-          }
-
-          const dataUrl = await this.readFileAsDataUrl(file);
-          hidden.value = dataUrl;
-
-          zone.classList.add('has-image');
-          const placeholder = zone.querySelector('.dropzone-content');
-          const preview = zone.querySelector('.dropzone-preview');
-          const previewImg = preview?.querySelector('.image-preview');
-          if (placeholder) placeholder.classList.add('hidden');
-          if (previewImg) previewImg.src = dataUrl;
-          if (preview) preview.classList.remove('hidden');
-          if (input) input.value = '';
-        }
-      }
-
-      renderGalleryPreview(urls) {
-        const galleryPreview = document.getElementById('gallery-preview');
-        const placeholder = document.querySelector('#gallery-upload .dropzone-content');
-        if (!galleryPreview) return;
-
-        if (!urls.length) {
+      
+      handleImageFiles(files, uploadArea, urlField, isMultiple) {
+        uploadArea.classList.add('has-image');
+        
+        if (isMultiple) {
+          // Handle multiple images for gallery
+          const galleryPreview = document.getElementById('gallery-preview');
           galleryPreview.innerHTML = '';
-          if (placeholder) placeholder.classList.remove('hidden');
-          return;
+          
+          const imageUrls = [];
+          files.forEach((file, index) => {
+            // Create a placeholder URL based on filename for demo purposes
+            // In production, you'd upload to a service like Cloudinary, AWS S3, etc.
+            const placeholderUrl = `https://via.placeholder.com/400x300/000000/e50000?text=Gallery+${index + 1}`;
+            imageUrls.push(placeholderUrl);
+            
+            urlField.value = JSON.stringify(imageUrls);
+            
+            // Create preview
+            const previewDiv = document.createElement('div');
+            previewDiv.style.display = 'inline-block';
+            previewDiv.style.margin = '10px';
+            previewDiv.style.position = 'relative';
+            
+            const img = document.createElement('img');
+            img.src = placeholderUrl;
+            img.style.width = '120px';
+            img.style.height = '80px';
+            img.style.objectFit = 'cover';
+            img.style.borderRadius = '8px';
+            img.style.border = '2px solid var(--accent-red)';
+            
+            const removeBtn = document.createElement('button');
+            removeBtn.innerHTML = '✕';
+            removeBtn.style.position = 'absolute';
+            removeBtn.style.top = '-8px';
+            removeBtn.style.right = '-8px';
+            removeBtn.style.background = 'var(--accent-red)';
+            removeBtn.style.color = 'white';
+            removeBtn.style.border = 'none';
+            removeBtn.style.borderRadius = '50%';
+            removeBtn.style.width = '20px';
+            removeBtn.style.height = '20px';
+            removeBtn.style.cursor = 'pointer';
+            removeBtn.style.fontSize = '12px';
+            
+            removeBtn.onclick = () => {
+              previewDiv.remove();
+              // Update URL field by removing this image
+              const currentUrls = JSON.parse(urlField.value || '[]');
+              const newUrls = currentUrls.filter((_, i) => i !== index);
+              urlField.value = JSON.stringify(newUrls);
+            };
+            
+            previewDiv.appendChild(img);
+            previewDiv.appendChild(removeBtn);
+            galleryPreview.appendChild(previewDiv);
+          });
+          
+          uploadArea.innerHTML = `
+            <div style="color: var(--accent-red); font-weight: bold;">
+              📷 ${files.length} image(s) selected for gallery (demo placeholders)
+            </div>
+          `;
+        } else {
+          // Handle single main image
+          const file = files[0];
+          // Create a placeholder URL for demo purposes
+          const placeholderUrl = `https://via.placeholder.com/800x400/000000/e50000?text=Main+Image`;
+          
+          urlField.value = placeholderUrl;
+          
+          uploadArea.innerHTML = `
+            <img src="${placeholderUrl}" class="image-preview" style="max-width: 100%; max-height: 200px; border-radius: 10px;">
+            <div style="margin-top: 10px; color: var(--accent-red); font-weight: bold;">
+              📷 Main image uploaded: ${file.name} (demo placeholder)
+            </div>
+          `;
         }
-
-        galleryPreview.innerHTML = urls.map((url, index) => `
-          <div class="gallery-thumb">
-            <img src="${url}" alt="Gallery image ${index + 1}" />
-            <button type="button" class="car-button remove-thumb" onclick="window.adminApp.removeGalleryImage(${index})">×</button>
-          </div>
-        `).join('');
-
-        if (placeholder) placeholder.classList.add('hidden');
       }
-
-      handleImageError(error) {
-        console.error(error);
-        this.toastMessage(error?.message || 'Unable to process image');
+      
+      showSection(section) {
+        document.getElementById('section-cars').classList.add('hidden');
+        document.getElementById('section-test').classList.add('hidden');
+        document.getElementById(`section-${section}`).classList.remove('hidden');
       }
-
-      readFileAsDataUrl(file) {
-        return new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result);
-          reader.onerror = () => reject(new Error(`Unable to read ${file.name}`));
-          reader.readAsDataURL(file);
-        });
+      
+      setActiveNav(activeId) {
+        document.querySelectorAll('.admin-nav button').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(activeId).classList.add('active');
       }
-
-      removeGalleryImage(index) {
-        const hidden = document.getElementById('gallery-urls');
-        const current = hidden.value ? JSON.parse(hidden.value) : [];
-        current.splice(index, 1);
-        hidden.value = JSON.stringify(current);
-        this.renderGalleryPreview(current);
-        this.toastMessage('Gallery image removed');
-      }
-
-      removeMainImage(silent = false) {
-        const hidden = document.getElementById('main-image-url');
-        if (hidden) hidden.value = '';
-        const zone = document.getElementById('main-image-upload');
-        if (!zone) return;
-        zone.classList.remove('has-image');
-
-        const placeholder = zone.querySelector('.dropzone-content');
-        const preview = zone.querySelector('.dropzone-preview');
-        const previewImg = preview?.querySelector('.image-preview');
-        if (placeholder) placeholder.classList.remove('hidden');
-        if (preview) preview.classList.add('hidden');
-        if (previewImg) previewImg.src = '';
-        const input = document.getElementById('main-image-input');
-        if (input) input.value = '';
-        if (!silent) this.toastMessage('Main image cleared');
-      }
-
+      
       async loadCars() {
         try {
           const response = await fetch('/.netlify/functions/api-cars');
+          
           if (response.ok) {
             this.cars = await response.json();
+            if (Array.isArray(this.cars) && this.cars.length > 0) {
+              this.renderCars();
+              return;
+            }
           } else {
-            this.cars = window.carsData || [];
+            console.warn(`❌ Admin - API error (${response.status}): ${response.statusText}`);
           }
         } catch (error) {
-          this.cars = window.carsData || [];
+          console.error('❌ Admin - Failed to load from database:', error);
         }
-
-        if (!Array.isArray(this.cars)) this.cars = [];
-        this.renderCars();
-        this.updateStats();
-      }
-
-      renderCars() {
-        const grid = document.getElementById('cars-grid');
-        if (!this.cars.length) {
-          grid.innerHTML = '<div class="empty-state">No builds published yet. Add your first build using the form.</div>';
+        
+        // Try to use carousel data as fallback
+        if (window.carsData && window.carsData.length > 0) {
+          console.log('🔄 Admin - Using carousel data as fallback');
+          this.cars = window.carsData;
+          console.log(`✅ Admin - Loaded ${this.cars.length} cars from carousel fallback`);
+          this.renderCars();
           return;
         }
-
-        const cards = this.cars
-          .slice()
-          .sort((a, b) => new Date(b.dateAdded || b.created_at || 0) - new Date(a.dateAdded || a.created_at || 0))
-          .map(car => this.buildCardMarkup(car))
-          .join('');
-        grid.innerHTML = cards;
+        
+        // Last resort - use default demo data
+        console.log('🔄 Admin - Using demo data as final fallback');
+        this.cars = this.getDefaultCars();
+        console.log(`✅ Admin - Loaded ${this.cars.length} demo cars`);
+        this.renderCars();
+        
+        // Show helpful message about the fallback data
+        const container = document.getElementById('cars-list');
+        if (container && this.cars.length > 0) {
+          const warningDiv = document.createElement('div');
+          warningDiv.style.cssText = 'background: rgba(255,165,0,0.1); border: 2px solid orange; padding: 15px; margin-bottom: 20px; border-radius: 10px; text-align: center;';
+          warningDiv.innerHTML = `
+            <h3 style="color: orange; margin: 0 0 10px 0;">⚠️ Using Demo Data</h3>
+            <p style="margin: 0; color: white;">Database connection failed. Showing demo cars for testing purposes.</p>
+          `;
+          container.insertBefore(warningDiv, container.firstChild);
+        }
       }
-
-      buildCardMarkup(car) {
-        const galleryCount = Array.isArray(car.gallery) ? car.gallery.length : 0;
-        const summary = this.getOverviewPreview(car.description);
-        const hasMainImage = Boolean(car.mainImage);
-        const featuredLabel = car.featured ? '⭐ Featured' : '➖ Hidden from hero';
-        const galleryLabel = `${galleryCount} gallery item${galleryCount === 1 ? '' : 's'}`;
-        const addedLabel = `Added ${this.formatRelative(car.dateAdded || car.created_at)}`;
-
-        return `
-          <article class="car-card">
-            <div class="car-thumb">
-              ${hasMainImage 
-                ? `<img src="${car.mainImage}" alt="${car.name || 'Build photo'}" loading="lazy" />`
-                : '<div class="car-thumb-placeholder">🏁</div>'}
+      
+      renderCars() {
+        const container = document.getElementById('cars-list');
+        
+        if (this.cars.length === 0) {
+          container.innerHTML = `
+            <div style="text-align: center; padding: 60px 20px; color: var(--medium-gray); grid-column: 1 / -1;">
+              <div style="font-size: 4rem; margin-bottom: 20px;">🏎️</div>
+              <h3 style="color: var(--accent-red); margin-bottom: 10px;">No Cars Yet</h3>
+              <p>Add your first car using the form above to get started!</p>
             </div>
-            <div class="car-content">
-              <header class="car-header">
-                <h3 class="car-title">${car.name || 'Untitled Build'}</h3>
-                <span class="badge">${this.getStatusEmoji(car.status)} ${car.status || 'Status unknown'}</span>
-              </header>
-              <div class="car-meta">
-                <span>${featuredLabel}</span>
-                <span>${galleryLabel}</span>
-                <span>${addedLabel}</span>
+          `;
+          return;
+        }
+        
+        container.innerHTML = this.cars.map(car => {
+          const hasImage = car.mainImage && car.mainImage !== 'null';
+          const hasGallery = car.gallery && car.gallery.length > 0;
+          
+          return `
+            <div class="car-card">
+              ${hasImage ? `
+                <div style="margin-bottom: 15px;">
+                  <img src="${car.mainImage}" 
+                       style="width: 100%; height: 200px; object-fit: cover; border-radius: 10px; border: 2px solid var(--accent-red);" 
+                       alt="${car.name}"
+                       onerror="this.style.display='none'">
+                </div>
+              ` : ''}
+              
+              <h3>${car.name}</h3>
+              ${car.year || car.make || car.model ? `
+                <p style="color: var(--accent-red); font-size: 1.1rem; font-weight: 600; margin-bottom: 10px;">
+                  🏎️ ${car.year || '????'} ${car.make || ''} ${car.model || ''}
+                </p>
+              ` : ''}
+              <p style="color: var(--pure-white); font-size: 1rem; margin-bottom: 15px;">
+                ${car.description || 'No description'}
+              </p>
+              
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+                <p class="car-meta"><strong>Status:</strong> ${this.getStatusEmoji(car.status)} ${car.status}</p>
+                <p class="car-meta"><strong>Featured:</strong> ${car.featured ? '⭐ Yes' : '❌ No'}</p>
               </div>
-              <p class="car-summary">${summary}</p>
-              <footer class="car-actions">
-                <button type="button" class="car-button" onclick="window.adminApp.editCar(${car.id})">Edit</button>
-                <button type="button" class="car-button danger" onclick="window.adminApp.deleteCar(${car.id})">Delete</button>
-                <button type="button" class="car-button" onclick="window.adminApp.viewCar(${car.id})">Preview</button>
-              </footer>
+              
+              ${hasGallery ? `
+                <div style="margin-bottom: 15px;">
+                  <h4 style="color: var(--accent-red); margin: 0 0 8px 0; font-size: 0.9rem;">📸 GALLERY (${car.gallery.length})</h4>
+                  <div style="display: flex; gap: 5px; overflow-x: auto;">
+                    ${car.gallery.slice(0, 4).map(img => `
+                      <img src="${img}" 
+                           style="width: 60px; height: 40px; object-fit: cover; border-radius: 4px; border: 1px solid var(--accent-red);" 
+                           onerror="this.style.display='none'">
+                    `).join('')}
+                    ${car.gallery.length > 4 ? `<span style="color: var(--medium-gray); font-size: 0.8rem; align-self: center;">+${car.gallery.length - 4} more</span>` : ''}
+                  </div>
+                </div>
+              ` : ''}
+              
+              <div style="font-size: 0.8rem; color: var(--medium-gray); margin-bottom: 15px;">
+                Added: ${new Date(car.dateAdded || car.created_at).toLocaleDateString()}
+              </div>
+              
+              <div class="car-actions">
+                <button onclick="if(window.adminApp) { window.adminApp.editCar(${car.id}); } else { console.error('adminApp not available'); }" title="Edit car details">
+                  ✏️ Edit
+                </button>
+                <button onclick="if(window.adminApp) { window.adminApp.deleteCar(${car.id}); } else { console.error('adminApp not available'); }" class="danger" title="Delete car">
+                  🗑️ Delete
+                </button>
+                <button onclick="if(window.adminApp) { window.adminApp.viewCar(${car.id}); } else { console.error('adminApp not available'); }" title="View full details">
+                  👁️ View
+                </button>
+              </div>
             </div>
-          </article>`;
+          `;
+        }).join('');
       }
-
-      getOverviewPreview(text, options = {}) {
-        const { maxSentences = 2, maxChars = 180 } = options;
-        if (!text) return 'Overview coming soon.';
-
-        const normalized = String(text).replace(/\s+/g, ' ').trim();
-        if (!normalized) return 'Overview coming soon.';
-
-        const sentences = normalized.match(/[^.!?]+[.!?]?/g) || [normalized];
-        let preview = '';
-
-        for (const sentence of sentences) {
-          const trimmed = sentence.trim();
-          if (!trimmed) continue;
-
-          const candidate = preview ? `${preview} ${trimmed}` : trimmed;
-          if (preview && candidate.length > maxChars) break;
-
-          preview = candidate;
-
-          const sentenceCount = (preview.match(/[.!?]/g) || []).length;
-          if (sentenceCount >= maxSentences || preview.length >= maxChars) break;
-        }
-
-        if (preview.length > maxChars) {
-          preview = preview.slice(0, maxChars);
-        }
-
-        if (preview.length < normalized.length) {
-          preview = preview.replace(/\s[^\s]*$/, '').replace(/[.,;:\-\s]*$/, '');
-          preview += '…';
-        }
-
-        return preview;
-      }
-
+      
       getStatusEmoji(status) {
-        switch ((status || '').toUpperCase()) {
+        switch(status) {
           case 'COMPLETED': return '✅';
           case 'IN PROGRESS': return '🔧';
           case 'FEATURED BUILD': return '⭐';
           case 'CUSTOMER CAR': return '👤';
-          default: return '🏁';
+          default: return '🏎️';
         }
       }
-
-      formatRelative(value) {
-        if (!value) return 'recently';
-        const timestamp = new Date(value).getTime();
-        if (Number.isNaN(timestamp)) return 'recently';
-        const diff = Date.now() - timestamp;
-        const minutes = Math.floor(diff / 60000);
-        if (minutes < 1) return 'just now';
-        if (minutes < 60) return `${minutes}m ago`;
-        const hours = Math.floor(minutes / 60);
-        if (hours < 24) return `${hours}h ago`;
-        const days = Math.floor(hours / 24);
-        if (days < 30) return `${days}d ago`;
-        return new Date(timestamp).toLocaleDateString();
+      
+      viewCar(carId) {
+        const car = this.cars.find(c => c.id === carId);
+        if (!car) return;
+        
+        // Create a modal or detailed view
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+          position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 10000;
+          background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center;
+          padding: 20px; cursor: pointer;
+        `;
+        
+        modal.innerHTML = `
+          <div style="background: var(--secondary-black); border-radius: 15px; padding: 30px; max-width: 800px; max-height: 90vh; overflow-y: auto; cursor: default;" onclick="event.stopPropagation()">
+            <h2 style="color: var(--accent-red); margin-top: 0;">${car.name}</h2>
+            ${car.mainImage ? `<img src="${car.mainImage}" style="width: 100%; max-height: 300px; object-fit: cover; border-radius: 10px; margin-bottom: 20px;">` : ''}
+            <p><strong>Description:</strong> ${car.description}</p>
+            <p><strong>Status:</strong> ${car.status}</p>
+            <p><strong>Featured:</strong> ${car.featured ? 'Yes' : 'No'}</p>
+            <button onclick="this.parentElement.parentElement.remove()" style="margin-top: 20px; padding: 10px 20px; background: var(--accent-red); color: white; border: none; border-radius: 5px; cursor: pointer;">Close</button>
+          </div>
+        `;
+        
+        modal.onclick = () => modal.remove();
+        document.body.appendChild(modal);
       }
-
-      updateStats() {
-        const total = this.cars.length;
-        const featured = this.cars.filter(car => car.featured).length;
-        const progressing = this.cars.filter(car => (car.status || '').toUpperCase().includes('PROGRESS')).length;
-        const missingMedia = this.cars.filter(car => !car.mainImage && (!car.gallery || !car.gallery.length)).length;
-
-        const stats = {
-          'stat-total-cars': total,
-          'stat-featured-cars': featured,
-          'stat-active-cars': progressing,
-          'stat-missing-media': missingMedia
-        };
-
-        Object.entries(stats).forEach(([id, value]) => {
-          const node = document.getElementById(id);
-          if (node) node.textContent = value;
-        });
-      }
-
-      async saveCar() {
-        const formData = new FormData(this.form);
-        const payload = {
-          name: formData.get('name')?.trim(),
-          description: formData.get('description')?.trim(),
-          status: formData.get('status') || 'IN PROGRESS',
+      
+      async addCar() {
+        const form = document.getElementById('add-car-form');
+        const formData = new FormData(form);
+        
+        // Get gallery images
+        const galleryUrls = document.getElementById('gallery-urls').value;
+        const gallery = galleryUrls ? JSON.parse(galleryUrls) : [];
+        
+        const carData = {
+          year: parseInt(formData.get('year')),
+          make: formData.get('make'),
+          model: formData.get('model'),
+          name: formData.get('name'),
+          description: formData.get('description'),
+          status: formData.get('status'),
           featured: formData.has('featured'),
           mainImage: formData.get('mainImage') || null,
-          gallery: formData.get('gallery') ? JSON.parse(formData.get('gallery')) : []
+          gallery: gallery
         };
-
-        const action = this.editingId ? 'PUT' : 'POST';
-        const url = this.editingId ? `/.netlify/functions/api-cars/${this.editingId}` : '/.netlify/functions/api-cars';
-
-        this.submitButton.disabled = true;
-        this.submitButton.textContent = this.editingId ? 'Saving Changes…' : 'Publishing…';
-
+        
         try {
-          const response = await fetch(url, {
-            method: action,
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-          });
-
-          if (!response.ok) throw new Error(`Request failed (${response.status})`);
-
-          this.toastMessage(this.editingId ? 'Build updated' : 'Build created');
-          this.form.reset();
-          document.getElementById('car-featured').checked = true;
-          this.resetDropzones();
-          this.cancelEdit(true);
-          await this.loadCars();
+          const isEditing = this.editingCarId;
+          const actionText = isEditing ? 'Updating' : 'Adding';
+          console.log(`🔄 ${actionText} car...`, carData);
+          
+          // Show loading state
+          const submitBtn = form.querySelector('button[type="submit"]');
+          const originalText = submitBtn.innerHTML;
+          submitBtn.innerHTML = `⏳ ${actionText} Car...`;
+          submitBtn.disabled = true;
+          
+          let response;
+          if (isEditing) {
+            // Update existing car
+            response = await fetch(`/.netlify/functions/api-cars/${this.editingCarId}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(carData)
+            });
+          } else {
+            // Add new car
+            response = await fetch('/.netlify/functions/api-cars', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(carData)
+            });
+          }
+          
+          if (response.ok) {
+            console.log(`✅ Car ${isEditing ? 'updated' : 'added'} successfully`);
+            
+            // Reset form
+            form.reset();
+            document.getElementById('car-featured').checked = true;
+            
+            // Reset image uploads
+            this.resetImageUploads();
+            
+            // If editing, cancel edit mode
+            if (isEditing) {
+              this.cancelEdit();
+            }
+            
+            // Reload list
+            this.loadCars();
+            
+            // Show success message
+            this.showNotification(`Car ${isEditing ? 'updated' : 'added'} successfully! 🎉`, 'success');
+            
+          } else {
+            throw new Error(`Failed to ${isEditing ? 'update' : 'add'} car: ${response.status}`);
+          }
+          
+          // Reset button
+          submitBtn.innerHTML = originalText;
+          submitBtn.disabled = false;
+          
         } catch (error) {
-          this.toastMessage(error.message || 'Unable to save build');
-        } finally {
-          this.submitButton.disabled = false;
-          this.submitButton.textContent = 'Save Build';
+          const action = this.editingCarId ? 'update' : 'add';
+          console.error(`❌ Failed to ${action} car:`, error);
+          this.showMessage(`Failed to ${action} car: ` + error.message, 'error');
+          
+          // Reset button
+          const submitBtn = form.querySelector('button[type="submit"]');
+          submitBtn.innerHTML = this.editingCarId ? '📝 Update Car' : '🚗 Add Car to Database';
+          submitBtn.disabled = false;
         }
       }
-
-      resetDropzones() {
-        this.removeMainImage(true);
+      
+      resetImageUploads() {
+        // Reset main image upload
+        const mainUpload = document.getElementById('main-image-upload');
+        mainUpload.classList.remove('has-image');
+        mainUpload.innerHTML = `
+          <div class="upload-content">
+            <div class="upload-icon">📷</div>
+            <div class="upload-placeholder">Click to upload main car image</div>
+            <small style="color: var(--medium-gray);">Recommended: 1920x1080px, JPG or PNG</small>
+          </div>
+        `;
+        document.getElementById('main-image-url').value = '';
+        
+        // Reset gallery upload
+        const galleryUpload = document.getElementById('gallery-upload');
+        galleryUpload.classList.remove('has-image');
+        galleryUpload.innerHTML = `
+          <div class="upload-content">
+            <div class="upload-icon">🖼️</div>
+            <div class="upload-placeholder">Click to upload gallery images</div>
+            <small style="color: var(--medium-gray);">Select multiple images for car gallery</small>
+          </div>
+        `;
+        document.getElementById('gallery-preview').innerHTML = '';
         document.getElementById('gallery-urls').value = '';
-        this.renderGalleryPreview([]);
-        const galleryInput = document.getElementById('gallery-input');
-        if (galleryInput) galleryInput.value = '';
       }
-
-      editCar(id) {
-        const car = this.cars.find(item => item.id === id);
-        if (!car) return;
-
-        this.editingId = id;
+      
+      showNotification(message, type) {
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `status-message status-${type}`;
+        notification.textContent = message;
+        notification.style.position = 'fixed';
+        notification.style.top = '20px';
+        notification.style.right = '20px';
+        notification.style.zIndex = '10000';
+        notification.style.maxWidth = '400px';
+        
+        document.body.appendChild(notification);
+        
+        // Auto remove after 4 seconds
+        setTimeout(() => {
+          notification.remove();
+        }, 4000);
+      }
+      
+      async deleteCar(carId) {
+        if (!confirm('Are you sure you want to delete this car?')) return;
+        
+        try {
+          console.log('🔄 Deleting car:', carId);
+          const response = await fetch(`/.netlify/functions/api-cars/${carId}`, {
+            method: 'DELETE'
+          });
+          
+          if (response.ok) {
+            console.log('✅ Car deleted successfully');
+            this.loadCars(); // Reload list
+          } else {
+            throw new Error(`Failed to delete car: ${response.status}`);
+          }
+        } catch (error) {
+          console.error('❌ Failed to delete car:', error);
+          alert('Failed to delete car: ' + error.message);
+        }
+      }
+      
+      editCar(carId) {
+        console.log('🔄 Admin - Editing car:', carId);
+        const car = this.cars.find(c => c.id === carId);
+        if (!car) {
+          console.error('❌ Admin - Car not found:', carId);
+          return;
+        }
+        
+        console.log('📝 Admin - Car data:', car);
+        
+        // Populate the form with existing data
+        document.getElementById('car-year').value = car.year || '';
+        document.getElementById('car-make').value = car.make || '';
+        document.getElementById('car-model').value = car.model || '';
         document.getElementById('car-name').value = car.name || '';
         document.getElementById('car-description').value = car.description || '';
         document.getElementById('car-status').value = car.status || 'IN PROGRESS';
-        document.getElementById('car-featured').checked = Boolean(car.featured);
-
-        if (car.mainImage) {
+        document.getElementById('car-featured').checked = car.featured || false;
+        
+        // Handle existing main image
+        if (car.mainImage && car.mainImage !== 'null') {
           document.getElementById('main-image-url').value = car.mainImage;
-          const zone = document.getElementById('main-image-upload');
-          zone.classList.add('has-image');
-          const placeholder = zone.querySelector('.dropzone-content');
-          const preview = zone.querySelector('.dropzone-preview');
-          const previewImg = preview?.querySelector('.image-preview');
-          if (placeholder) placeholder.classList.add('hidden');
-          if (previewImg) previewImg.src = car.mainImage;
-          if (preview) preview.classList.remove('hidden');
-        } else {
-          this.removeMainImage(true);
+          const mainImageUpload = document.getElementById('main-image-upload');
+          mainImageUpload.classList.add('has-image');
+          mainImageUpload.innerHTML = `
+            <img src="${car.mainImage}" class="image-preview" style="max-width: 100%; max-height: 200px; border-radius: 10px;">
+            <div class="upload-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s; border-radius: 10px;">
+              <button type="button" class="change-image-btn" onclick="document.getElementById('main-image-input').click()" style="background: var(--accent-red); color: white; border: none; padding: 8px 16px; margin: 4px; border-radius: 6px; cursor: pointer; font-size: 14px;">📷 Change Image</button>
+              <button type="button" class="remove-image-btn" onclick="window.adminApp.removeMainImage()" style="background: #666; color: white; border: none; padding: 8px 16px; margin: 4px; border-radius: 6px; cursor: pointer; font-size: 14px;">🗑️ Remove</button>
+            </div>
+          `;
         }
-
-        if (car.gallery?.length) {
-          const urls = car.gallery.map(entry => typeof entry === 'string' ? entry : entry.url).filter(Boolean);
-          document.getElementById('gallery-urls').value = JSON.stringify(urls);
-          this.renderGalleryPreview(urls);
-        } else {
-          document.getElementById('gallery-urls').value = '';
-          this.renderGalleryPreview([]);
+        
+        // Handle existing gallery images
+        if (car.gallery && car.gallery.length > 0) {
+          const galleryUrls = car.gallery.map(img => typeof img === 'string' ? img : img.url).filter(url => url && url !== 'null');
+          document.getElementById('gallery-urls').value = JSON.stringify(galleryUrls);
+          
+          const galleryPreview = document.getElementById('gallery-preview');
+          galleryPreview.innerHTML = galleryUrls.map((url, index) => `
+            <div class="gallery-item" style="position: relative; display: inline-block; margin: 5px;">
+              <img src="${url}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 5px;">
+              <button type="button" class="remove-gallery-btn" onclick="window.adminApp.removeGalleryImage(${index})" 
+                      style="position: absolute; top: -5px; right: -5px; background: var(--accent-red); color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center;">✕</button>
+            </div>
+          `).join('');
         }
-
-        document.getElementById('form-title').textContent = 'Edit Build';
-        document.getElementById('form-caption').textContent = 'Update the details and press Save Build to apply changes.';
-        this.cancelButton.classList.remove('hidden');
-        this.toastMessage(`Editing ${car.name}`);
-        this.form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        
+        // Store editing car ID
+        this.editingCarId = carId;
+        
+        // Update button text
+        const submitBtn = document.querySelector('#add-car-form button[type="submit"]');
+        submitBtn.textContent = '📝 Update Car';
+        submitBtn.style.background = 'linear-gradient(45deg, #ff4444, #cc0000)';
+        
+        // Add cancel button if not exists
+        if (!document.getElementById('cancel-edit-btn')) {
+          const cancelBtn = document.createElement('button');
+          cancelBtn.id = 'cancel-edit-btn';
+          cancelBtn.type = 'button';
+          cancelBtn.textContent = '❌ Cancel Edit';
+          cancelBtn.style.cssText = `
+            background: var(--dark-gray); color: white; border: none; padding: 12px 24px; 
+            border-radius: 8px; cursor: pointer; margin-left: 10px; font-family: 'Orbitron', sans-serif;
+          `;
+          cancelBtn.onclick = () => this.cancelEdit();
+          submitBtn.parentNode.appendChild(cancelBtn);
+        }
+        
+        // Scroll to form
+        document.getElementById('add-car-form').scrollIntoView({ behavior: 'smooth' });
+        
+        this.showMessage(`✏️ Editing: ${car.name}`, 'info');
       }
-
-      cancelEdit(skipToast = false) {
-        this.editingId = null;
-        this.cancelButton.classList.add('hidden');
-        document.getElementById('form-title').textContent = 'Add New Build';
-        document.getElementById('form-caption').textContent = 'Complete the details and press Save Build to publish.';
-        this.form.reset();
-        document.getElementById('car-featured').checked = true;
-        this.removeMainImage(true);
-        document.getElementById('gallery-urls').value = '';
-        this.renderGalleryPreview([]);
-        if (!skipToast) this.toastMessage('Edit cancelled');
+      
+      cancelEdit() {
+        console.log('🔄 Admin - Cancelling edit');
+        this.editingCarId = null;
+        
+        // Reset form
+        document.getElementById('add-car-form').reset();
+        
+        // Reset image uploads
+        this.resetImageUploads();
+        
+        // Reset button
+        const submitBtn = document.querySelector('#add-car-form button[type="submit"]');
+        submitBtn.textContent = '🚗 Add Car to Database';
+        submitBtn.style.background = 'linear-gradient(45deg, var(--accent-red), #cc0000)';
+        
+        // Remove cancel button
+        const cancelBtn = document.getElementById('cancel-edit-btn');
+        if (cancelBtn) cancelBtn.remove();
+        
+        this.showMessage('Edit cancelled', 'info');
       }
-
-      async deleteCar(id) {
-        if (!confirm('Delete this build? This cannot be undone.')) return;
+      
+      async updateCar(carId, updates) {
         try {
-          const response = await fetch(`/.netlify/functions/api-cars/${id}`, { method: 'DELETE' });
-          if (!response.ok) throw new Error(`Request failed (${response.status})`);
-          this.toastMessage('Build deleted');
-          await this.loadCars();
+          console.log('🔄 Updating car:', carId, updates);
+          const response = await fetch(`/.netlify/functions/api-cars/${carId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updates)
+          });
+          
+          if (response.ok) {
+            console.log('✅ Car updated successfully');
+            this.loadCars(); // Reload list
+          } else {
+            throw new Error(`Failed to update car: ${response.status}`);
+          }
         } catch (error) {
-          this.toastMessage(error.message || 'Unable to delete build');
+          console.error('❌ Failed to update car:', error);
+          alert('Failed to update car: ' + error.message);
         }
       }
-
-      viewCar(id) {
-        const car = this.cars.find(item => item.id === id);
-        if (!car) return;
-
-        const overlay = document.createElement('div');
-        overlay.className = 'modal-overlay';
-        overlay.innerHTML = `
-          <article class="modal-card">
-            <header style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;">
-              <div>
-                <h2 style="margin:0;font-family:var(--font-display);letter-spacing:0.08em;">${car.name}</h2>
-                <p style="margin:6px 0 0;color:var(--gray-400);">${car.status}</p>
-              </div>
-              <button type="button" class="car-button" onclick="this.closest('.modal-overlay').remove();">×</button>
-            </header>
-            ${car.mainImage ? `<img src="${car.mainImage}" alt="${car.name}" style="width:100%;border-radius:12px;object-fit:cover;max-height:320px;" />` : ''}
-            <p>${car.description || ''}</p>
-          </article>`;
-        overlay.addEventListener('click', () => overlay.remove());
-        overlay.querySelector('article').addEventListener('click', event => event.stopPropagation());
-        document.body.appendChild(overlay);
+      
+      async testConnection() {
+        const results = document.getElementById('test-results');
+        results.innerHTML = '<div class="spinner"></div><p>Testing connection...</p>';
+        
+        try {
+          const response = await fetch('/.netlify/functions/api-cars');
+          if (response.ok) {
+            results.innerHTML = '<p style="color: #00ff00;">✅ API connection successful!</p>';
+          } else {
+            results.innerHTML = `<p style="color: #ff0000;">❌ API error: ${response.status}</p>`;
+          }
+        } catch (error) {
+          results.innerHTML = `<p style="color: #ff0000;">❌ Connection failed: ${error.message}</p>`;
+        }
       }
-
-      toastMessage(message) {
-        this.toast.textContent = message;
-        this.toast.classList.add('show');
-        clearTimeout(this.toastTimeout);
-        this.toastTimeout = setTimeout(() => {
-          this.toast.classList.remove('show');
-        }, 3200);
+      
+      async testCars() {
+        const results = document.getElementById('test-results');
+        results.innerHTML = '<div class="spinner"></div><p>Loading cars...</p>';
+        
+        try {
+          const response = await fetch('/.netlify/functions/api-cars');
+          if (response.ok) {
+            const cars = await response.json();
+            results.innerHTML = `
+              <p style="color: #00ff00;">✅ Found ${cars.length} cars in database</p>
+              <pre style="background: #1a1a1a; padding: 10px; border-radius: 5px; overflow-x: auto;">
+${JSON.stringify(cars, null, 2)}
+              </pre>
+            `;
+          } else {
+            results.innerHTML = `<p style="color: #ff0000;">❌ Failed to load cars: ${response.status}</p>`;
+          }
+        } catch (error) {
+          results.innerHTML = `<p style="color: #ff0000;">❌ Error: ${error.message}</p>`;
+        }
+      }
+      
+      showMessage(message, type = 'info') {
+        console.log(`📝 Admin Message (${type}):`, message);
+        
+        // Create or update a message element
+        let messageEl = document.getElementById('admin-message');
+        if (!messageEl) {
+          messageEl = document.createElement('div');
+          messageEl.id = 'admin-message';
+          messageEl.style.cssText = `
+            position: fixed; top: 20px; right: 20px; z-index: 10000;
+            padding: 12px 24px; border-radius: 8px; font-weight: 500;
+            max-width: 300px; word-wrap: break-word;
+            transition: all 0.3s ease; transform: translateX(100%);
+          `;
+          document.body.appendChild(messageEl);
+        }
+        
+        // Set message and style based on type
+        messageEl.textContent = message;
+        messageEl.className = '';
+        
+        if (type === 'error') {
+          messageEl.style.cssText += `
+            background: var(--accent-red); color: white;
+            border: 2px solid #cc0000;
+          `;
+        } else if (type === 'success') {
+          messageEl.style.cssText += `
+            background: #00aa00; color: white;
+            border: 2px solid #008800;
+          `;
+        } else {
+          messageEl.style.cssText += `
+            background: var(--secondary-black); color: var(--pure-white);
+            border: 2px solid var(--accent-red);
+          `;
+        }
+        
+        // Show message
+        setTimeout(() => {
+          messageEl.style.transform = 'translateX(0)';
+        }, 100);
+        
+        // Hide message after 4 seconds
+        setTimeout(() => {
+          messageEl.style.transform = 'translateX(100%)';
+          setTimeout(() => {
+            if (messageEl.parentNode) {
+              messageEl.parentNode.removeChild(messageEl);
+            }
+          }, 300);
+        }, 4000);
+      }
+      
+      removeMainImage() {
+        console.log('🗑️ Removing main image');
+        
+        // Clear the image URL input
+        document.getElementById('main-image-url').value = '';
+        
+        // Reset the upload area
+        const mainImageUpload = document.getElementById('main-image-upload');
+        mainImageUpload.classList.remove('has-image');
+        mainImageUpload.innerHTML = `
+          <input type="file" id="main-image-input" class="hidden-input" accept="image/*">
+          <div class="upload-content">
+            <div class="upload-icon">📷</div>
+            <div class="upload-placeholder">Click to upload main car image</div>
+            <small style="color: var(--medium-gray);">Recommended: 1920x1080px, JPG or PNG</small>
+          </div>
+        `;
+        
+        // Re-attach the file input event listener
+        this.setupImageUploads();
+        
+        this.showMessage('Main image removed', 'info');
+      }
+      
+      removeGalleryImage(index) {
+        console.log(`🗑️ Removing gallery image at index ${index}`);
+        
+        // Get current gallery URLs
+        const galleryUrls = document.getElementById('gallery-urls').value;
+        let gallery = galleryUrls ? JSON.parse(galleryUrls) : [];
+        
+        // Remove the image at the specified index
+        gallery.splice(index, 1);
+        
+        // Update the hidden input
+        document.getElementById('gallery-urls').value = JSON.stringify(gallery);
+        
+        // Update the preview
+        const galleryPreview = document.getElementById('gallery-preview');
+        galleryPreview.innerHTML = gallery.map((url, i) => `
+          <div class="gallery-item" style="position: relative; display: inline-block; margin: 5px;">
+            <img src="${url}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 5px;">
+            <button type="button" class="remove-gallery-btn" onclick="window.adminApp.removeGalleryImage(${i})" 
+                    style="position: absolute; top: -5px; right: -5px; background: var(--accent-red); color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center;">✕</button>
+          </div>
+        `).join('');
+        
+        this.showMessage('Gallery image removed', 'info');
+      }
+      
+      setupImageUploads() {
+        // Re-setup image upload handlers
+        this.setupImageUpload('main-image-upload', 'main-image-input', 'main-image-url', false);
+        this.setupImageUpload('gallery-upload', 'gallery-input', 'gallery-urls', true);
       }
     }
+    
+    // Initialize everything when page loads
+    let auth, adminApp;
 
     document.addEventListener('DOMContentLoaded', () => {
-      window.adminApp = new AdminApp();
-      new AdminAuth();
+      console.log('🚀 Starting Nightmare Racing Admin...');
+      auth = new AdminAuth();
+      adminApp = new AdminApp();
+      // Make adminApp globally available for onclick handlers
+      window.adminApp = adminApp;
     });
   </script>
 </body>

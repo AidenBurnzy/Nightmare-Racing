@@ -36,6 +36,9 @@ const fetchCarsQuery = async (sql) => {
             return await sql`
                 SELECT
                     c.id,
+                    c.year,
+                    c.make,
+                    c.model,
                     c.name,
                     c.description,
                     c.main_image,
@@ -84,6 +87,9 @@ const fetchCarsQuery = async (sql) => {
     return await sql`
         SELECT
             c.id,
+            c.year,
+            c.make,
+            c.model,
             c.name,
             c.description,
             c.main_image,
@@ -181,6 +187,9 @@ exports.handler = async (event) => {
 
                 return {
                     id: car.id,
+                    year: car.year,
+                    make: car.make,
+                    model: car.model,
                     name: car.name,
                     description: car.description,
                     mainImage: sanitizeMediaUrl(car.main_image),
@@ -205,8 +214,11 @@ exports.handler = async (event) => {
             const sanitizedMainImage = sanitizeMediaUrl(carData.mainImage) || null;
 
             const [newCar] = await sql`
-                INSERT INTO cars (name, description, main_image, status, featured, date_added)
+                INSERT INTO cars (year, make, model, name, description, main_image, status, featured, date_added)
                 VALUES (
+                    ${carData.year || null},
+                    ${carData.make || null},
+                    ${carData.model || null},
                     ${carData.name},
                     ${carData.description},
                     ${sanitizedMainImage},
@@ -214,7 +226,7 @@ exports.handler = async (event) => {
                     ${carData.featured !== false},
                     ${carData.dateAdded || new Date().toISOString()}
                 )
-                RETURNING id, name, description, main_image, status, featured, date_added
+                RETURNING id, year, make, model, name, description, main_image, status, featured, date_added
             `;
 
             if (Array.isArray(carData.gallery) && carData.gallery.length > 0) {
@@ -265,6 +277,9 @@ exports.handler = async (event) => {
                 headers,
                 body: JSON.stringify({
                     id: newCar.id,
+                    year: newCar.year,
+                    make: newCar.make,
+                    model: newCar.model,
                     name: newCar.name,
                     description: newCar.description,
                     mainImage: newCar.main_image,
@@ -282,7 +297,10 @@ exports.handler = async (event) => {
 
             await sql`
                 UPDATE cars
-                SET name = ${carData.name},
+                SET year = ${carData.year || null},
+                    make = ${carData.make || null},
+                    model = ${carData.model || null},
+                    name = ${carData.name},
                     description = ${carData.description},
                     main_image = ${sanitizeMediaUrl(carData.mainImage)},
                     status = ${carData.status},
