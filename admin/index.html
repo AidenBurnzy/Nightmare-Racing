@@ -1380,51 +1380,24 @@
           return `
             <div class="car-card">
               ${hasImage ? `
-                <div style="margin-bottom: 15px;">
+                <div style="margin-bottom: 12px;">
                   <img src="${car.mainImage}" 
-                       style="width: 100%; height: 200px; object-fit: cover; border-radius: 10px; border: 2px solid var(--accent-red);" 
+                       style="width: 100%; height: 180px; object-fit: cover; border-radius: 10px; border: 2px solid var(--accent-red);" 
                        alt="${car.name}"
                        onerror="this.style.display='none'">
                 </div>
               ` : ''}
               
-              <h3>${car.name}</h3>
+              <h3 style="margin-bottom: 8px;">${car.name}</h3>
               ${car.year || car.make || car.model ? `
-                <p style="color: var(--accent-red); font-size: 1.1rem; font-weight: 600; margin-bottom: 10px;">
+                <p style="color: var(--accent-red); font-size: 1rem; font-weight: 600; margin-bottom: 10px;">
                   🏎️ ${car.year || '????'} ${car.make || ''} ${car.model || ''}
                 </p>
               ` : ''}
-              <p style="color: var(--pure-white); font-size: 1rem; margin-bottom: 15px;">
-                ${car.description || 'No description'}
-              </p>
               
-              ${car.mechanics ? `
-                <p style="color: var(--accent-red); font-size: 0.95rem; margin-bottom: 12px;">
-                  🔧 <strong>Mechanics:</strong> ${car.mechanics}
-                </p>
-              ` : ''}
-              
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
-                <p class="car-meta"><strong>Status:</strong> ${this.getStatusEmoji(car.status)} ${car.status}</p>
-                <p class="car-meta"><strong>Featured:</strong> ${car.featured ? '⭐ Yes' : '❌ No'}</p>
-              </div>
-              
-              ${hasGallery ? `
-                <div style="margin-bottom: 15px;">
-                  <h4 style="color: var(--accent-red); margin: 0 0 8px 0; font-size: 0.9rem;">📸 GALLERY (${car.gallery.length})</h4>
-                  <div style="display: flex; gap: 5px; overflow-x: auto;">
-                    ${car.gallery.slice(0, 4).map(img => `
-                      <img src="${img}" 
-                           style="width: 60px; height: 40px; object-fit: cover; border-radius: 4px; border: 1px solid var(--accent-red);" 
-                           onerror="this.style.display='none'">
-                    `).join('')}
-                    ${car.gallery.length > 4 ? `<span style="color: var(--medium-gray); font-size: 0.8rem; align-self: center;">+${car.gallery.length - 4} more</span>` : ''}
-                  </div>
-                </div>
-              ` : ''}
-              
-              <div style="font-size: 0.8rem; color: var(--medium-gray); margin-bottom: 15px;">
-                Added: ${new Date(car.dateAdded || car.created_at).toLocaleDateString()}
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;">
+                <p class="car-meta" style="margin: 0;"><strong>Status:</strong> ${this.getStatusEmoji(car.status)} ${car.status}</p>
+                <p class="car-meta" style="margin: 0;"><strong>Featured:</strong> ${car.featured ? '⭐ Yes' : '❌ No'}</p>
               </div>
               
               <div class="car-actions">
@@ -1461,18 +1434,79 @@
         const modal = document.createElement('div');
         modal.style.cssText = `
           position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 10000;
-          background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center;
+          background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center;
           padding: 20px; cursor: pointer;
         `;
         
+        const hasGallery = car.gallery && car.gallery.length > 0;
+        
         modal.innerHTML = `
-          <div style="background: var(--secondary-black); border-radius: 15px; padding: 30px; max-width: 800px; max-height: 90vh; overflow-y: auto; cursor: default;" onclick="event.stopPropagation()">
-            <h2 style="color: var(--accent-red); margin-top: 0;">${car.name}</h2>
-            ${car.mainImage ? `<img src="${car.mainImage}" style="width: 100%; max-height: 300px; object-fit: cover; border-radius: 10px; margin-bottom: 20px;">` : ''}
-            <p><strong>Description:</strong> ${car.description}</p>
-            <p><strong>Status:</strong> ${car.status}</p>
-            <p><strong>Featured:</strong> ${car.featured ? 'Yes' : 'No'}</p>
-            <button onclick="this.parentElement.parentElement.remove()" style="margin-top: 20px; padding: 10px 20px; background: var(--accent-red); color: white; border: none; border-radius: 5px; cursor: pointer;">Close</button>
+          <div style="background: var(--secondary-black); border: 2px solid var(--accent-red); border-radius: 15px; padding: 30px; max-width: 900px; max-height: 90vh; overflow-y: auto; cursor: default;" onclick="event.stopPropagation()">
+            <h2 style="color: var(--accent-red); margin-top: 0; font-family: var(--font-primary);">${car.name}</h2>
+            
+            ${car.year || car.make || car.model ? `
+              <p style="color: var(--accent-red); font-size: 1.2rem; font-weight: 600; margin-bottom: 15px;">
+                🏎️ ${car.year || '????'} ${car.make || ''} ${car.model || ''}
+              </p>
+            ` : ''}
+            
+            ${car.mainImage ? `
+              <img src="${car.mainImage}" 
+                   style="width: 100%; max-height: 400px; object-fit: cover; border-radius: 10px; margin-bottom: 20px; border: 2px solid var(--accent-red);"
+                   onerror="this.style.display='none'">
+            ` : ''}
+            
+            <div style="margin-bottom: 20px;">
+              <h3 style="color: var(--accent-red); font-size: 1.1rem; margin-bottom: 8px;">📝 Description</h3>
+              <p style="color: var(--pure-white); line-height: 1.6;">${car.description || 'No description'}</p>
+            </div>
+            
+            ${car.mechanics ? `
+              <div style="margin-bottom: 20px;">
+                <h3 style="color: var(--accent-red); font-size: 1.1rem; margin-bottom: 8px;">🔧 Mechanics</h3>
+                <p style="color: var(--pure-white);">${car.mechanics}</p>
+              </div>
+            ` : ''}
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+              <div>
+                <strong style="color: var(--accent-red);">Status:</strong> 
+                <span style="color: var(--pure-white);">${this.getStatusEmoji(car.status)} ${car.status}</span>
+              </div>
+              <div>
+                <strong style="color: var(--accent-red);">Featured:</strong> 
+                <span style="color: var(--pure-white);">${car.featured ? '⭐ Yes' : '❌ No'}</span>
+              </div>
+              <div>
+                <strong style="color: var(--accent-red);">Added:</strong> 
+                <span style="color: var(--pure-white);">${new Date(car.dateAdded || car.created_at).toLocaleDateString()}</span>
+              </div>
+            </div>
+            
+            ${hasGallery ? `
+              <div style="margin-bottom: 20px;">
+                <h3 style="color: var(--accent-red); font-size: 1.1rem; margin-bottom: 12px;">📸 Gallery (${car.gallery.length} images)</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px;">
+                  ${car.gallery.map(img => `
+                    <img src="${img}" 
+                         style="width: 100%; height: 120px; object-fit: cover; border-radius: 8px; border: 2px solid var(--dark-gray); cursor: pointer;"
+                         onclick="window.open('${img}', '_blank')"
+                         onerror="this.style.display='none'">
+                  `).join('')}
+                </div>
+              </div>
+            ` : ''}
+            
+            <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 25px;">
+              <button onclick="if(window.adminApp) { window.adminApp.editCar(${car.id}); this.parentElement.parentElement.parentElement.remove(); }" 
+                      style="padding: 12px 24px; background: var(--accent-red); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-family: var(--font-secondary);">
+                ✏️ Edit Car
+              </button>
+              <button onclick="this.parentElement.parentElement.parentElement.remove()" 
+                      style="padding: 12px 24px; background: var(--dark-gray); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-family: var(--font-secondary);">
+                Close
+              </button>
+            </div>
           </div>
         `;
         
