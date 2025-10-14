@@ -10,7 +10,7 @@ exports.handler = async (event, context) => {
     };
     
     try {
-        const dbUrl = process.env.DATABASE_URL || process.env.NEON_DATABASE_URL;
+    const dbUrl = process.env.NETLIFY_DATABASE_URL || process.env.DATABASE_URL || process.env.NEON_DATABASE_URL;
         
         if (!dbUrl) {
             return {
