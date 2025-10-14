@@ -41,6 +41,7 @@ const fetchCarsQuery = async (sql) => {
                     c.model,
                     c.name,
                     c.description,
+                    c.mechanics,
                     c.main_image,
                     c.status,
                     c.featured,
@@ -92,6 +93,7 @@ const fetchCarsQuery = async (sql) => {
             c.model,
             c.name,
             c.description,
+            c.mechanics,
             c.main_image,
             c.status,
             c.featured,
@@ -192,6 +194,7 @@ exports.handler = async (event) => {
                     model: car.model,
                     name: car.name,
                     description: car.description,
+                    mechanics: car.mechanics,
                     mainImage: sanitizeMediaUrl(car.main_image),
                     gallery: galleryUrls,
                     videos,
@@ -214,19 +217,20 @@ exports.handler = async (event) => {
             const sanitizedMainImage = sanitizeMediaUrl(carData.mainImage) || null;
 
             const [newCar] = await sql`
-                INSERT INTO cars (year, make, model, name, description, main_image, status, featured, date_added)
+                INSERT INTO cars (year, make, model, name, description, mechanics, main_image, status, featured, date_added)
                 VALUES (
                     ${carData.year || null},
                     ${carData.make || null},
                     ${carData.model || null},
                     ${carData.name},
                     ${carData.description},
+                    ${carData.mechanics || null},
                     ${sanitizedMainImage},
                     ${carData.status || 'COMPLETED'},
                     ${carData.featured !== false},
                     ${carData.dateAdded || new Date().toISOString()}
                 )
-                RETURNING id, year, make, model, name, description, main_image, status, featured, date_added
+                RETURNING id, year, make, model, name, description, mechanics, main_image, status, featured, date_added
             `;
 
             if (Array.isArray(carData.gallery) && carData.gallery.length > 0) {
@@ -282,6 +286,7 @@ exports.handler = async (event) => {
                     model: newCar.model,
                     name: newCar.name,
                     description: newCar.description,
+                    mechanics: newCar.mechanics,
                     mainImage: newCar.main_image,
                     status: newCar.status,
                     featured: newCar.featured,
@@ -302,6 +307,7 @@ exports.handler = async (event) => {
                     model = ${carData.model || null},
                     name = ${carData.name},
                     description = ${carData.description},
+                    mechanics = ${carData.mechanics || null},
                     main_image = ${sanitizeMediaUrl(carData.mainImage)},
                     status = ${carData.status},
                     featured = ${carData.featured}

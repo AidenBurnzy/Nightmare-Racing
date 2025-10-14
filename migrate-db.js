@@ -29,14 +29,15 @@ async function runMigration() {
         console.log('🔗 Connecting to database...');
         const sql = neon(databaseUrl);
 
-        console.log('🔄 Adding year, make, and model columns to cars table...');
+        console.log('🔄 Adding year, make, model, and mechanics columns to cars table...');
 
-        // Add year, make, and model columns to cars table
+        // Add year, make, model, and mechanics columns to cars table
         await sql`
             ALTER TABLE cars 
             ADD COLUMN IF NOT EXISTS year INTEGER,
             ADD COLUMN IF NOT EXISTS make VARCHAR(100),
-            ADD COLUMN IF NOT EXISTS model VARCHAR(100)
+            ADD COLUMN IF NOT EXISTS model VARCHAR(100),
+            ADD COLUMN IF NOT EXISTS mechanics TEXT
         `;
 
         console.log('✅ Migration completed successfully!');
@@ -45,8 +46,9 @@ async function runMigration() {
         console.log('  - Added year column (INTEGER)');
         console.log('  - Added make column (VARCHAR(100))');
         console.log('  - Added model column (VARCHAR(100))');
+        console.log('  - Added mechanics column (TEXT)');
         console.log('');
-        console.log('✨ Your database is now ready to use Year, Make, and Model fields!');
+        console.log('✨ Your database is now ready to use Year, Make, Model, and Mechanics fields!');
 
         process.exit(0);
 

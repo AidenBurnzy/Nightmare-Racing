@@ -783,6 +783,14 @@
               <textarea id="car-description" name="description" required placeholder="e.g., 1200HP Beast • Custom Build • Track Ready" rows="3"></textarea>
             </div>
             
+            <div class="form-group">
+              <label for="car-mechanics">Mechanic(s) (Optional)</label>
+              <input type="text" id="car-mechanics" name="mechanics" placeholder="e.g., John Smith, Mike Johnson (separate multiple with commas)">
+              <small style="color: var(--medium-gray); display: block; margin-top: 5px;">
+                💡 Leave blank if no mechanics, or enter one or multiple names separated by commas
+              </small>
+            </div>
+            
             <!-- Image Upload Section -->
             <div class="form-group">
               <label>Main Car Image</label>
@@ -1390,6 +1398,12 @@
                 ${car.description || 'No description'}
               </p>
               
+              ${car.mechanics ? `
+                <p style="color: var(--accent-red); font-size: 0.95rem; margin-bottom: 12px;">
+                  🔧 <strong>Mechanics:</strong> ${car.mechanics}
+                </p>
+              ` : ''}
+              
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
                 <p class="car-meta"><strong>Status:</strong> ${this.getStatusEmoji(car.status)} ${car.status}</p>
                 <p class="car-meta"><strong>Featured:</strong> ${car.featured ? '⭐ Yes' : '❌ No'}</p>
@@ -1480,6 +1494,7 @@
           model: formData.get('model'),
           name: formData.get('name'),
           description: formData.get('description'),
+          mechanics: formData.get('mechanics') || null,
           status: formData.get('status'),
           featured: formData.has('featured'),
           mainImage: formData.get('mainImage') || null,
@@ -1638,6 +1653,7 @@
         document.getElementById('car-model').value = car.model || '';
         document.getElementById('car-name').value = car.name || '';
         document.getElementById('car-description').value = car.description || '';
+        document.getElementById('car-mechanics').value = car.mechanics || '';
         document.getElementById('car-status').value = car.status || 'IN PROGRESS';
         document.getElementById('car-featured').checked = car.featured || false;
         
