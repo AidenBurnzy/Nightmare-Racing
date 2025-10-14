@@ -1187,6 +1187,11 @@
         const uploadArea = document.getElementById(uploadAreaId);
         const fileInput = document.getElementById(inputId);
         const urlField = document.getElementById(urlFieldId);
+
+        if (!uploadArea || !fileInput || !urlField) {
+          console.warn('⚠️ Admin - Missing upload elements for', { uploadAreaId, inputId, urlFieldId });
+          return;
+        }
         
         // Click to trigger file selection
         uploadArea.addEventListener('click', () => {
@@ -1210,7 +1215,7 @@
           
           const files = Array.from(e.dataTransfer.files).filter(file => file.type.startsWith('image/'));
           if (files.length > 0) {
-            this.handleImageFiles(files, uploadArea, urlField, isMultiple);
+            this.handleImageFiles(files, uploadAreaId, inputId, urlFieldId, isMultiple);
           }
         });
         
@@ -1218,29 +1223,38 @@
         fileInput.addEventListener('change', (e) => {
           const files = Array.from(e.target.files);
           if (files.length > 0) {
-            this.handleImageFiles(files, uploadArea, urlField, isMultiple);
+            this.handleImageFiles(files, uploadAreaId, inputId, urlFieldId, isMultiple);
           }
         });
       }
       
-      handleImageFiles(files, uploadArea, urlField, isMultiple) {
-        uploadArea.classList.add('has-image');
-        
+      handleImageFiles(files, uploadAreaId, inputId, urlFieldId, isMultiple) {
+        const uploadArea = document.getElementById(uploadAreaId);
+        const urlField = document.getElementById(urlFieldId);
+
+        if (!uploadArea || !urlField) {
+          console.warn('⚠️ Admin - Unable to handle image files', { uploadAreaId, inputId, urlFieldId });
+          return;
+        }
+
         if (isMultiple) {
           // Handle multiple images for gallery
           const galleryPreview = document.getElementById('gallery-preview');
           galleryPreview.innerHTML = '';
+
+          const baseGalleryMarkup = `
+            <input type="file" id="${inputId}" class="hidden-input" accept="image/*" multiple>
+            <div class="upload-content">
+              <div class="upload-icon">🖼️</div>
+              <div class="upload-placeholder">Click to upload gallery images</div>
+              <small style="color: var(--medium-gray);">Select multiple images for car gallery</small>
+            </div>
+          `;
           
-          const imageUrls = [];
-          files.forEach((file, index) => {
-            // Create a placeholder URL based on filename for demo purposes
-            // In production, you'd upload to a service like Cloudinary, AWS S3, etc.
-            const placeholderUrl = `https://via.placeholder.com/400x300/000000/e50000?text=Gallery+${index + 1}`;
-            imageUrls.push(placeholderUrl);
-            
-            urlField.value = JSON.stringify(imageUrls);
-            
-            // Create preview
+          const imageUrls = files.map((file, index) => `https://via.placeholder.com/400x300/000000/e50000?text=Gallery+${index + 1}`);
+          urlField.value = JSON.stringify(imageUrls);
+
+          imageUrls.forEach((placeholderUrl) => {
             const previewDiv = document.createElement('div');
             previewDiv.style.display = 'inline-block';
             previewDiv.style.margin = '10px';
@@ -1270,10 +1284,27 @@
             
             removeBtn.onclick = () => {
               previewDiv.remove();
-              // Update URL field by removing this image
               const currentUrls = JSON.parse(urlField.value || '[]');
-              const newUrls = currentUrls.filter((_, i) => i !== index);
+              const newUrls = currentUrls.filter(url => url !== placeholderUrl);
+
+              if (newUrls.length === 0) {
+                urlField.value = '';
+                const resetArea = this.rebuildUploadArea(uploadAreaId, baseGalleryMarkup);
+                if (resetArea) {
+                  this.setupImageUpload(uploadAreaId, inputId, urlFieldId, true);
+                }
+                if (galleryPreview) {
+                  galleryPreview.innerHTML = '';
+                }
+                return;
+              }
+
               urlField.value = JSON.stringify(newUrls);
+
+              const summary = document.getElementById(uploadAreaId)?.querySelector('.upload-summary');
+              if (summary) {
+                summary.textContent = `📷 ${newUrls.length} image(s) selected for gallery (demo placeholders)`;
+              }
             };
             
             previewDiv.appendChild(img);
@@ -1281,25 +1312,35 @@
             galleryPreview.appendChild(previewDiv);
           });
           
-          uploadArea.innerHTML = `
-            <div style="color: var(--accent-red); font-weight: bold;">
+          const galleryMarkup = `
+            <input type="file" id="${inputId}" class="hidden-input" accept="image/*" multiple>
+            <div class="upload-summary" style="color: var(--accent-red); font-weight: bold;">
               📷 ${files.length} image(s) selected for gallery (demo placeholders)
             </div>
           `;
+          const updatedArea = this.rebuildUploadArea(uploadAreaId, galleryMarkup);
+          if (updatedArea) {
+            updatedArea.classList.add('has-image');
+            this.setupImageUpload(uploadAreaId, inputId, urlFieldId, true);
+          }
         } else {
           // Handle single main image
           const file = files[0];
-          // Create a placeholder URL for demo purposes
           const placeholderUrl = `https://via.placeholder.com/800x400/000000/e50000?text=Main+Image`;
-          
           urlField.value = placeholderUrl;
-          
-          uploadArea.innerHTML = `
+
+          const mainMarkup = `
+            <input type="file" id="${inputId}" class="hidden-input" accept="image/*">
             <img src="${placeholderUrl}" class="image-preview" style="max-width: 100%; max-height: 200px; border-radius: 10px;">
             <div style="margin-top: 10px; color: var(--accent-red); font-weight: bold;">
               📷 Main image uploaded: ${file.name} (demo placeholder)
             </div>
           `;
+          const updatedArea = this.rebuildUploadArea(uploadAreaId, mainMarkup);
+          if (updatedArea) {
+            updatedArea.classList.add('has-image');
+            this.setupImageUpload(uploadAreaId, inputId, urlFieldId, false);
+          }
         }
       }
       
@@ -1374,14 +1415,23 @@
         }
         
         container.innerHTML = this.cars.map(car => {
-          const hasImage = car.mainImage && car.mainImage !== 'null';
-          const hasGallery = car.gallery && car.gallery.length > 0;
+          const mainImageUrl = this.resolveMediaUrl(car.mainImage);
+          const galleryUrls = (Array.isArray(car.gallery) ? car.gallery : [])
+            .map(item => {
+              if (typeof item === 'string') return this.resolveMediaUrl(item);
+              if (item && typeof item.url === 'string') return this.resolveMediaUrl(item.url);
+              return null;
+            })
+            .filter(Boolean);
+
+          const hasImage = !!mainImageUrl;
+          const hasGallery = galleryUrls.length > 0;
           
           return `
             <div class="car-card">
               ${hasImage ? `
                 <div style="margin-bottom: 12px;">
-                  <img src="${car.mainImage}" 
+                  <img src="${mainImageUrl}" 
                        style="width: 100%; height: 180px; object-fit: cover; border-radius: 10px; border: 2px solid var(--accent-red);" 
                        alt="${car.name}"
                        onerror="this.style.display='none'">
@@ -1425,6 +1475,15 @@
           default: return '🏎️';
         }
       }
+
+      resolveMediaUrl(value) {
+        if (!value) return null;
+        const raw = typeof value === 'string' ? value.trim() : '';
+        if (!raw || raw.toLowerCase() === 'null') return null;
+        if (/^https?:\/\//i.test(raw) || raw.startsWith('data:')) return raw;
+        if (raw.startsWith('/')) return raw;
+        return `/${raw.replace(/^\.\/?/, '')}`;
+      }
       
       viewCar(carId) {
         const car = this.cars.find(c => c.id === carId);
@@ -1438,7 +1497,16 @@
           padding: 20px; cursor: pointer;
         `;
         
-        const hasGallery = car.gallery && car.gallery.length > 0;
+        const mainImageUrl = this.resolveMediaUrl(car.mainImage);
+        const galleryUrls = (Array.isArray(car.gallery) ? car.gallery : [])
+          .map(item => {
+            if (typeof item === 'string') return this.resolveMediaUrl(item);
+            if (item && typeof item.url === 'string') return this.resolveMediaUrl(item.url);
+            return null;
+          })
+          .filter(Boolean);
+
+        const hasGallery = galleryUrls.length > 0;
         
         modal.innerHTML = `
           <div style="background: var(--secondary-black); border: 2px solid var(--accent-red); border-radius: 15px; padding: 30px; max-width: 900px; max-height: 90vh; overflow-y: auto; cursor: default;" onclick="event.stopPropagation()">
@@ -1450,8 +1518,8 @@
               </p>
             ` : ''}
             
-            ${car.mainImage ? `
-              <img src="${car.mainImage}" 
+            ${mainImageUrl ? `
+              <img src="${mainImageUrl}" 
                    style="width: 100%; max-height: 400px; object-fit: cover; border-radius: 10px; margin-bottom: 20px; border: 2px solid var(--accent-red);"
                    onerror="this.style.display='none'">
             ` : ''}
@@ -1485,12 +1553,12 @@
             
             ${hasGallery ? `
               <div style="margin-bottom: 20px;">
-                <h3 style="color: var(--accent-red); font-size: 1.1rem; margin-bottom: 12px;">📸 Gallery (${car.gallery.length} images)</h3>
+                <h3 style="color: var(--accent-red); font-size: 1.1rem; margin-bottom: 12px;">📸 Gallery (${galleryUrls.length} images)</h3>
                 <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px;">
-                  ${car.gallery.map(img => `
-                    <img src="${img}" 
+                  ${galleryUrls.map(imgUrl => `
+                    <img src="${imgUrl}" 
                          style="width: 100%; height: 120px; object-fit: cover; border-radius: 8px; border: 2px solid var(--dark-gray); cursor: pointer;"
-                         onclick="window.open('${img}', '_blank')"
+                         onclick="window.open('${imgUrl}', '_blank')"
                          onerror="this.style.display='none'">
                   `).join('')}
                 </div>
@@ -1612,27 +1680,35 @@
       
       resetImageUploads() {
         // Reset main image upload
-        const mainUpload = document.getElementById('main-image-upload');
-        mainUpload.classList.remove('has-image');
-        mainUpload.innerHTML = `
+        const mainMarkup = `
+          <input type="file" id="main-image-input" class="hidden-input" accept="image/*">
           <div class="upload-content">
             <div class="upload-icon">📷</div>
             <div class="upload-placeholder">Click to upload main car image</div>
             <small style="color: var(--medium-gray);">Recommended: 1920x1080px, JPG or PNG</small>
           </div>
         `;
+
+        const mainUpload = this.rebuildUploadArea('main-image-upload', mainMarkup);
+        if (mainUpload) {
+          this.setupImageUpload('main-image-upload', 'main-image-input', 'main-image-url', false);
+        }
         document.getElementById('main-image-url').value = '';
         
         // Reset gallery upload
-        const galleryUpload = document.getElementById('gallery-upload');
-        galleryUpload.classList.remove('has-image');
-        galleryUpload.innerHTML = `
+        const galleryMarkup = `
+          <input type="file" id="gallery-input" class="hidden-input" accept="image/*" multiple>
           <div class="upload-content">
             <div class="upload-icon">🖼️</div>
             <div class="upload-placeholder">Click to upload gallery images</div>
             <small style="color: var(--medium-gray);">Select multiple images for car gallery</small>
           </div>
         `;
+
+        const galleryUpload = this.rebuildUploadArea('gallery-upload', galleryMarkup);
+        if (galleryUpload) {
+          this.setupImageUpload('gallery-upload', 'gallery-input', 'gallery-urls', true);
+        }
         document.getElementById('gallery-preview').innerHTML = '';
         document.getElementById('gallery-urls').value = '';
       }
@@ -1698,32 +1774,57 @@
         document.getElementById('car-featured').checked = car.featured || false;
         
         // Handle existing main image
-        if (car.mainImage && car.mainImage !== 'null') {
-          document.getElementById('main-image-url').value = car.mainImage;
-          const mainImageUpload = document.getElementById('main-image-upload');
-          mainImageUpload.classList.add('has-image');
-          mainImageUpload.innerHTML = `
-            <img src="${car.mainImage}" class="image-preview" style="max-width: 100%; max-height: 200px; border-radius: 10px;">
+        const resolvedMainImage = this.resolveMediaUrl(car.mainImage);
+        if (resolvedMainImage) {
+          document.getElementById('main-image-url').value = resolvedMainImage;
+          const previewMarkup = `
+            <input type="file" id="main-image-input" class="hidden-input" accept="image/*">
+            <img src="${resolvedMainImage}" class="image-preview" style="max-width: 100%; max-height: 200px; border-radius: 10px;">
             <div class="upload-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s; border-radius: 10px;">
               <button type="button" class="change-image-btn" onclick="document.getElementById('main-image-input').click()" style="background: var(--accent-red); color: white; border: none; padding: 8px 16px; margin: 4px; border-radius: 6px; cursor: pointer; font-size: 14px;">📷 Change Image</button>
               <button type="button" class="remove-image-btn" onclick="window.adminApp.removeMainImage()" style="background: #666; color: white; border: none; padding: 8px 16px; margin: 4px; border-radius: 6px; cursor: pointer; font-size: 14px;">🗑️ Remove</button>
             </div>
           `;
+          const mainImageUpload = this.rebuildUploadArea('main-image-upload', previewMarkup);
+          if (mainImageUpload) {
+            mainImageUpload.classList.add('has-image');
+            this.setupImageUpload('main-image-upload', 'main-image-input', 'main-image-url', false);
+          }
         }
         
         // Handle existing gallery images
-        if (car.gallery && car.gallery.length > 0) {
-          const galleryUrls = car.gallery.map(img => typeof img === 'string' ? img : img.url).filter(url => url && url !== 'null');
-          document.getElementById('gallery-urls').value = JSON.stringify(galleryUrls);
+        const resolvedGallery = (Array.isArray(car.gallery) ? car.gallery : [])
+          .map(item => {
+            if (typeof item === 'string') return this.resolveMediaUrl(item);
+            if (item && typeof item.url === 'string') return this.resolveMediaUrl(item.url);
+            return null;
+          })
+          .filter(Boolean);
+
+        const galleryUploadArea = document.getElementById('gallery-upload');
+        if (galleryUploadArea) {
+          if (resolvedGallery.length > 0) {
+            galleryUploadArea.classList.add('has-image');
+          } else {
+            galleryUploadArea.classList.remove('has-image');
+          }
+        }
+
+        const galleryPreview = document.getElementById('gallery-preview');
+
+        if (resolvedGallery.length > 0) {
+          document.getElementById('gallery-urls').value = JSON.stringify(resolvedGallery);
           
-          const galleryPreview = document.getElementById('gallery-preview');
-          galleryPreview.innerHTML = galleryUrls.map((url, index) => `
+          galleryPreview.innerHTML = resolvedGallery.map((url, index) => `
             <div class="gallery-item" style="position: relative; display: inline-block; margin: 5px;">
               <img src="${url}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 5px;">
               <button type="button" class="remove-gallery-btn" onclick="window.adminApp.removeGalleryImage(${index})" 
                       style="position: absolute; top: -5px; right: -5px; background: var(--accent-red); color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center;">✕</button>
             </div>
           `).join('');
+        } else {
+          document.getElementById('gallery-urls').value = '';
+          galleryPreview.innerHTML = '';
         }
         
         // Store editing car ID
@@ -1889,16 +1990,31 @@ ${JSON.stringify(cars, null, 2)}
         }, 4000);
       }
       
+      rebuildUploadArea(areaId, innerHtml) {
+        const existing = document.getElementById(areaId);
+        if (!existing) {
+          console.warn('⚠️ Admin - Upload area not found', areaId);
+          return null;
+        }
+
+        const replacement = existing.cloneNode(false);
+        replacement.innerHTML = innerHtml;
+        replacement.classList.remove('has-image');
+
+        if (existing.parentNode) {
+          existing.parentNode.replaceChild(replacement, existing);
+        }
+
+        return replacement;
+      }
+
       removeMainImage() {
         console.log('🗑️ Removing main image');
         
         // Clear the image URL input
         document.getElementById('main-image-url').value = '';
         
-        // Reset the upload area
-        const mainImageUpload = document.getElementById('main-image-upload');
-        mainImageUpload.classList.remove('has-image');
-        mainImageUpload.innerHTML = `
+        const resetMarkup = `
           <input type="file" id="main-image-input" class="hidden-input" accept="image/*">
           <div class="upload-content">
             <div class="upload-icon">📷</div>
@@ -1906,9 +2022,11 @@ ${JSON.stringify(cars, null, 2)}
             <small style="color: var(--medium-gray);">Recommended: 1920x1080px, JPG or PNG</small>
           </div>
         `;
-        
-        // Re-attach the file input event listener
-        this.setupImageUploads();
+
+        const mainImageUpload = this.rebuildUploadArea('main-image-upload', resetMarkup);
+        if (mainImageUpload) {
+          this.setupImageUpload('main-image-upload', 'main-image-input', 'main-image-url', false);
+        }
         
         this.showMessage('Main image removed', 'info');
       }
@@ -1923,18 +2041,32 @@ ${JSON.stringify(cars, null, 2)}
         // Remove the image at the specified index
         gallery.splice(index, 1);
         
-        // Update the hidden input
-        document.getElementById('gallery-urls').value = JSON.stringify(gallery);
-        
+        const resolvedGallery = gallery
+          .map(item => (typeof item === 'string' ? this.resolveMediaUrl(item) : this.resolveMediaUrl(item?.url)))
+          .filter(Boolean);
+
+        // Update the hidden input with normalized URLs
+        document.getElementById('gallery-urls').value = JSON.stringify(resolvedGallery);
+
         // Update the preview
         const galleryPreview = document.getElementById('gallery-preview');
-        galleryPreview.innerHTML = gallery.map((url, i) => `
+
+        galleryPreview.innerHTML = resolvedGallery.map((url, i) => `
           <div class="gallery-item" style="position: relative; display: inline-block; margin: 5px;">
             <img src="${url}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 5px;">
             <button type="button" class="remove-gallery-btn" onclick="window.adminApp.removeGalleryImage(${i})" 
                     style="position: absolute; top: -5px; right: -5px; background: var(--accent-red); color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center;">✕</button>
           </div>
         `).join('');
+
+        const galleryUploadArea = document.getElementById('gallery-upload');
+        if (galleryUploadArea) {
+          if (resolvedGallery.length > 0) {
+            galleryUploadArea.classList.add('has-image');
+          } else {
+            galleryUploadArea.classList.remove('has-image');
+          }
+        }
         
         this.showMessage('Gallery image removed', 'info');
       }
