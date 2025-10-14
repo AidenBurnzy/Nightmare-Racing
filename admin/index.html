@@ -379,6 +379,14 @@
       position: relative;
       overflow: hidden;
     }
+
+    .upload-status {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      padding: 30px 20px;
+    }
     
     .image-upload-area:hover {
       background: rgba(229, 0, 0, 0.1);
@@ -1209,26 +1217,26 @@
           uploadArea.style.background = 'rgba(229, 0, 0, 0.05)';
         });
         
-        uploadArea.addEventListener('drop', (e) => {
+        uploadArea.addEventListener('drop', async (e) => {
           e.preventDefault();
           uploadArea.style.background = 'rgba(229, 0, 0, 0.05)';
           
           const files = Array.from(e.dataTransfer.files).filter(file => file.type.startsWith('image/'));
           if (files.length > 0) {
-            this.handleImageFiles(files, uploadAreaId, inputId, urlFieldId, isMultiple);
+            await this.handleImageFiles(files, uploadAreaId, inputId, urlFieldId, isMultiple);
           }
         });
         
         // File input change
-        fileInput.addEventListener('change', (e) => {
+        fileInput.addEventListener('change', async (e) => {
           const files = Array.from(e.target.files);
           if (files.length > 0) {
-            this.handleImageFiles(files, uploadAreaId, inputId, urlFieldId, isMultiple);
+            await this.handleImageFiles(files, uploadAreaId, inputId, urlFieldId, isMultiple);
           }
         });
       }
       
-      handleImageFiles(files, uploadAreaId, inputId, urlFieldId, isMultiple) {
+      async handleImageFiles(files, uploadAreaId, inputId, urlFieldId, isMultiple) {
         const uploadArea = document.getElementById(uploadAreaId);
         const urlField = document.getElementById(urlFieldId);
 
@@ -1237,10 +1245,77 @@
           return;
         }
 
+        const uploadingMarkup = `
+          <div class="upload-status">
+            <div class="spinner" style="width: 36px; height: 36px; border-width: 4px; margin: 0;"></div>
+            <div class="upload-summary" style="color: var(--accent-red); font-weight: bold;">
+              Uploading ${files.length} image${files.length === 1 ? '' : 's'}...
+            </div>
+          </div>
+        `;
+        this.rebuildUploadArea(uploadAreaId, uploadingMarkup);
+
+        let uploads;
+        try {
+          uploads = await this.uploadMediaFiles(files);
+        } catch (error) {
+          console.error('❌ Admin - Upload failed', error);
+          this.showMessage(error.message || 'Image upload failed. Please try again.', 'error');
+
+          const resetMarkup = isMultiple ? `
+            <input type="file" id="${inputId}" class="hidden-input" accept="image/*" multiple>
+            <div class="upload-content">
+              <div class="upload-icon">🖼️</div>
+              <div class="upload-placeholder">Click to upload gallery images</div>
+              <small style="color: var(--medium-gray);">Select multiple images for car gallery</small>
+            </div>
+          ` : `
+            <input type="file" id="${inputId}" class="hidden-input" accept="image/*">
+            <div class="upload-content">
+              <div class="upload-icon">📷</div>
+              <div class="upload-placeholder">Click to upload main car image</div>
+              <small style="color: var(--medium-gray);">Recommended: 1920x1080px, JPG or PNG</small>
+            </div>
+          `;
+
+          const resetArea = this.rebuildUploadArea(uploadAreaId, resetMarkup);
+          if (resetArea) {
+            this.setupImageUpload(uploadAreaId, inputId, urlFieldId, isMultiple);
+          }
+          return;
+        }
+
+        if (!Array.isArray(uploads) || uploads.length === 0) {
+          this.showMessage('No images were uploaded. Please try again.', 'error');
+          const resetMarkup = isMultiple ? `
+            <input type="file" id="${inputId}" class="hidden-input" accept="image/*" multiple>
+            <div class="upload-content">
+              <div class="upload-icon">🖼️</div>
+              <div class="upload-placeholder">Click to upload gallery images</div>
+              <small style="color: var(--medium-gray);">Select multiple images for car gallery</small>
+            </div>
+          ` : `
+            <input type="file" id="${inputId}" class="hidden-input" accept="image/*">
+            <div class="upload-content">
+              <div class="upload-icon">📷</div>
+              <div class="upload-placeholder">Click to upload main car image</div>
+              <small style="color: var(--medium-gray);">Recommended: 1920x1080px, JPG or PNG</small>
+            </div>
+          `;
+
+          const resetArea = this.rebuildUploadArea(uploadAreaId, resetMarkup);
+          if (resetArea) {
+            this.setupImageUpload(uploadAreaId, inputId, urlFieldId, isMultiple);
+          }
+          return;
+        }
+
         if (isMultiple) {
           // Handle multiple images for gallery
           const galleryPreview = document.getElementById('gallery-preview');
-          galleryPreview.innerHTML = '';
+          if (galleryPreview) {
+            galleryPreview.innerHTML = '';
+          }
 
           const baseGalleryMarkup = `
             <input type="file" id="${inputId}" class="hidden-input" accept="image/*" multiple>
@@ -1250,18 +1325,21 @@
               <small style="color: var(--medium-gray);">Select multiple images for car gallery</small>
             </div>
           `;
-          
-          const imageUrls = files.map((file, index) => `https://via.placeholder.com/400x300/000000/e50000?text=Gallery+${index + 1}`);
+
+          const imageUrls = uploads
+            .map(upload => (typeof upload?.url === 'string' ? upload.url : null))
+            .filter(Boolean);
           urlField.value = JSON.stringify(imageUrls);
 
-          imageUrls.forEach((placeholderUrl) => {
+          imageUrls.forEach((uploadedUrl, uploadedIndex) => {
             const previewDiv = document.createElement('div');
             previewDiv.style.display = 'inline-block';
             previewDiv.style.margin = '10px';
             previewDiv.style.position = 'relative';
+            previewDiv.dataset.url = uploadedUrl;
             
             const img = document.createElement('img');
-            img.src = placeholderUrl;
+            img.src = uploadedUrl;
             img.style.width = '120px';
             img.style.height = '80px';
             img.style.objectFit = 'cover';
@@ -1285,7 +1363,7 @@
             removeBtn.onclick = () => {
               previewDiv.remove();
               const currentUrls = JSON.parse(urlField.value || '[]');
-              const newUrls = currentUrls.filter(url => url !== placeholderUrl);
+              const newUrls = currentUrls.filter(url => url !== uploadedUrl);
 
               if (newUrls.length === 0) {
                 urlField.value = '';
@@ -1303,19 +1381,21 @@
 
               const summary = document.getElementById(uploadAreaId)?.querySelector('.upload-summary');
               if (summary) {
-                summary.textContent = `📷 ${newUrls.length} image(s) selected for gallery (demo placeholders)`;
+                summary.textContent = `📷 ${newUrls.length} image(s) uploaded to gallery`;
               }
             };
             
             previewDiv.appendChild(img);
             previewDiv.appendChild(removeBtn);
-            galleryPreview.appendChild(previewDiv);
+            if (galleryPreview) {
+              galleryPreview.appendChild(previewDiv);
+            }
           });
           
           const galleryMarkup = `
             <input type="file" id="${inputId}" class="hidden-input" accept="image/*" multiple>
             <div class="upload-summary" style="color: var(--accent-red); font-weight: bold;">
-              📷 ${files.length} image(s) selected for gallery (demo placeholders)
+              📷 ${imageUrls.length} image(s) uploaded to gallery
             </div>
           `;
           const updatedArea = this.rebuildUploadArea(uploadAreaId, galleryMarkup);
@@ -1323,17 +1403,34 @@
             updatedArea.classList.add('has-image');
             this.setupImageUpload(uploadAreaId, inputId, urlFieldId, true);
           }
+          this.showMessage('Gallery images uploaded successfully', 'success');
         } else {
           // Handle single main image
-          const file = files[0];
-          const placeholderUrl = `https://via.placeholder.com/800x400/000000/e50000?text=Main+Image`;
-          urlField.value = placeholderUrl;
+          const mainUpload = uploads[0];
+          const mainImageUrl = typeof mainUpload?.url === 'string' ? mainUpload.url : null;
+          if (!mainImageUrl) {
+            this.showMessage('Main image upload failed. Please try again.', 'error');
+            const resetMarkup = `
+              <input type="file" id="${inputId}" class="hidden-input" accept="image/*">
+              <div class="upload-content">
+                <div class="upload-icon">📷</div>
+                <div class="upload-placeholder">Click to upload main car image</div>
+                <small style="color: var(--medium-gray);">Recommended: 1920x1080px, JPG or PNG</small>
+              </div>
+            `;
+            const resetArea = this.rebuildUploadArea(uploadAreaId, resetMarkup);
+            if (resetArea) {
+              this.setupImageUpload(uploadAreaId, inputId, urlFieldId, false);
+            }
+            return;
+          }
+          urlField.value = mainImageUrl;
 
           const mainMarkup = `
             <input type="file" id="${inputId}" class="hidden-input" accept="image/*">
-            <img src="${placeholderUrl}" class="image-preview" style="max-width: 100%; max-height: 200px; border-radius: 10px;">
+            <img src="${mainImageUrl}" class="image-preview" style="max-width: 100%; max-height: 200px; border-radius: 10px;">
             <div style="margin-top: 10px; color: var(--accent-red); font-weight: bold;">
-              📷 Main image uploaded: ${file.name} (demo placeholder)
+              📷 Main image uploaded: ${mainUpload?.name || 'Uploaded file'}
             </div>
           `;
           const updatedArea = this.rebuildUploadArea(uploadAreaId, mainMarkup);
@@ -1341,7 +1438,52 @@
             updatedArea.classList.add('has-image');
             this.setupImageUpload(uploadAreaId, inputId, urlFieldId, false);
           }
+          this.showMessage('Main image uploaded successfully', 'success');
         }
+      }
+
+      async uploadMediaFiles(files) {
+        if (!Array.isArray(files) || files.length === 0) {
+          return [];
+        }
+
+        const formData = new FormData();
+        files.forEach((file) => {
+          formData.append('files', file, file.name);
+        });
+
+        const response = await fetch('/.netlify/functions/upload-media', {
+          method: 'POST',
+          body: formData
+        });
+
+        if (!response.ok) {
+          let message = 'Upload failed';
+          try {
+            const errorPayload = await response.json();
+            if (errorPayload?.error) {
+              message = errorPayload.error;
+            }
+          } catch (err) {
+            const fallback = await response.text();
+            if (fallback && fallback.trim()) {
+              message = fallback;
+            }
+          }
+          throw new Error(message);
+        }
+
+        const payload = await response.json();
+        if (!payload || !Array.isArray(payload.uploads)) {
+          throw new Error('Unexpected response from upload service');
+        }
+
+        return payload.uploads
+          .map((item) => ({
+            url: typeof item?.url === 'string' ? item.url : null,
+            name: item?.name || item?.originalName || null
+          }))
+          .filter(upload => typeof upload.url === 'string');
       }
       
       showSection(section) {

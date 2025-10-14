@@ -10,7 +10,9 @@
     "db:setup": "node scripts/setup-database.js"
   },
   "dependencies": {
-    "@neondatabase/serverless": "^0.9.0"
+    "@neondatabase/serverless": "^0.9.0",
+    "@netlify/blobs": "^10.1.0",
+    "busboy": "^1.6.0"
   },
   "devDependencies": {
     "netlify-cli": "^17.0.0"
