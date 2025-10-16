@@ -417,9 +417,6 @@ function createCarCard(car, index) {
             }
             ${images.length > 1 ? `
                 <div class="gallery-count">${images.length} photos</div>
-                <div class="gallery-controls">
-                    ${images.map((_, i) => `<div class="gallery-dot ${i === 0 ? 'active' : ''}" data-index="${i}"></div>`).join('')}
-                </div>
             ` : ''}
         </div>
         <div class="car-info-section">
@@ -441,18 +438,17 @@ function createCarCard(car, index) {
 
     const mainImageElement = card.querySelector('.gallery-main-image');
     if (mainImageElement && images.length > 0) {
+        // Always start at index 0 (main image) - no auto-cycling
         mainImageElement.dataset.currentIndex = '0';
         mainImageElement.addEventListener('click', (event) => {
             event.stopPropagation();
-            const datasetIndex = Number.parseInt(mainImageElement.dataset.currentIndex || '0', 10);
-            const startingIndex = Number.isFinite(datasetIndex) ? datasetIndex : 0;
-            openImageViewer(images, startingIndex, car);
+            // Always open viewer at index 0 (main image) when clicking the card image
+            openImageViewer(images, 0, car);
         });
     }
 
-    if (images.length > 1) {
-        setupCardGallery(card, images, index);
-    }
+    // Removed auto-gallery setup - cards now only show the main image
+    // Gallery images are accessible through the modal when user clicks "View Full Details"
 
     card.addEventListener('click', () => openCarModal(car));
 
@@ -574,7 +570,10 @@ function createSpecItem(label, value) {
     `;
 }
 
-// Setup image gallery for card
+// DEPRECATED: Card gallery auto-cycling removed - cards now only show main image
+// Gallery images are accessible through the modal when user clicks "View Full Details"
+// This function is kept for reference but is no longer called
+/*
 function setupCardGallery(card, images, cardIndex) {
     const galleryElement = card.querySelector(`#gallery-${cardIndex}`);
     if (!galleryElement) {
@@ -633,6 +632,7 @@ function setupCardGallery(card, images, cardIndex) {
     
     startAutoAdvance();
 }
+*/
 
 // Open car detail modal
 function openCarModal(car) {
