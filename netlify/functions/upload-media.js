@@ -70,6 +70,43 @@ const sanitizeFileExtension = (filename = '') => {
   return safeExtension || '';
 };
 
+const resolveBlobStore = (event) => {
+  const storeName = process.env.BLOB_STORE_NAME || 'car-images';
+
+  let environmentConfigured = false;
+  if (event?.blobs) {
+    try {
+      connectLambda(event);
+      environmentConfigured = true;
+    } catch (blobError) {
+      console.warn('upload-media connectLambda warning', blobError);
+    }
+  }
+
+  if (environmentConfigured || process.env.NETLIFY_BLOBS_CONTEXT) {
+    return getStore(storeName);
+  }
+
+  const explicitSiteId = process.env.BLOB_STORE_SITE_ID || process.env.NETLIFY_BLOBS_SITE_ID;
+  const explicitToken = process.env.BLOB_STORE_TOKEN || process.env.NETLIFY_BLOBS_TOKEN;
+  const explicitEdgeUrl = process.env.BLOB_STORE_EDGE_URL || process.env.NETLIFY_BLOBS_EDGE_URL;
+  const explicitApiUrl = process.env.BLOB_STORE_API_URL || process.env.NETLIFY_BLOBS_API_URL;
+
+  if (explicitSiteId && explicitToken) {
+    return getStore({
+      name: storeName,
+      siteID: explicitSiteId,
+      token: explicitToken,
+      edgeURL: explicitEdgeUrl,
+      apiURL: explicitApiUrl
+    });
+  }
+
+  const configurationError = new Error('BLOB_STORE_NOT_CONFIGURED');
+  configurationError.code = 'BLOB_STORE_NOT_CONFIGURED';
+  throw configurationError;
+};
+
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
     return {
@@ -89,12 +126,6 @@ exports.handler = async (event) => {
   }
 
   try {
-    try {
-      connectLambda(event);
-    } catch (blobError) {
-      console.warn('upload-media connectLambda warning', blobError);
-    }
-
     const files = await parseMultipartForm(event.body, contentType, event.isBase64Encoded);
 
     if (!Array.isArray(files) || files.length === 0) {
@@ -105,7 +136,7 @@ exports.handler = async (event) => {
       };
     }
 
-  const store = getStore('car-images');
+    const store = resolveBlobStore(event);
     const uploads = [];
 
     for (const file of files) {
@@ -136,8 +167,15 @@ exports.handler = async (event) => {
     };
   } catch (error) {
     console.error('upload-media error', error);
-    const message = error?.message || 'Image upload failed';
-    const statusCode = message.toLowerCase().includes('exceeds') ? 413 : 500;
+    let statusCode = 500;
+    let message = error?.message || 'Image upload failed';
+
+    if (error?.code === 'BLOB_STORE_NOT_CONFIGURED' || error?.name === 'MissingBlobsEnvironmentError') {
+      statusCode = 503;
+      message = 'Image storage is not configured. Please enable Netlify Blobs or set BLOB_STORE_* environment variables.';
+    } else if (message.toLowerCase().includes('exceeds')) {
+      statusCode = 413;
+    }
 
     return {
       statusCode,

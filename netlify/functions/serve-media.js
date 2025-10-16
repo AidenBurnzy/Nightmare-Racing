@@ -1,6 +1,43 @@
 // serve-media.js - Streams stored blob images back to the client
 const { connectLambda, getStore } = require('@netlify/blobs');
 
+const resolveBlobStore = (event) => {
+  const storeName = process.env.BLOB_STORE_NAME || 'car-images';
+
+  let environmentConfigured = false;
+  if (event?.blobs) {
+    try {
+      connectLambda(event);
+      environmentConfigured = true;
+    } catch (blobError) {
+      console.warn('serve-media connectLambda warning', blobError);
+    }
+  }
+
+  if (environmentConfigured || process.env.NETLIFY_BLOBS_CONTEXT) {
+    return getStore(storeName);
+  }
+
+  const explicitSiteId = process.env.BLOB_STORE_SITE_ID || process.env.NETLIFY_BLOBS_SITE_ID;
+  const explicitToken = process.env.BLOB_STORE_TOKEN || process.env.NETLIFY_BLOBS_TOKEN;
+  const explicitEdgeUrl = process.env.BLOB_STORE_EDGE_URL || process.env.NETLIFY_BLOBS_EDGE_URL;
+  const explicitApiUrl = process.env.BLOB_STORE_API_URL || process.env.NETLIFY_BLOBS_API_URL;
+
+  if (explicitSiteId && explicitToken) {
+    return getStore({
+      name: storeName,
+      siteID: explicitSiteId,
+      token: explicitToken,
+      edgeURL: explicitEdgeUrl,
+      apiURL: explicitApiUrl
+    });
+  }
+
+  const configurationError = new Error('BLOB_STORE_NOT_CONFIGURED');
+  configurationError.code = 'BLOB_STORE_NOT_CONFIGURED';
+  throw configurationError;
+};
+
 const sanitizeFilename = (name = '') => {
   if (typeof name !== 'string') {
     return 'file';
@@ -33,12 +70,7 @@ exports.handler = async (event) => {
   const key = decodeURIComponent(keyParam);
 
   try {
-    try {
-      connectLambda(event);
-    } catch (blobError) {
-      console.warn('serve-media connectLambda warning', blobError);
-    }
-    const store = getStore('car-images');
+    const store = resolveBlobStore(event);
     const result = await store.getWithMetadata(key, { type: 'arrayBuffer' });
 
     if (!result) {
@@ -80,6 +112,13 @@ exports.handler = async (event) => {
     };
   } catch (error) {
     console.error('serve-media error', error);
+    if (error?.code === 'BLOB_STORE_NOT_CONFIGURED' || error?.name === 'MissingBlobsEnvironmentError') {
+      return {
+        statusCode: 503,
+        headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+        body: 'Image storage is not configured. Please enable Netlify Blobs or set BLOB_STORE_* environment variables.'
+      };
+    }
     return {
       statusCode: 500,
       headers: { 'Content-Type': 'text/plain; charset=utf-8' },
