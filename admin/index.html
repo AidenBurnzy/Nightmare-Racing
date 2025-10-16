@@ -1305,11 +1305,7 @@
         }
 
         if (isMultiple) {
-          // Handle multiple images for gallery
           const galleryPreview = document.getElementById('gallery-preview');
-          if (galleryPreview) {
-            galleryPreview.innerHTML = '';
-          }
 
           const baseGalleryMarkup = `
             <input type="file" id="${inputId}" class="hidden-input" accept="image/*" multiple>
@@ -1320,76 +1316,121 @@
             </div>
           `;
 
-          const imageUrls = uploads
+          const parseExistingUrls = () => {
+            if (!urlField.value) {
+              return [];
+            }
+            try {
+              const parsed = JSON.parse(urlField.value);
+              if (Array.isArray(parsed)) {
+                return parsed.filter(item => typeof item === 'string' && item.trim());
+              }
+            } catch (error) {
+              console.warn('⚠️ Admin - Failed to parse existing gallery URLs', error);
+            }
+            return [];
+          };
+
+          const existingUrls = parseExistingUrls();
+
+          const newUrls = uploads
             .map(upload => (typeof upload?.url === 'string' ? upload.url : null))
             .filter(Boolean);
-          urlField.value = JSON.stringify(imageUrls);
 
-          imageUrls.forEach((uploadedUrl, uploadedIndex) => {
-            const previewDiv = document.createElement('div');
-            previewDiv.style.display = 'inline-block';
-            previewDiv.style.margin = '10px';
-            previewDiv.style.position = 'relative';
-            previewDiv.dataset.url = uploadedUrl;
-            
-            const img = document.createElement('img');
-            img.src = uploadedUrl;
-            img.style.width = '120px';
-            img.style.height = '80px';
-            img.style.objectFit = 'cover';
-            img.style.borderRadius = '8px';
-            img.style.border = '2px solid var(--accent-red)';
-            
-            const removeBtn = document.createElement('button');
-            removeBtn.innerHTML = '✕';
-            removeBtn.style.position = 'absolute';
-            removeBtn.style.top = '-8px';
-            removeBtn.style.right = '-8px';
-            removeBtn.style.background = 'var(--accent-red)';
-            removeBtn.style.color = 'white';
-            removeBtn.style.border = 'none';
-            removeBtn.style.borderRadius = '50%';
-            removeBtn.style.width = '20px';
-            removeBtn.style.height = '20px';
-            removeBtn.style.cursor = 'pointer';
-            removeBtn.style.fontSize = '12px';
-            
-            removeBtn.onclick = () => {
-              previewDiv.remove();
-              const currentUrls = JSON.parse(urlField.value || '[]');
-              const newUrls = currentUrls.filter(url => url !== uploadedUrl);
-
-              if (newUrls.length === 0) {
-                urlField.value = '';
-                const resetArea = this.rebuildUploadArea(uploadAreaId, baseGalleryMarkup);
-                if (resetArea) {
-                  this.setupImageUpload(uploadAreaId, inputId, urlFieldId, true);
-                }
-                if (galleryPreview) {
-                  galleryPreview.innerHTML = '';
-                }
-                return;
-              }
-
-              urlField.value = JSON.stringify(newUrls);
-
-              const summary = document.getElementById(uploadAreaId)?.querySelector('.upload-summary');
-              if (summary) {
-                summary.textContent = `📷 ${newUrls.length} image(s) uploaded to gallery`;
-              }
-            };
-            
-            previewDiv.appendChild(img);
-            previewDiv.appendChild(removeBtn);
-            if (galleryPreview) {
-              galleryPreview.appendChild(previewDiv);
+          if (newUrls.length === 0 && existingUrls.length === 0) {
+            this.showMessage('No images were uploaded. Please try again.', 'error');
+            const resetArea = this.rebuildUploadArea(uploadAreaId, baseGalleryMarkup);
+            if (resetArea) {
+              this.setupImageUpload(uploadAreaId, inputId, urlFieldId, true);
             }
-          });
-          
+            return;
+          }
+
+          let currentGalleryUrls = existingUrls.concat(newUrls);
+
+          const updateHiddenField = () => {
+            if (currentGalleryUrls.length === 0) {
+              urlField.value = '';
+            } else {
+              urlField.value = JSON.stringify(currentGalleryUrls);
+            }
+          };
+
+          const updateSummary = () => {
+            const summary = document.getElementById(uploadAreaId)?.querySelector('.upload-summary');
+            if (summary) {
+              summary.textContent = `📷 ${currentGalleryUrls.length} image(s) uploaded to gallery`;
+            }
+          };
+
+          const renderGallery = () => {
+            if (!galleryPreview) {
+              return;
+            }
+
+            galleryPreview.innerHTML = '';
+
+            currentGalleryUrls.forEach((uploadedUrl, uploadedIndex) => {
+              const previewDiv = document.createElement('div');
+              previewDiv.style.display = 'inline-block';
+              previewDiv.style.margin = '10px';
+              previewDiv.style.position = 'relative';
+              previewDiv.dataset.url = uploadedUrl;
+
+              const img = document.createElement('img');
+              img.src = uploadedUrl;
+              img.style.width = '120px';
+              img.style.height = '80px';
+              img.style.objectFit = 'cover';
+              img.style.borderRadius = '8px';
+              img.style.border = '2px solid var(--accent-red)';
+
+              const removeBtn = document.createElement('button');
+              removeBtn.innerHTML = '✕';
+              removeBtn.style.position = 'absolute';
+              removeBtn.style.top = '-8px';
+              removeBtn.style.right = '-8px';
+              removeBtn.style.background = 'var(--accent-red)';
+              removeBtn.style.color = 'white';
+              removeBtn.style.border = 'none';
+              removeBtn.style.borderRadius = '50%';
+              removeBtn.style.width = '20px';
+              removeBtn.style.height = '20px';
+              removeBtn.style.cursor = 'pointer';
+              removeBtn.style.fontSize = '12px';
+
+              removeBtn.onclick = () => {
+                currentGalleryUrls = currentGalleryUrls.filter((_, idx) => idx !== uploadedIndex);
+                updateHiddenField();
+
+                if (currentGalleryUrls.length === 0) {
+                  const resetArea = this.rebuildUploadArea(uploadAreaId, baseGalleryMarkup);
+                  if (resetArea) {
+                    resetArea.classList.remove('has-image');
+                    this.setupImageUpload(uploadAreaId, inputId, urlFieldId, true);
+                  }
+                  if (galleryPreview) {
+                    galleryPreview.innerHTML = '';
+                  }
+                  return;
+                }
+
+                updateSummary();
+                renderGallery();
+              };
+
+              previewDiv.appendChild(img);
+              previewDiv.appendChild(removeBtn);
+              galleryPreview.appendChild(previewDiv);
+            });
+          };
+
+          updateHiddenField();
+
           const galleryMarkup = `
             <input type="file" id="${inputId}" class="hidden-input" accept="image/*" multiple>
             <div class="upload-summary" style="color: var(--accent-red); font-weight: bold;">
-              📷 ${imageUrls.length} image(s) uploaded to gallery
+              📷 ${currentGalleryUrls.length} image(s) uploaded to gallery
             </div>
           `;
           const updatedArea = this.rebuildUploadArea(uploadAreaId, galleryMarkup);
@@ -1397,7 +1438,15 @@
             updatedArea.classList.add('has-image');
             this.setupImageUpload(uploadAreaId, inputId, urlFieldId, true);
           }
-          this.showMessage('Gallery images uploaded successfully', 'success');
+
+          renderGallery();
+          updateSummary();
+
+          const addedCount = newUrls.length;
+          const successMessage = addedCount > 0
+            ? `${addedCount} image${addedCount === 1 ? '' : 's'} added to gallery`
+            : 'Gallery updated';
+          this.showMessage(successMessage, 'success');
         } else {
           // Handle single main image
           const mainUpload = uploads[0];
@@ -1587,13 +1636,13 @@
               </div>
               
               <div class="car-actions">
-                <button onclick="if(window.adminApp) { window.adminApp.editCar(${car.id}); } else { console.error('adminApp not available'); }" title="Edit car details">
+                <button type="button" onclick="if(window.adminApp) { window.adminApp.editCar(${car.id}); } else { console.error('adminApp not available'); }" title="Edit car details">
                   ✏️ Edit
                 </button>
-                <button onclick="if(window.adminApp) { window.adminApp.deleteCar(${car.id}); } else { console.error('adminApp not available'); }" class="danger" title="Delete car">
+                <button type="button" onclick="if(window.adminApp) { window.adminApp.deleteCar(${car.id}); } else { console.error('adminApp not available'); }" class="danger" title="Delete car">
                   🗑️ Delete
                 </button>
-                <button onclick="if(window.adminApp) { window.adminApp.viewCar(${car.id}); } else { console.error('adminApp not available'); }" title="View full details">
+                <button type="button" onclick="if(window.adminApp) { window.adminApp.viewCar(${car.id}); } else { console.error('adminApp not available'); }" title="View full details">
                   👁️ View
                 </button>
               </div>
@@ -1698,11 +1747,11 @@
             ` : ''}
             
             <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 25px;">
-              <button onclick="if(window.adminApp) { window.adminApp.editCar(${car.id}); this.parentElement.parentElement.parentElement.remove(); }" 
+              <button type="button" onclick="if(window.adminApp) { window.adminApp.editCar(${car.id}); this.parentElement.parentElement.parentElement.remove(); }" 
                       style="padding: 12px 24px; background: var(--accent-red); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-family: var(--font-secondary);">
                 ✏️ Edit Car
               </button>
-              <button onclick="this.parentElement.parentElement.parentElement.remove()" 
+              <button type="button" onclick="this.parentElement.parentElement.parentElement.remove()" 
                       style="padding: 12px 24px; background: var(--dark-gray); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-family: var(--font-secondary);">
                 Close
               </button>
