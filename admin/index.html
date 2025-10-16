@@ -1599,7 +1599,11 @@
           return;
         }
         
-        container.innerHTML = this.cars.map(car => {
+        container.innerHTML = this.cars.map((car, index) => {
+          const identifier = this.extractCarId(car, index);
+          const hasIdentifier = identifier !== null && identifier !== undefined && identifier !== '';
+          const jsIdArg = hasIdentifier ? JSON.stringify(String(identifier)) : null;
+
           const mainImageUrl = this.resolveMediaUrl(car.mainImage);
           const galleryUrls = (Array.isArray(car.gallery) ? car.gallery : [])
             .map(item => {
@@ -1611,6 +1615,30 @@
 
           const hasImage = !!mainImageUrl;
           const hasGallery = galleryUrls.length > 0;
+
+          const actionButtons = hasIdentifier
+            ? `
+                <button type="button" onclick='if(window.adminApp) { window.adminApp.editCar(${jsIdArg}); } else { console.error("adminApp not available"); }' title="Edit car details">
+                  ✏️ Edit
+                </button>
+                <button type="button" onclick='if(window.adminApp) { window.adminApp.deleteCar(${jsIdArg}); } else { console.error("adminApp not available"); }' class="danger" title="Delete car">
+                  🗑️ Delete
+                </button>
+                <button type="button" onclick='if(window.adminApp) { window.adminApp.viewCar(${jsIdArg}); } else { console.error("adminApp not available"); }' title="View full details">
+                  👁️ View
+                </button>
+              `
+            : `
+                <button type="button" disabled title="Car identifier unavailable">
+                  ✏️ Edit
+                </button>
+                <button type="button" disabled class="danger" title="Car identifier unavailable">
+                  🗑️ Delete
+                </button>
+                <button type="button" disabled title="Car identifier unavailable">
+                  👁️ View
+                </button>
+              `;
           
           return `
             <div class="car-card">
@@ -1636,15 +1664,7 @@
               </div>
               
               <div class="car-actions">
-                <button type="button" onclick="if(window.adminApp) { window.adminApp.editCar(${car.id}); } else { console.error('adminApp not available'); }" title="Edit car details">
-                  ✏️ Edit
-                </button>
-                <button type="button" onclick="if(window.adminApp) { window.adminApp.deleteCar(${car.id}); } else { console.error('adminApp not available'); }" class="danger" title="Delete car">
-                  🗑️ Delete
-                </button>
-                <button type="button" onclick="if(window.adminApp) { window.adminApp.viewCar(${car.id}); } else { console.error('adminApp not available'); }" title="View full details">
-                  👁️ View
-                </button>
+                ${actionButtons}
               </div>
             </div>
           `;
@@ -1669,9 +1689,45 @@
         if (raw.startsWith('/')) return raw;
         return `/${raw.replace(/^\.\/?/, '')}`;
       }
+
+      extractCarId(car, fallbackIndex = null) {
+        if (!car || typeof car !== 'object') {
+          return fallbackIndex;
+        }
+
+        const identifier = car.id ?? car.vehicleId ?? car.carId ?? car.slug ?? null;
+        if (identifier !== null && identifier !== undefined && identifier !== '') {
+          return identifier;
+        }
+
+        return fallbackIndex;
+      }
+
+      findCarById(carId) {
+        if (!Array.isArray(this.cars) || carId === undefined || carId === null) {
+          return null;
+        }
+
+        const target = String(carId);
+        const foundCar = this.cars.find((car, index) => {
+          const candidate = this.extractCarId(car, index);
+          return candidate !== null && candidate !== undefined && String(candidate) === target;
+        });
+
+        if (foundCar) {
+          return foundCar;
+        }
+
+        const numericIndex = Number(target);
+        if (Number.isInteger(numericIndex) && numericIndex >= 0 && numericIndex < this.cars.length) {
+          return this.cars[numericIndex];
+        }
+
+        return null;
+      }
       
       viewCar(carId) {
-        const car = this.cars.find(c => c.id === carId);
+        const car = this.findCarById(carId);
         if (!car) return;
         
         // Create a modal or detailed view
@@ -1681,6 +1737,10 @@
           background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center;
           padding: 20px; cursor: pointer;
         `;
+
+        const modalIdValue = this.extractCarId(car, this.cars.indexOf(car));
+        const hasModalId = modalIdValue !== null && modalIdValue !== undefined && modalIdValue !== '';
+        const modalIdArg = hasModalId ? JSON.stringify(String(modalIdValue)) : null;
         
         const mainImageUrl = this.resolveMediaUrl(car.mainImage);
         const galleryUrls = (Array.isArray(car.gallery) ? car.gallery : [])
@@ -1747,10 +1807,12 @@
             ` : ''}
             
             <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 25px;">
-              <button type="button" onclick="if(window.adminApp) { window.adminApp.editCar(${car.id}); this.parentElement.parentElement.parentElement.remove(); }" 
-                      style="padding: 12px 24px; background: var(--accent-red); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-family: var(--font-secondary);">
-                ✏️ Edit Car
-              </button>
+              ${hasModalId ? `
+                <button type="button" onclick='if(window.adminApp) { window.adminApp.editCar(${modalIdArg}); this.parentElement.parentElement.parentElement.remove(); }' 
+                        style="padding: 12px 24px; background: var(--accent-red); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-family: var(--font-secondary);">
+                  ✏️ Edit Car
+                </button>
+              ` : ''}
               <button type="button" onclick="this.parentElement.parentElement.parentElement.remove()" 
                       style="padding: 12px 24px; background: var(--dark-gray); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-family: var(--font-secondary);">
                 Close
@@ -1935,7 +1997,7 @@
       
       editCar(carId) {
         console.log('🔄 Admin - Editing car:', carId);
-        const car = this.cars.find(c => c.id === carId);
+        const car = this.findCarById(carId);
         if (!car) {
           console.error('❌ Admin - Car not found:', carId);
           return;
@@ -2007,7 +2069,10 @@
         }
         
         // Store editing car ID
-        this.editingCarId = carId;
+        const normalizedId = this.extractCarId(car, this.cars.indexOf(car));
+        this.editingCarId = normalizedId !== null && normalizedId !== undefined && normalizedId !== ''
+          ? normalizedId
+          : carId;
         
         // Update button text
         const submitBtn = document.querySelector('#add-car-form button[type="submit"]');
