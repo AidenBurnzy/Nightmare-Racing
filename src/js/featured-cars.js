@@ -5,6 +5,14 @@ let filteredCars = [];
 let currentModalCar = null;
 let currentImageIndex = 0;
 
+const imageViewerState = {
+    images: [],
+    index: 0,
+    carName: ''
+};
+
+let imageViewerInitialized = false;
+
 const filtersState = {
     search: '',
     status: 'all',
@@ -27,6 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadAllCars();
     setupModalEvents();
     handleDirectCarLink();
+    setupImageViewer();
 });
 
 // Handle direct car links (e.g., from carousel)
@@ -430,6 +439,17 @@ function createCarCard(car, index) {
         </div>
     `;
 
+    const mainImageElement = card.querySelector('.gallery-main-image');
+    if (mainImageElement && images.length > 0) {
+        mainImageElement.dataset.currentIndex = '0';
+        mainImageElement.addEventListener('click', (event) => {
+            event.stopPropagation();
+            const datasetIndex = Number.parseInt(mainImageElement.dataset.currentIndex || '0', 10);
+            const startingIndex = Number.isFinite(datasetIndex) ? datasetIndex : 0;
+            openImageViewer(images, startingIndex, car);
+        });
+    }
+
     if (images.length > 1) {
         setupCardGallery(card, images, index);
     }
@@ -557,11 +577,21 @@ function createSpecItem(label, value) {
 // Setup image gallery for card
 function setupCardGallery(card, images, cardIndex) {
     const galleryElement = card.querySelector(`#gallery-${cardIndex}`);
+    if (!galleryElement) {
+        return;
+    }
+
     const mainImage = galleryElement.querySelector('.gallery-main-image');
     const dots = galleryElement.querySelectorAll('.gallery-dot');
+
+    if (!mainImage) {
+        return;
+    }
     
     let currentIndex = 0;
     let intervalId = null;
+
+    mainImage.dataset.currentIndex = '0';
     
     // Auto-advance images
     function startAutoAdvance() {
@@ -580,6 +610,7 @@ function setupCardGallery(card, images, cardIndex) {
     
     function updateGalleryImage() {
         mainImage.src = images[currentIndex];
+        mainImage.dataset.currentIndex = String(currentIndex);
         dots.forEach((dot, i) => {
             dot.classList.toggle('active', i === currentIndex);
         });
@@ -621,12 +652,25 @@ function openCarModal(car) {
     
     // Update main image
     const mainImage = document.getElementById('modal-main-image');
-    if (images.length > 0) {
-        mainImage.src = images[0];
-        mainImage.alt = car.name;
-    } else {
-        mainImage.src = '';
-        mainImage.alt = 'No image available';
+    if (mainImage) {
+        if (images.length > 0) {
+            mainImage.src = images[0];
+            mainImage.alt = `${car.name || 'Project build'} – image 1 of ${images.length}`;
+        } else {
+            mainImage.src = '';
+            mainImage.alt = 'No image available';
+        }
+
+        mainImage.dataset.currentIndex = '0';
+
+        if (images.length > 0) {
+            mainImage.onclick = (event) => {
+                event.stopPropagation();
+                openImageViewer(images, currentImageIndex, car);
+            };
+        } else {
+            mainImage.onclick = null;
+        }
     }
     
     // Update thumbnails
@@ -681,7 +725,9 @@ function closeCarModal() {
     const modal = document.getElementById('car-modal');
     if (modal) {
         modal.classList.remove('active');
-        document.body.style.overflow = '';
+        if (!isImageViewerOpen()) {
+            document.body.style.overflow = '';
+        }
     }
 }
 
@@ -691,7 +737,11 @@ function setModalImage(index, images) {
     
     currentImageIndex = index;
     const mainImage = document.getElementById('modal-main-image');
-    mainImage.src = images[index];
+    if (mainImage) {
+        mainImage.src = images[index];
+        mainImage.dataset.currentIndex = String(index);
+        mainImage.alt = `${currentModalCar?.name || 'Project build'} – image ${index + 1} of ${images.length}`;
+    }
     
     // Update thumbnails
     const thumbnails = document.querySelectorAll('.thumbnail');
@@ -846,6 +896,166 @@ function extractVimeoId(url) {
     return match && match[1] ? match[1] : null;
 }
 
+function setupImageViewer() {
+    const viewer = document.getElementById('image-viewer');
+    if (!viewer || imageViewerInitialized) {
+        return;
+    }
+
+    const closeBtn = viewer.querySelector('.image-viewer-close');
+    const prevBtn = viewer.querySelector('.image-viewer-prev');
+    const nextBtn = viewer.querySelector('.image-viewer-next');
+    const backdrop = viewer.querySelector('.image-viewer-backdrop');
+
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closeImageViewer);
+    }
+
+    if (prevBtn) {
+        prevBtn.addEventListener('click', () => changeImageViewer(-1));
+    }
+
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => changeImageViewer(1));
+    }
+
+    if (backdrop) {
+        backdrop.addEventListener('click', closeImageViewer);
+    }
+
+    viewer.addEventListener('click', (event) => {
+        if (event.target === viewer) {
+            closeImageViewer();
+        }
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (!isImageViewerOpen()) {
+            return;
+        }
+
+        if (event.key === 'Escape') {
+            event.preventDefault();
+            closeImageViewer();
+            return;
+        }
+
+        if (event.key === 'ArrowLeft') {
+            event.preventDefault();
+            changeImageViewer(-1);
+        }
+
+        if (event.key === 'ArrowRight') {
+            event.preventDefault();
+            changeImageViewer(1);
+        }
+    });
+
+    imageViewerInitialized = true;
+}
+
+function openImageViewer(images, startIndex = 0, car = null) {
+    if (!Array.isArray(images) || images.length === 0) {
+        return;
+    }
+
+    const viewer = document.getElementById('image-viewer');
+    if (!viewer) {
+        return;
+    }
+
+    setupImageViewer();
+
+    const safeIndex = Math.max(0, Math.min(startIndex, images.length - 1));
+    imageViewerState.images = images;
+    imageViewerState.index = safeIndex;
+    imageViewerState.carName = car?.name || '';
+
+    updateImageViewer();
+
+    viewer.classList.add('open');
+    viewer.setAttribute('aria-hidden', 'false');
+
+    const closeBtn = viewer.querySelector('.image-viewer-close');
+    if (closeBtn) {
+        closeBtn.focus({ preventScroll: true });
+    }
+
+    document.body.style.overflow = 'hidden';
+}
+
+function changeImageViewer(offset) {
+    const { images } = imageViewerState;
+    if (!Array.isArray(images) || images.length <= 1) {
+        return;
+    }
+
+    const total = images.length;
+    imageViewerState.index = (imageViewerState.index + offset + total) % total;
+    updateImageViewer();
+}
+
+function updateImageViewer() {
+    const viewer = document.getElementById('image-viewer');
+    if (!viewer) {
+        return;
+    }
+
+    const { images, index, carName } = imageViewerState;
+    if (!Array.isArray(images) || images.length === 0) {
+        closeImageViewer();
+        return;
+    }
+
+    const mainImage = viewer.querySelector('.image-viewer-main');
+    const caption = viewer.querySelector('.image-viewer-caption');
+    const prevBtn = viewer.querySelector('.image-viewer-prev');
+    const nextBtn = viewer.querySelector('.image-viewer-next');
+
+    if (mainImage) {
+        const labelPrefix = carName ? `${carName} – ` : '';
+        mainImage.src = images[index];
+        mainImage.alt = `${labelPrefix}image ${index + 1} of ${images.length}`;
+    }
+
+    if (caption) {
+        const captionPrefix = carName ? `${carName} • ` : '';
+        caption.textContent = `${captionPrefix}Image ${index + 1} of ${images.length}`;
+    }
+
+    const showNav = images.length > 1;
+    if (prevBtn) {
+        prevBtn.style.display = showNav ? 'flex' : 'none';
+    }
+    if (nextBtn) {
+        nextBtn.style.display = showNav ? 'flex' : 'none';
+    }
+}
+
+function closeImageViewer() {
+    const viewer = document.getElementById('image-viewer');
+    if (!viewer) {
+        return;
+    }
+
+    viewer.classList.remove('open');
+    viewer.setAttribute('aria-hidden', 'true');
+
+    imageViewerState.images = [];
+    imageViewerState.index = 0;
+    imageViewerState.carName = '';
+
+    const modalActive = document.getElementById('car-modal')?.classList.contains('active');
+    if (!modalActive) {
+        document.body.style.overflow = '';
+    }
+}
+
+function isImageViewerOpen() {
+    const viewer = document.getElementById('image-viewer');
+    return Boolean(viewer && viewer.classList.contains('open'));
+}
+
 // Setup modal events
 function setupModalEvents() {
     const modal = document.getElementById('car-modal');
@@ -863,6 +1073,9 @@ function setupModalEvents() {
     // Close on escape key
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && modal && modal.classList.contains('active')) {
+            if (isImageViewerOpen()) {
+                return;
+            }
             closeCarModal();
         }
     });

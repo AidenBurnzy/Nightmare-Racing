@@ -405,6 +405,96 @@
     padding-left: 40px;
 }
 
+.mobile-nav-links .mobile-submenu-heading,
+.mobile-nav-links > li > a.mobile-sub-link {
+    display: none;
+}
+
+.mobile-services {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mobile-services-toggle {
+    width: 100%;
+    background: none;
+    border: none;
+    color: var(--pure-white);
+    text-transform: uppercase;
+    font-family: var(--font-secondary);
+    font-weight: 500;
+    font-size: 1.1rem;
+    padding: 1rem 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.mobile-services-toggle:hover,
+.mobile-services-toggle:focus {
+    color: var(--accent-red);
+}
+
+.mobile-services.open .mobile-services-toggle {
+    color: var(--accent-red);
+}
+
+.mobile-services-toggle .toggle-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid var(--accent-red);
+    color: var(--accent-red);
+    font-size: 1rem;
+    line-height: 1;
+    transition: all 0.3s ease;
+}
+
+.mobile-services-toggle[aria-expanded="true"] .toggle-icon {
+    background: var(--accent-red);
+    color: var(--pure-white);
+    transform: rotate(45deg);
+}
+
+.mobile-services-submenu {
+    list-style: none;
+    margin: 0;
+    padding: 0 0 1rem 1.25rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mobile-services-submenu[hidden] {
+    display: none !important;
+}
+
+.mobile-services.open .mobile-services-submenu {
+    padding-top: 0.5rem;
+}
+
+.mobile-services-submenu .mobile-sub-link {
+    padding: 0.75rem 0;
+    padding-left: 0.75rem;
+    font-size: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.mobile-services-submenu .mobile-sub-link:last-child {
+    border-bottom: none;
+}
+
+.mobile-services-submenu .mobile-sub-link::before {
+    left: 0.75rem;
+}
+
+.mobile-services-submenu .mobile-sub-link:hover,
+.mobile-services-submenu .mobile-sub-link.active {
+    padding-left: 1.5rem;
+}
+
 /* Mobile Sign In Button */
 .mobile-sign-in {
     margin-top: 1.5rem !important;

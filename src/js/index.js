@@ -385,6 +385,8 @@ document.addEventListener('DOMContentLoaded', function() {
     let mobileMenuOverlay = null;
     let mobileMenuClose = null;
     let mobileNavLinks = null;
+    let mobileServicesToggles = [];
+    let mobileServicesAccordionId = 0;
     
     function createMobileMenu() {
         mobileMenuOverlay = document.querySelector('.mobile-menu-overlay');
@@ -444,10 +446,116 @@ document.addEventListener('DOMContentLoaded', function() {
             document.body.appendChild(mobileMenu);
         }
 
+        const navList = mobileMenu.querySelector('.mobile-nav-links');
+        enhanceMobileServicesMenu(navList);
+
         mobileMenuClose = mobileMenu.querySelector('.mobile-menu-close');
         mobileNavLinks = mobileMenu.querySelectorAll('.mobile-nav-links a');
 
+        setupMobileServicesAccordion();
+
         setupMobileMenuEvents();
+    }
+
+    function enhanceMobileServicesMenu(menuList) {
+        if (!menuList || menuList.dataset.servicesEnhanced === 'true') {
+            return;
+        }
+
+        if (menuList.querySelector('.mobile-services-toggle')) {
+            menuList.dataset.servicesEnhanced = 'true';
+            return;
+        }
+
+        const items = Array.from(menuList.children);
+        const serviceLinkItem = items.find((item) => {
+            const anchor = item.querySelector('a');
+            if (!anchor) return false;
+            const href = anchor.getAttribute('href') || '';
+            return href.includes('#services');
+        });
+
+        if (!serviceLinkItem) {
+            menuList.dataset.servicesEnhanced = 'true';
+            return;
+        }
+
+        const serviceAnchor = serviceLinkItem.querySelector('a');
+        const serviceHref = serviceAnchor?.getAttribute('href') || '#services';
+        const serviceLabel = serviceAnchor?.textContent?.trim() || 'Services';
+
+        let headingItem = null;
+        const submenuItems = [];
+        let next = serviceLinkItem.nextElementSibling;
+
+        while (next) {
+            if (next.classList.contains('mobile-submenu-heading')) {
+                headingItem = next;
+                next = next.nextElementSibling;
+                continue;
+            }
+
+            const subLinkAnchor = next.querySelector('a.mobile-sub-link');
+            if (subLinkAnchor) {
+                submenuItems.push(next);
+                next = next.nextElementSibling;
+                continue;
+            }
+            break;
+        }
+
+        if (submenuItems.length === 0) {
+            menuList.dataset.servicesEnhanced = 'true';
+            return;
+        }
+
+        mobileServicesAccordionId += 1;
+        const submenuId = `mobile-services-submenu-${mobileServicesAccordionId}`;
+
+        const servicesItem = document.createElement('li');
+        servicesItem.classList.add('mobile-services');
+
+        const toggleButton = document.createElement('button');
+        toggleButton.type = 'button';
+        toggleButton.className = 'mobile-services-toggle';
+        toggleButton.setAttribute('aria-expanded', 'false');
+        toggleButton.setAttribute('aria-controls', submenuId);
+        toggleButton.innerHTML = `
+            <span>${serviceLabel}</span>
+            <span class="toggle-icon" aria-hidden="true">+</span>
+        `;
+
+        const submenu = document.createElement('ul');
+        submenu.className = 'mobile-services-submenu';
+        submenu.id = submenuId;
+        submenu.hidden = true;
+
+        const overviewItem = document.createElement('li');
+        const overviewLink = document.createElement('a');
+        overviewLink.className = 'mobile-sub-link mobile-sub-overview';
+        overviewLink.href = serviceHref;
+        overviewLink.textContent = 'Services Overview';
+        overviewItem.appendChild(overviewLink);
+        submenu.appendChild(overviewItem);
+
+        submenuItems.forEach((item) => {
+            submenu.appendChild(item.cloneNode(true));
+        });
+
+        servicesItem.appendChild(toggleButton);
+        servicesItem.appendChild(submenu);
+
+        menuList.insertBefore(servicesItem, serviceLinkItem);
+
+        menuList.removeChild(serviceLinkItem);
+        if (headingItem) {
+            menuList.removeChild(headingItem);
+        }
+        submenuItems.forEach((item) => {
+            menuList.removeChild(item);
+        });
+
+        menuList.dataset.servicesEnhanced = 'true';
     }
     
     function setupMobileMenuEvents() {
@@ -490,6 +598,73 @@ document.addEventListener('DOMContentLoaded', function() {
         
         setupTouchGestures();
     }
+
+    function setupMobileServicesAccordion() {
+        if (!mobileMenu) {
+            return;
+        }
+
+        mobileServicesToggles = Array.from(mobileMenu.querySelectorAll('.mobile-services-toggle'));
+
+        mobileServicesToggles.forEach((toggle) => {
+            const submenu = toggle.nextElementSibling;
+            if (!(submenu instanceof HTMLElement)) {
+                return;
+            }
+
+            const parentItem = toggle.closest('.mobile-services');
+            submenu.hidden = true;
+            toggle.setAttribute('aria-expanded', 'false');
+            if (parentItem) {
+                parentItem.classList.remove('open');
+            }
+
+            toggle.addEventListener('click', () => {
+                const isOpen = toggle.getAttribute('aria-expanded') === 'true';
+
+                mobileServicesToggles.forEach((otherToggle) => {
+                    if (otherToggle === toggle) return;
+                    const otherSubmenu = otherToggle.nextElementSibling;
+                    if (otherSubmenu instanceof HTMLElement) {
+                        otherToggle.setAttribute('aria-expanded', 'false');
+                        otherSubmenu.hidden = true;
+                        const otherParent = otherToggle.closest('.mobile-services');
+                        if (otherParent) {
+                            otherParent.classList.remove('open');
+                        }
+                    }
+                });
+
+                if (isOpen) {
+                    toggle.setAttribute('aria-expanded', 'false');
+                    submenu.hidden = true;
+                    if (parentItem) {
+                        parentItem.classList.remove('open');
+                    }
+                } else {
+                    toggle.setAttribute('aria-expanded', 'true');
+                    submenu.hidden = false;
+                    if (parentItem) {
+                        parentItem.classList.add('open');
+                    }
+                }
+            });
+        });
+    }
+
+    function collapseMobileServicesSubmenus() {
+        mobileServicesToggles.forEach((toggle) => {
+            toggle.setAttribute('aria-expanded', 'false');
+            const submenu = toggle.nextElementSibling;
+            if (submenu instanceof HTMLElement) {
+                submenu.hidden = true;
+            }
+            const parentItem = toggle.closest('.mobile-services');
+            if (parentItem) {
+                parentItem.classList.remove('open');
+            }
+        });
+    }
     
     function toggleMobileMenu() {
         if (!mobileMenu) return;
@@ -525,6 +700,7 @@ document.addEventListener('DOMContentLoaded', function() {
         mobileMenu.classList.remove('active');
         mobileMenuOverlay.classList.remove('active');
         document.body.classList.remove('menu-open');
+        collapseMobileServicesSubmenus();
     }
     
     // ================================
