@@ -1,7 +1,6 @@
 // serve-media.js - Streams stored blob images back to the client
-const { connectLambda, getStore } = require('@netlify/blobs');
-
-const resolveBlobStore = (event) => {
+const resolveBlobStore = async (event) => {
+  const { connectLambda, getStore } = await import('@netlify/blobs');
   const storeName = process.env.BLOB_STORE_NAME || 'car-images';
 
   let environmentConfigured = false;
@@ -15,7 +14,7 @@ const resolveBlobStore = (event) => {
   }
 
   if (environmentConfigured || process.env.NETLIFY_BLOBS_CONTEXT) {
-    return getStore(storeName);
+  return getStore(storeName);
   }
 
   const explicitSiteId = process.env.BLOB_STORE_SITE_ID || process.env.NETLIFY_BLOBS_SITE_ID;
@@ -24,7 +23,7 @@ const resolveBlobStore = (event) => {
   const explicitApiUrl = process.env.BLOB_STORE_API_URL || process.env.NETLIFY_BLOBS_API_URL;
 
   if (explicitSiteId && explicitToken) {
-    return getStore({
+  return getStore({
       name: storeName,
       siteID: explicitSiteId,
       token: explicitToken,
@@ -70,7 +69,7 @@ exports.handler = async (event) => {
   const key = decodeURIComponent(keyParam);
 
   try {
-    const store = resolveBlobStore(event);
+  const store = await resolveBlobStore(event);
     const result = await store.getWithMetadata(key, { type: 'arrayBuffer' });
 
     if (!result) {

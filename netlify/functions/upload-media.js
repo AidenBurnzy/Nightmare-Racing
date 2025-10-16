@@ -1,12 +1,11 @@
 // upload-media.js - Handles multipart image uploads and stores them in Netlify Blobs
-const { connectLambda, getStore } = require('@netlify/blobs');
-const Busboy = require('busboy');
 const { randomUUID } = require('crypto');
 const path = require('path');
 
 const MAX_FILE_SIZE_BYTES = 15 * 1024 * 1024; // 15MB per image
 
-const parseMultipartForm = (eventBody, contentType, isBase64Encoded) => {
+const parseMultipartForm = async (eventBody, contentType, isBase64Encoded) => {
+  const Busboy = (await import('busboy')).default;
   return new Promise((resolve, reject) => {
     const files = [];
     const busboy = Busboy({
@@ -70,7 +69,8 @@ const sanitizeFileExtension = (filename = '') => {
   return safeExtension || '';
 };
 
-const resolveBlobStore = (event) => {
+const resolveBlobStore = async (event) => {
+  const { connectLambda, getStore } = await import('@netlify/blobs');
   const storeName = process.env.BLOB_STORE_NAME || 'car-images';
 
   let environmentConfigured = false;
@@ -84,7 +84,7 @@ const resolveBlobStore = (event) => {
   }
 
   if (environmentConfigured || process.env.NETLIFY_BLOBS_CONTEXT) {
-    return getStore(storeName);
+  return getStore(storeName);
   }
 
   const explicitSiteId = process.env.BLOB_STORE_SITE_ID || process.env.NETLIFY_BLOBS_SITE_ID;
@@ -93,7 +93,7 @@ const resolveBlobStore = (event) => {
   const explicitApiUrl = process.env.BLOB_STORE_API_URL || process.env.NETLIFY_BLOBS_API_URL;
 
   if (explicitSiteId && explicitToken) {
-    return getStore({
+  return getStore({
       name: storeName,
       siteID: explicitSiteId,
       token: explicitToken,
@@ -126,7 +126,7 @@ exports.handler = async (event) => {
   }
 
   try {
-    const files = await parseMultipartForm(event.body, contentType, event.isBase64Encoded);
+  const files = await parseMultipartForm(event.body, contentType, event.isBase64Encoded);
 
     if (!Array.isArray(files) || files.length === 0) {
       return {
@@ -136,7 +136,7 @@ exports.handler = async (event) => {
       };
     }
 
-    const store = resolveBlobStore(event);
+  const store = await resolveBlobStore(event);
     const uploads = [];
 
     for (const file of files) {
