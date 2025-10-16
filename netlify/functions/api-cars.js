@@ -1,120 +1,124 @@
-// api-cars.js - API endpoints for car data
+// api-cars.js - API endpoints for vehicle data without featured flag
 // Direct database connection for Netlify Functions
 
 const { neon } = require('@neondatabase/serverless');
 
-let carVideosSupported = true;
-
 const sanitizeMediaUrl = (rawUrl) => {
     if (typeof rawUrl !== 'string') return null;
-
     const trimmed = rawUrl.trim();
     if (!trimmed) return null;
-
     if (trimmed.startsWith('data:image') || trimmed.startsWith('data:video')) {
         return null;
     }
-
     return trimmed;
 };
 
-const parseGalleryItems = (rawGallery) => {
-    if (Array.isArray(rawGallery)) return rawGallery;
-    if (typeof rawGallery === 'string' && rawGallery.trim()) {
+const parseJsonArray = (value, fallback = []) => {
+    if (Array.isArray(value)) {
+        return value;
+    }
+    if (value && typeof value === 'object') {
+        return Array.isArray(value) ? value : fallback;
+    }
+    if (typeof value === 'string' && value.trim()) {
         try {
-            return JSON.parse(rawGallery);
+            const parsed = JSON.parse(value);
+            return Array.isArray(parsed) ? parsed : fallback;
         } catch (error) {
-            return [];
+            return fallback;
         }
     }
-    return [];
+    return fallback;
 };
 
-const fetchCarsQuery = async (sql) => {
-    if (carVideosSupported) {
+const parseJsonObject = (value, fallback = {}) => {
+    if (value && typeof value === 'object' && !Array.isArray(value)) {
+        return value;
+    }
+    if (typeof value === 'string' && value.trim()) {
         try {
-            return await sql`
-                SELECT
-                    c.id,
-                    c.year,
-                    c.make,
-                    c.model,
-                    c.name,
-                    c.description,
-                    c.mechanics,
-                    c.main_image,
-                    c.status,
-                    c.featured,
-                    c.date_added,
-                    COALESCE(g.gallery, '[]'::json) AS gallery,
-                    COALESCE(v.videos, '[]'::json) AS videos
-                FROM cars c
-                LEFT JOIN LATERAL (
-                    SELECT json_agg(
-                        json_build_object(
-                            'url', cg.image_url,
-                            'order', cg.image_order,
-                            'caption', cg.caption
-                        )
-                        ORDER BY cg.image_order
-                    ) FILTER (WHERE cg.image_url IS NOT NULL) AS gallery
-                    FROM car_gallery cg
-                    WHERE cg.car_id = c.id
-                ) g ON TRUE
-                LEFT JOIN LATERAL (
-                    SELECT json_agg(
-                        json_build_object(
-                            'url', cv.video_url,
-                            'order', cv.video_order,
-                            'caption', cv.caption
-                        )
-                        ORDER BY cv.video_order
-                    ) FILTER (WHERE cv.video_url IS NOT NULL) AS videos
-                    FROM car_videos cv
-                    WHERE cv.car_id = c.id
-                ) v ON TRUE
-                ORDER BY c.date_added DESC
-            `;
+            const parsed = JSON.parse(value);
+            return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : fallback;
         } catch (error) {
-            if (error?.code === '42P01') {
-                console.warn('car_videos table missing; continuing without video support');
-                carVideosSupported = false;
-            } else {
-                throw error;
-            }
+            return fallback;
         }
     }
+    return fallback;
+};
 
-    return await sql`
-        SELECT
-            c.id,
-            c.year,
-            c.make,
-            c.model,
-            c.name,
-            c.description,
-            c.mechanics,
-            c.main_image,
-            c.status,
-            c.featured,
-            c.date_added,
-            COALESCE(g.gallery, '[]'::json) AS gallery,
-            '[]'::json AS videos
-        FROM cars c
-        LEFT JOIN LATERAL (
-            SELECT json_agg(
-                json_build_object(
-                    'url', cg.image_url,
-                    'order', cg.image_order,
-                    'caption', cg.caption
-                )
-                ORDER BY cg.image_order
-            ) FILTER (WHERE cg.image_url IS NOT NULL) AS gallery
-            FROM car_gallery cg
-            WHERE cg.car_id = c.id
-        ) g ON TRUE
-        ORDER BY c.date_added DESC
-    `;
+const sanitizeGalleryInput = (gallery) => {
+    const items = parseJsonArray(gallery);
+    return items
+        .map((item) => {
+            if (!item) return null;
+            if (typeof item === 'string') {
+                const url = sanitizeMediaUrl(item);
+                return url ? { url, caption: null } : null;
+            }
+            if (typeof item === 'object') {
+                const url = sanitizeMediaUrl(item.url || item.image);
+                if (!url) {
+                    return null;
+                }
+                const caption = typeof item.caption === 'string' && item.caption.trim() ? item.caption.trim() : null;
+                return { url, caption };
+            }
+            return null;
+        })
+        .filter(Boolean);
+};
+
+const sanitizeVideosInput = (videos) => {
+    const items = parseJsonArray(videos);
+    return items
+        .map((item) => {
+            if (!item) return null;
+            if (typeof item === 'string') {
+                const url = sanitizeMediaUrl(item);
+                return url ? { url, caption: null } : null;
+            }
+            if (typeof item === 'object') {
+                const url = sanitizeMediaUrl(item.url || item.video);
+                if (!url) {
+                    return null;
+                }
+                const caption = typeof item.caption === 'string' && item.caption.trim() ? item.caption.trim() : null;
+                return { url, caption };
+            }
+            return null;
+        })
+        .filter(Boolean);
+};
+
+const normalizeGalleryForResponse = (gallery) => {
+    return sanitizeGalleryInput(gallery).map((item) => {
+        if (item.caption) {
+            return item;
+        }
+        return item.url;
+    });
+};
+
+const normalizeVideosForResponse = (videos) => sanitizeVideosInput(videos);
+
+const sanitizeSpecsInput = (specs) => parseJsonObject(specs, {});
+
+const serializeVehicleRow = (row) => {
+    return {
+        id: row.id,
+        year: row.year,
+        make: row.make,
+        model: row.model,
+        name: row.name,
+        description: row.description,
+        mechanics: row.mechanics,
+        mainImage: sanitizeMediaUrl(row.main_image),
+        gallery: normalizeGalleryForResponse(row.gallery),
+        videos: normalizeVideosForResponse(row.videos),
+        specs: parseJsonObject(row.specs, {}),
+        status: row.status,
+        dateAdded: row.date_added
+    };
 };
 
 exports.handler = async (event) => {
@@ -138,7 +142,6 @@ exports.handler = async (event) => {
 
         if (!databaseUrl) {
             console.error('❌ No database URL found in environment variables');
-            console.error('Available env vars:', Object.keys(process.env).filter(k => k.includes('DATABASE')));
             return {
                 statusCode: 500,
                 headers,
@@ -153,72 +156,67 @@ exports.handler = async (event) => {
         const sql = neon(databaseUrl);
 
         if (event.httpMethod === 'GET') {
-            const cars = await fetchCarsQuery(sql);
-
-            const transformedCars = cars.map(car => {
-                const galleryItems = parseGalleryItems(car.gallery);
-                const galleryUrls = galleryItems
-                    .map(item => {
-                        if (!item) return null;
-                        if (typeof item === 'string') return sanitizeMediaUrl(item);
-                        if (typeof item.url === 'string') return sanitizeMediaUrl(item.url);
-                        return null;
-                    })
-                    .filter(Boolean);
-
-                const videoItems = Array.isArray(car.videos) ? car.videos : [];
-                const videos = videoItems
-                    .map(item => {
-                        if (!item) return null;
-                        if (typeof item === 'string') {
-                            const url = sanitizeMediaUrl(item);
-                            if (!url) return null;
-                            return { url, caption: null };
-                        }
-                        if (typeof item.url === 'string') {
-                            const url = sanitizeMediaUrl(item.url);
-                            if (!url) return null;
-                            return {
-                                url,
-                                caption: item.caption || null
-                            };
-                        }
-                        return null;
-                    })
-                    .filter(Boolean);
-
-                return {
-                    id: car.id,
-                    year: car.year,
-                    make: car.make,
-                    model: car.model,
-                    name: car.name,
-                    description: car.description,
-                    mechanics: car.mechanics,
-                    mainImage: sanitizeMediaUrl(car.main_image),
-                    gallery: galleryUrls,
+            const vehicles = await sql`
+                SELECT
+                    id,
+                    year,
+                    make,
+                    model,
+                    name,
+                    description,
+                    mechanics,
+                    main_image,
+                    status,
+                    date_added,
+                    gallery,
                     videos,
-                    status: car.status,
-                    featured: car.featured,
-                    dateAdded: car.date_added
-                };
-            });
+                    specs
+                FROM vehicle_information
+                ORDER BY date_added DESC, id DESC
+            `;
+
+            const payload = vehicles.map(serializeVehicleRow);
 
             return {
                 statusCode: 200,
                 headers,
-                body: JSON.stringify(transformedCars)
+                body: JSON.stringify(payload)
             };
         }
 
         if (event.httpMethod === 'POST') {
-            const carData = JSON.parse(event.body);
+            const carData = JSON.parse(event.body || '{}');
 
-            const sanitizedMainImage = sanitizeMediaUrl(carData.mainImage) || null;
+            if (!carData.name || !carData.description) {
+                return {
+                    statusCode: 400,
+                    headers,
+                    body: JSON.stringify({
+                        error: 'Validation error',
+                        message: 'Name and description are required'
+                    })
+                };
+            }
 
-            const [newCar] = await sql`
-                INSERT INTO cars (year, make, model, name, description, mechanics, main_image, status, featured, date_added)
-                VALUES (
+            const sanitizedMainImage = sanitizeMediaUrl(carData.mainImage);
+            const galleryPayload = sanitizeGalleryInput(carData.gallery);
+            const videosPayload = sanitizeVideosInput(carData.videos);
+            const specsPayload = sanitizeSpecsInput(carData.specs);
+
+            const [newVehicle] = await sql`
+                INSERT INTO vehicle_information (
+                    year,
+                    make,
+                    model,
+                    name,
+                    description,
+                    mechanics,
+                    main_image,
+                    status,
+                    gallery,
+                    videos,
+                    specs
+                ) VALUES (
                     ${carData.year || null},
                     ${carData.make || null},
                     ${carData.model || null},
@@ -227,159 +225,101 @@ exports.handler = async (event) => {
                     ${carData.mechanics || null},
                     ${sanitizedMainImage},
                     ${carData.status || 'COMPLETED'},
-                    ${carData.featured !== false},
-                    ${carData.dateAdded || new Date().toISOString()}
+                    ${JSON.stringify(galleryPayload)}::jsonb,
+                    ${JSON.stringify(videosPayload)}::jsonb,
+                    ${JSON.stringify(specsPayload)}::jsonb
                 )
-                RETURNING id, year, make, model, name, description, mechanics, main_image, status, featured, date_added
+                RETURNING id, year, make, model, name, description, mechanics, main_image, status, date_added, gallery, videos, specs
             `;
-
-            if (Array.isArray(carData.gallery) && carData.gallery.length > 0) {
-                for (let i = 0; i < carData.gallery.length; i++) {
-                    const image = carData.gallery[i];
-                    if (!image) continue;
-                    const imageUrl = typeof image === 'string' ? image : image.url;
-                    const caption = typeof image === 'object' ? image.caption : null;
-                    const sanitizedUrl = sanitizeMediaUrl(imageUrl);
-                    if (!sanitizedUrl) continue;
-
-                    await sql`
-                        INSERT INTO car_gallery (car_id, image_url, image_order, caption)
-                        VALUES (${newCar.id}, ${sanitizedUrl}, ${i}, ${caption})
-                    `;
-                }
-            }
-
-            if (carVideosSupported && Array.isArray(carData.videos) && carData.videos.length > 0) {
-                try {
-                    for (let i = 0; i < carData.videos.length; i++) {
-                        const video = carData.videos[i];
-                        if (!video) continue;
-                        const videoUrl = typeof video === 'string' ? video : video.url;
-                        const caption = typeof video === 'object' ? video.caption : null;
-                        const sanitizedVideoUrl = sanitizeMediaUrl(videoUrl);
-                        if (!sanitizedVideoUrl) continue;
-
-                        await sql`
-                            INSERT INTO car_videos (car_id, video_url, video_order, caption)
-                            VALUES (${newCar.id}, ${sanitizedVideoUrl}, ${i}, ${caption})
-                        `;
-                    }
-                } catch (insertError) {
-                    if (insertError?.code === '42P01') {
-                        console.warn('car_videos table missing during insert; skipping video persistence');
-                        carVideosSupported = false;
-                    } else {
-                        throw insertError;
-                    }
-                }
-            } else if (!carVideosSupported && Array.isArray(carData.videos) && carData.videos.length > 0) {
-                console.warn('Skipping video persistence because car_videos table is unavailable');
-            }
 
             return {
                 statusCode: 200,
                 headers,
-                body: JSON.stringify({
-                    id: newCar.id,
-                    year: newCar.year,
-                    make: newCar.make,
-                    model: newCar.model,
-                    name: newCar.name,
-                    description: newCar.description,
-                    mechanics: newCar.mechanics,
-                    mainImage: newCar.main_image,
-                    status: newCar.status,
-                    featured: newCar.featured,
-                    dateAdded: newCar.date_added
-                })
+                body: JSON.stringify(serializeVehicleRow(newVehicle))
             };
         }
 
         if (event.httpMethod === 'PUT') {
             const pathParts = event.path.split('/');
-            const carId = pathParts[pathParts.length - 1];
-            const carData = JSON.parse(event.body);
+            const rawId = pathParts[pathParts.length - 1];
+            const vehicleId = Number.parseInt(rawId, 10);
+
+            if (!Number.isFinite(vehicleId)) {
+                return {
+                    statusCode: 400,
+                    headers,
+                    body: JSON.stringify({
+                        error: 'Invalid vehicle ID',
+                        message: 'A numeric ID is required for updates'
+                    })
+                };
+            }
+
+            const carData = JSON.parse(event.body || '{}');
+
+            if (!carData.name || !carData.description) {
+                return {
+                    statusCode: 400,
+                    headers,
+                    body: JSON.stringify({
+                        error: 'Validation error',
+                        message: 'Name and description are required'
+                    })
+                };
+            }
+
+            const sanitizedMainImage = sanitizeMediaUrl(carData.mainImage);
+            const galleryPayload = sanitizeGalleryInput(carData.gallery);
+            const videosPayload = sanitizeVideosInput(carData.videos);
+            const specsPayload = sanitizeSpecsInput(carData.specs);
 
             await sql`
-                UPDATE cars
-                SET year = ${carData.year || null},
+                UPDATE vehicle_information
+                SET
+                    year = ${carData.year || null},
                     make = ${carData.make || null},
                     model = ${carData.model || null},
                     name = ${carData.name},
                     description = ${carData.description},
                     mechanics = ${carData.mechanics || null},
-                    main_image = ${sanitizeMediaUrl(carData.mainImage)},
-                    status = ${carData.status},
-                    featured = ${carData.featured}
-                WHERE id = ${carId}
+                    main_image = ${sanitizedMainImage},
+                    status = ${carData.status || 'COMPLETED'},
+                    gallery = ${JSON.stringify(galleryPayload)}::jsonb,
+                    videos = ${JSON.stringify(videosPayload)}::jsonb,
+                    specs = ${JSON.stringify(specsPayload)}::jsonb,
+                    updated_at = NOW()
+                WHERE id = ${vehicleId}
             `;
-
-            await sql`DELETE FROM car_gallery WHERE car_id = ${carId}`;
-
-            if (Array.isArray(carData.gallery) && carData.gallery.length > 0) {
-                for (let i = 0; i < carData.gallery.length; i++) {
-                    const image = carData.gallery[i];
-                    if (!image) continue;
-                    const imageUrl = typeof image === 'string' ? image : image?.url;
-                    const caption = typeof image === 'object' ? image.caption : null;
-                    const sanitizedUrl = sanitizeMediaUrl(imageUrl);
-                    if (!sanitizedUrl) continue;
-
-                    await sql`
-                        INSERT INTO car_gallery (car_id, image_url, image_order, caption)
-                        VALUES (${carId}, ${sanitizedUrl}, ${i}, ${caption})
-                    `;
-                }
-            }
-
-            if (carVideosSupported) {
-                try {
-                    await sql`DELETE FROM car_videos WHERE car_id = ${carId}`;
-
-                    if (Array.isArray(carData.videos) && carData.videos.length > 0) {
-                        for (let i = 0; i < carData.videos.length; i++) {
-                            const video = carData.videos[i];
-                            if (!video) continue;
-                            const videoUrl = typeof video === 'string' ? video : video.url;
-                            const caption = typeof video === 'object' ? video.caption : null;
-                            const sanitizedVideoUrl = sanitizeMediaUrl(videoUrl);
-                            if (!sanitizedVideoUrl) continue;
-
-                            await sql`
-                                INSERT INTO car_videos (car_id, video_url, video_order, caption)
-                                VALUES (${carId}, ${sanitizedVideoUrl}, ${i}, ${caption})
-                            `;
-                        }
-                    }
-                } catch (videoError) {
-                    if (videoError?.code === '42P01') {
-                        console.warn('car_videos table missing during update; skipping video persistence');
-                        carVideosSupported = false;
-                    } else {
-                        throw videoError;
-                    }
-                }
-            } else if (Array.isArray(carData.videos) && carData.videos.length > 0) {
-                console.warn('Skipping video persistence because car_videos table is unavailable');
-            }
 
             return {
                 statusCode: 200,
                 headers,
-                body: JSON.stringify({ success: true, message: 'Car updated successfully' })
+                body: JSON.stringify({ success: true, message: 'Vehicle updated successfully' })
             };
         }
 
         if (event.httpMethod === 'DELETE') {
             const pathParts = event.path.split('/');
-            const carId = pathParts[pathParts.length - 1];
+            const rawId = pathParts[pathParts.length - 1];
+            const vehicleId = Number.parseInt(rawId, 10);
 
-            await sql`DELETE FROM cars WHERE id = ${carId}`;
+            if (!Number.isFinite(vehicleId)) {
+                return {
+                    statusCode: 400,
+                    headers,
+                    body: JSON.stringify({
+                        error: 'Invalid vehicle ID',
+                        message: 'A numeric ID is required for deletion'
+                    })
+                };
+            }
+
+            await sql`DELETE FROM vehicle_information WHERE id = ${vehicleId}`;
 
             return {
                 statusCode: 200,
                 headers,
-                body: JSON.stringify({ success: true, message: 'Car deleted successfully' })
+                body: JSON.stringify({ success: true, message: 'Vehicle deleted successfully' })
             };
         }
 

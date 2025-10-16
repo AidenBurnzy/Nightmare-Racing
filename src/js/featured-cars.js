@@ -1,8 +1,16 @@
 // featured-cars.js - Dynamic project loading for Our Projects page
 
 let carsData = [];
+let filteredCars = [];
 let currentModalCar = null;
 let currentImageIndex = 0;
+
+const filtersState = {
+    search: '',
+    status: 'all',
+    make: 'all',
+    year: 'all'
+};
 
 const sanitizeFrontendMediaUrl = (rawUrl) => {
     if (typeof rawUrl !== 'string') return null;
@@ -14,12 +22,10 @@ const sanitizeFrontendMediaUrl = (rawUrl) => {
 };
 
 // Initialize when DOM loads
-document.addEventListener('DOMContentLoaded', function() {
-    // Our Projects Page JavaScript
+document.addEventListener('DOMContentLoaded', () => {
+    setupFilterControls();
     loadAllCars();
     setupModalEvents();
-    
-    // Handle direct car links from carousel
     handleDirectCarLink();
 });
 
@@ -40,59 +46,328 @@ function handleDirectCarLink() {
     }
 }
 
+function setupFilterControls() {
+    const searchInput = document.getElementById('filter-search');
+    const statusSelect = document.getElementById('filter-status');
+    const makeSelect = document.getElementById('filter-make');
+    const yearSelect = document.getElementById('filter-year');
+    const resetButton = document.getElementById('filter-reset');
+    const emptyResetButton = document.getElementById('empty-state-reset');
+
+    if (searchInput) {
+        searchInput.addEventListener('input', (event) => {
+            filtersState.search = event.target.value.trim().toLowerCase();
+            applyFilters();
+        });
+    }
+
+    if (statusSelect) {
+        statusSelect.addEventListener('change', (event) => {
+            const value = event.target.value;
+            filtersState.status = value === 'all' ? 'all' : value.toUpperCase();
+            applyFilters();
+        });
+    }
+
+    if (makeSelect) {
+        makeSelect.addEventListener('change', (event) => {
+            const value = event.target.value;
+            filtersState.make = value === 'all' ? 'all' : value;
+            applyFilters();
+        });
+    }
+
+    if (yearSelect) {
+        yearSelect.addEventListener('change', (event) => {
+            const value = event.target.value;
+            filtersState.year = value === 'all' ? 'all' : value;
+            applyFilters();
+        });
+    }
+
+    if (resetButton) {
+        resetButton.addEventListener('click', resetFilters);
+    }
+
+    if (emptyResetButton) {
+        emptyResetButton.addEventListener('click', resetFilters);
+    }
+}
+
+function resetFilters() {
+    filtersState.search = '';
+    filtersState.status = 'all';
+    filtersState.make = 'all';
+    filtersState.year = 'all';
+
+    const searchInput = document.getElementById('filter-search');
+    const statusSelect = document.getElementById('filter-status');
+    const makeSelect = document.getElementById('filter-make');
+    const yearSelect = document.getElementById('filter-year');
+
+    if (searchInput) {
+        searchInput.value = '';
+    }
+    if (statusSelect) {
+        statusSelect.value = 'all';
+    }
+    if (makeSelect) {
+        makeSelect.value = 'all';
+    }
+    if (yearSelect) {
+        yearSelect.value = 'all';
+    }
+
+    applyFilters();
+}
+
+function refreshFiltersOptions() {
+    const statusSelect = document.getElementById('filter-status');
+    const makeSelect = document.getElementById('filter-make');
+    const yearSelect = document.getElementById('filter-year');
+
+    if (!statusSelect || !makeSelect || !yearSelect) {
+        return;
+    }
+
+    const statuses = getUniqueStatuses(carsData);
+    populateSelect(
+        statusSelect,
+        statuses.map((status) => ({ value: status, label: formatStatusLabel(status) })),
+        'All statuses',
+        filtersState.status
+    );
+    if (!statuses.includes(filtersState.status)) {
+        filtersState.status = 'all';
+        statusSelect.value = 'all';
+    }
+
+    const makes = getUniqueMakes(carsData);
+    populateSelect(makeSelect, makes, 'All makes', filtersState.make);
+    if (!makes.some((item) => item.value === filtersState.make)) {
+        filtersState.make = 'all';
+        makeSelect.value = 'all';
+    }
+
+    const years = getUniqueYears(carsData);
+    populateSelect(
+        yearSelect,
+        years.map((year) => ({ value: year, label: year })),
+        'All years',
+        filtersState.year
+    );
+    if (!years.includes(filtersState.year)) {
+        filtersState.year = 'all';
+        yearSelect.value = 'all';
+    }
+}
+
+function populateSelect(selectEl, items, allLabel, activeValue) {
+    if (!selectEl) return;
+
+    selectEl.innerHTML = '';
+
+    const allOption = document.createElement('option');
+    allOption.value = 'all';
+    allOption.textContent = allLabel;
+    selectEl.appendChild(allOption);
+
+    items.forEach((item) => {
+        const option = document.createElement('option');
+        option.value = item.value;
+        option.textContent = item.label;
+        selectEl.appendChild(option);
+    });
+
+    if (activeValue && activeValue !== 'all' && items.some((item) => item.value === activeValue)) {
+        selectEl.value = activeValue;
+    } else {
+        selectEl.value = 'all';
+    }
+}
+
+function formatStatusLabel(status) {
+    if (!status) return '';
+    return status
+        .toLowerCase()
+        .split(' ')
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+}
+
+function getUniqueStatuses(cars) {
+    const statuses = new Set();
+    if (!Array.isArray(cars)) {
+        return [];
+    }
+    cars.forEach((car) => {
+        const status = typeof car.status === 'string' ? car.status.toUpperCase() : '';
+        if (status) {
+            statuses.add(status);
+        }
+    });
+    return Array.from(statuses).sort((a, b) => a.localeCompare(b));
+}
+
+function getUniqueMakes(cars) {
+    const makes = new Map();
+    if (!Array.isArray(cars)) {
+        return [];
+    }
+    cars.forEach((car) => {
+        if (typeof car.make !== 'string') {
+            return;
+        }
+        const trimmed = car.make.trim();
+        if (!trimmed) {
+            return;
+        }
+        const key = trimmed.toLowerCase();
+        if (!makes.has(key)) {
+            makes.set(key, trimmed);
+        }
+    });
+    return Array.from(makes.entries())
+        .map(([value, label]) => ({ value, label }))
+        .sort((a, b) => a.label.localeCompare(b.label));
+}
+
+function getUniqueYears(cars) {
+    const years = new Set();
+    if (!Array.isArray(cars)) {
+        return [];
+    }
+    cars.forEach((car) => {
+        if (!car?.year) {
+            return;
+        }
+        const yearValue = String(car.year);
+        if (yearValue) {
+            years.add(yearValue);
+        }
+    });
+    return Array.from(years).sort((a, b) => Number(b) - Number(a));
+}
+
+function filtersActive() {
+    return Boolean(
+        filtersState.search ||
+        filtersState.status !== 'all' ||
+        filtersState.make !== 'all' ||
+        filtersState.year !== 'all'
+    );
+}
+
+function applyFilters() {
+    if (!Array.isArray(carsData)) {
+        filteredCars = [];
+        renderCars([]);
+        return;
+    }
+
+    const statusFilter = filtersState.status;
+    const makeFilter = filtersState.make;
+    const yearFilter = filtersState.year;
+    const searchTerm = filtersState.search;
+
+    const results = carsData.filter((car) => {
+        const statusValue = typeof car.status === 'string' ? car.status.toUpperCase() : '';
+        const makeValue = typeof car.make === 'string' ? car.make.trim().toLowerCase() : '';
+        const yearValue = car.year ? String(car.year) : '';
+        const searchableText = [car.name, car.make, car.model, car.description, car.mechanics]
+            .filter(Boolean)
+            .join(' ')
+            .toLowerCase();
+
+        const matchesStatus = statusFilter === 'all' || statusValue === statusFilter;
+        const matchesMake = makeFilter === 'all' || makeValue === makeFilter;
+        const matchesYear = yearFilter === 'all' || yearValue === yearFilter;
+        const matchesSearch = !searchTerm || searchableText.includes(searchTerm);
+
+        return matchesStatus && matchesMake && matchesYear && matchesSearch;
+    });
+
+    results.sort((a, b) => {
+        const timeA = new Date(a.dateAdded || a.created_at || 0).getTime();
+        const timeB = new Date(b.dateAdded || b.created_at || 0).getTime();
+
+        if (!Number.isNaN(timeA) && !Number.isNaN(timeB)) {
+            return timeB - timeA;
+        }
+
+        return (Number(b.year) || 0) - (Number(a.year) || 0);
+    });
+
+    filteredCars = results;
+    renderCars(filteredCars);
+}
+
 // Load all projects from database
 async function loadAllCars() {
     try {
         showLoadingState(true);
-        
-        // Fetch cars from database API
+
         const response = await fetch('/.netlify/functions/api-cars');
-        
+
         if (response.ok) {
             const data = await response.json();
-            if (Array.isArray(data) && data.length > 0) {
+            if (Array.isArray(data)) {
                 carsData = data;
-                displayAllCars();
+                refreshFiltersOptions();
+                applyFilters();
                 showLoadingState(false);
                 return;
-            } else {
-                console.warn('Database returned no cars');
             }
+            console.warn('Database returned no cars');
         } else {
             console.warn(`Database API error (${response.status}): ${response.statusText}`);
         }
     } catch (error) {
         console.error('Error loading cars from database:', error);
     }
-    
-    // If API failed, try to use the same data source as the working carousel
+
     try {
-        // Since carousel works, let's try to get its data
-        if (window.carsData && window.carsData.length > 0) {
+        if (Array.isArray(window.carsData) && window.carsData.length > 0) {
             carsData = window.carsData;
-            displayAllCars();
+            refreshFiltersOptions();
+            applyFilters();
         } else {
-            // Last resort - show a helpful message
             showDatabaseError();
         }
     } catch (error) {
         console.error('Failed to load alternative data:', error);
         showDatabaseError();
     }
-    
+
     showLoadingState(false);
 }
 
 
 
-// Display all cars in grid
-function displayAllCars() {
+// Render car grid based on filtered results
+function renderCars(cars = []) {
     const container = document.getElementById('cars-container');
     if (!container) return;
-    
+
+    if (!Array.isArray(cars) || cars.length === 0) {
+        container.innerHTML = '';
+        updateEmptyState({
+            show: true,
+            icon: filtersActive() ? '🧭' : '🏁',
+            title: filtersActive() ? 'No Projects Match These Filters' : 'No Projects Yet',
+            message: filtersActive()
+                ? 'Try adjusting or clearing filters to see more Nightmare Racing builds.'
+                : 'Check back soon for new builds and showcase highlights!',
+            showReset: filtersActive()
+        });
+        return;
+    }
+
+    updateEmptyState({ show: false });
+    container.style.display = 'grid';
     container.innerHTML = '';
-    
-    carsData.forEach((car, index) => {
+
+    cars.forEach((car, index) => {
         const carCard = createCarCard(car, index);
         container.appendChild(carCard);
     });
@@ -106,14 +381,19 @@ function createCarCard(car, index) {
     const images = buildImageArray(car);
     const previewDescription = getOverviewPreview(car.description);
     const statusLabel = (car.status || 'COMPLETED').toUpperCase();
-    const formattedDate = formatBuildDate(car.dateAdded);
+    const formattedDate = formatBuildDate(car.dateAdded || car.created_at);
 
     const metaChips = [];
     if (formattedDate) {
         metaChips.push(`<span class="meta-chip">${formattedDate}</span>`);
     }
-    if (car.featured) {
-        metaChips.push('<span class="meta-chip meta-chip-featured">Featured</span>');
+    const buildLabelParts = [];
+    if (car.year) buildLabelParts.push(car.year);
+    if (car.make) buildLabelParts.push(car.make);
+    if (car.model) buildLabelParts.push(car.model);
+    const buildLabel = buildLabelParts.join(' ');
+    if (buildLabel) {
+        metaChips.push(`<span class="meta-chip">${buildLabel}</span>`);
     }
     const metaHTML = metaChips.length ? `<div class="car-card-meta">${metaChips.join('')}</div>` : '';
 
@@ -592,48 +872,90 @@ function setupModalEvents() {
 function showLoadingState(show) {
     const loadingState = document.getElementById('loading-state');
     const carsContainer = document.getElementById('cars-container');
+    const emptyState = document.getElementById('empty-state');
     
     if (loadingState) {
         loadingState.style.display = show ? 'block' : 'none';
     }
-    if (carsContainer) {
-        carsContainer.style.display = show ? 'none' : 'grid';
+    if (carsContainer && show) {
+        carsContainer.style.display = 'none';
+    }
+    if (emptyState && show) {
+        emptyState.style.display = 'none';
     }
 }
 
-// Show empty state
-function showEmptyState() {
+// Manage empty state messaging and visibility
+function updateEmptyState({ show, icon = '🏁', title = 'No Projects Yet', message = 'Check back soon for new builds and showcase highlights!', showReset = false } = {}) {
     const emptyState = document.getElementById('empty-state');
     const carsContainer = document.getElementById('cars-container');
-    
-    if (emptyState) {
-        emptyState.style.display = 'block';
+    const iconEl = document.getElementById('empty-state-icon');
+    const titleEl = document.getElementById('empty-state-title');
+    const messageEl = document.getElementById('empty-state-message');
+    const resetButton = document.getElementById('empty-state-reset');
+
+    if (!emptyState) {
+        return;
     }
-    if (carsContainer) {
+
+    if (iconEl) {
+        iconEl.textContent = icon;
+    }
+    if (titleEl) {
+        titleEl.textContent = title;
+    }
+    if (messageEl) {
+        messageEl.textContent = message;
+    }
+    if (resetButton) {
+        resetButton.style.display = show && showReset ? 'inline-flex' : 'none';
+    }
+
+    const retryButton = emptyState.querySelector('button[data-retry]');
+    if (retryButton && !show) {
+        retryButton.style.display = 'none';
+    }
+
+    emptyState.style.display = show ? 'block' : 'none';
+
+    if (carsContainer && show) {
         carsContainer.style.display = 'none';
     }
 }
 
 // Show database error state
 function showDatabaseError() {
+    updateEmptyState({
+        show: true,
+        icon: '⚠️',
+        title: 'Database Connection Error',
+        message: 'Unable to connect to the vehicle database. This might be due to missing environment variables on Netlify.',
+        showReset: false
+    });
+
     const emptyState = document.getElementById('empty-state');
-    const carsContainer = document.getElementById('cars-container');
-    
-    if (emptyState) {
-        emptyState.innerHTML = `
-            <div style="text-align: center; padding: 60px 20px; color: #ccc;">
-                <div style="font-size: 4rem; margin-bottom: 20px;">⚠️</div>
-                <h2 style="color: #e50000; margin-bottom: 20px;">Database Connection Error</h2>
-                <p style="margin-bottom: 15px;">Unable to connect to the car database.</p>
-                <p style="margin-bottom: 20px;">This might be due to missing environment variables on Netlify.</p>
-                <button onclick="location.reload()" style="background: #e50000; color: white; border: none; padding: 12px 24px; border-radius: 5px; cursor: pointer;">
-                    Try Again
-                </button>
-            </div>
-        `;
-        emptyState.style.display = 'block';
+    if (!emptyState) {
+        return;
     }
-    if (carsContainer) {
-        carsContainer.style.display = 'none';
+
+    const resetButton = document.getElementById('empty-state-reset');
+    if (resetButton) {
+        resetButton.style.display = 'none';
+    }
+
+    let retryButton = emptyState.querySelector('button[data-retry]');
+    if (!retryButton) {
+        retryButton = document.createElement('button');
+        retryButton.type = 'button';
+        retryButton.dataset.retry = 'true';
+        retryButton.className = 'btn btn-secondary';
+        retryButton.style.marginBottom = '1.5rem';
+        retryButton.textContent = 'Try Again';
+        retryButton.addEventListener('click', () => window.location.reload());
+
+        const homeLink = emptyState.querySelector('.btn.btn-primary');
+        emptyState.insertBefore(retryButton, homeLink || null);
+    } else {
+        retryButton.style.display = 'inline-flex';
     }
 }

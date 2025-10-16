@@ -32,8 +32,7 @@ collections:
           - {label: "Horsepower", name: "horsepower", widget: "string", required: false, hint: "e.g., 1200HP"}
           - {label: "Custom Spec 1", name: "custom1", widget: "string", required: false}
           - {label: "Custom Spec 2", name: "custom2", widget: "string", required: false}
-      - {label: "Build Status", name: "status", widget: "select", options: ["Completed", "In Progress", "Featured Build", "Customer Car"], default: "Completed"}
-      - {label: "Featured on Homepage", name: "featured", widget: "boolean", default: true}
+  - {label: "Build Status", name: "status", widget: "select", options: ["COMPLETED", "IN PROGRESS", "COMING SOON", "CUSTOMER CAR"], default: "COMPLETED"}
       - {label: "Date Added", name: "dateAdded", widget: "datetime", default: "{{now}}"}
 
   - name: "website-updates"

@@ -47,6 +47,76 @@
     margin: 0 auto;
 }
 
+/* Filters */
+.filters-panel {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.2rem;
+    margin-bottom: 3rem;
+    padding: 1.5rem;
+    border-radius: 18px;
+    border: 1px solid rgba(229, 0, 0, 0.28);
+    background: linear-gradient(180deg, rgba(14, 14, 14, 0.9), rgba(10, 10, 10, 0.6));
+    backdrop-filter: blur(8px);
+}
+
+.filter-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.filter-field label {
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--medium-gray);
+}
+
+.filter-field input,
+.filter-field select {
+    padding: 0.75rem 0.9rem;
+    border-radius: 10px;
+    border: 1px solid rgba(229, 0, 0, 0.35);
+    background: rgba(8, 8, 8, 0.82);
+    color: var(--pure-white);
+    font-family: var(--font-secondary);
+    font-size: 0.95rem;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.filter-field input:focus,
+.filter-field select:focus {
+    outline: none;
+    border-color: var(--accent-red);
+    box-shadow: 0 0 0 2px rgba(229, 0, 0, 0.25);
+}
+
+.filter-actions {
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+}
+
+.filter-reset {
+    padding: 0.75rem 1.25rem;
+    border-radius: 10px;
+    border: 1px solid rgba(229, 0, 0, 0.35);
+    background: rgba(229, 0, 0, 0.12);
+    color: var(--pure-white);
+    font-family: var(--font-secondary);
+    font-size: 0.9rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.filter-reset:hover {
+    background: rgba(229, 0, 0, 0.28);
+    transform: translateY(-2px);
+}
+
 /* Loading State */
 .loading-state {
     text-align: center;
@@ -95,6 +165,10 @@
     color: var(--medium-gray);
     font-size: 1.2rem;
     margin-bottom: 2rem;
+}
+
+#empty-state-reset {
+    margin-bottom: 1.5rem;
 }
 
 /* Cars Container */
@@ -242,12 +316,6 @@
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--medium-gray);
-}
-
-.meta-chip-featured {
-    background: rgba(229, 0, 0, 0.2);
-    border-color: rgba(229, 0, 0, 0.4);
-    color: var(--pure-white);
 }
 
 .car-description {

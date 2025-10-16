@@ -780,7 +780,7 @@
                 <select id="car-status" name="status">
                   <option value="COMPLETED">✅ Completed</option>
                   <option value="IN PROGRESS">🔧 In Progress</option>
-                  <option value="FEATURED BUILD">⭐ Featured Build</option>
+                  <option value="COMING SOON">🚧 Coming Soon</option>
                   <option value="CUSTOMER CAR">👤 Customer Car</option>
                 </select>
               </div>
@@ -828,12 +828,6 @@
               <input type="hidden" id="gallery-urls" name="gallery">
             </div>
             
-            <!-- Featured Toggle -->
-            <div class="checkbox-wrapper">
-              <input type="checkbox" id="car-featured" name="featured" checked>
-              <label for="car-featured">⭐ Feature this car on homepage</label>
-            </div>
-
             <button type="submit" class="auth-button" style="margin-top: 20px;">
               🚗 Add Car to Database
             </button>
@@ -1587,9 +1581,9 @@
                 </p>
               ` : ''}
               
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;">
+              <div style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px;">
                 <p class="car-meta" style="margin: 0;"><strong>Status:</strong> ${this.getStatusEmoji(car.status)} ${car.status}</p>
-                <p class="car-meta" style="margin: 0;"><strong>Featured:</strong> ${car.featured ? '⭐ Yes' : '❌ No'}</p>
+                ${car.mechanics ? `<p class="car-meta" style="margin: 0;"><strong>Mechanics:</strong> ${car.mechanics}</p>` : ''}
               </div>
               
               <div class="car-actions">
@@ -1612,7 +1606,7 @@
         switch(status) {
           case 'COMPLETED': return '✅';
           case 'IN PROGRESS': return '🔧';
-          case 'FEATURED BUILD': return '⭐';
+          case 'COMING SOON': return '🚧';
           case 'CUSTOMER CAR': return '👤';
           default: return '🏎️';
         }
@@ -1678,14 +1672,10 @@
               </div>
             ` : ''}
             
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;">
               <div>
                 <strong style="color: var(--accent-red);">Status:</strong> 
                 <span style="color: var(--pure-white);">${this.getStatusEmoji(car.status)} ${car.status}</span>
-              </div>
-              <div>
-                <strong style="color: var(--accent-red);">Featured:</strong> 
-                <span style="color: var(--pure-white);">${car.featured ? '⭐ Yes' : '❌ No'}</span>
               </div>
               <div>
                 <strong style="color: var(--accent-red);">Added:</strong> 
@@ -1735,6 +1725,7 @@
         const rawYear = formData.get('year');
         const rawMake = formData.get('make');
         const rawModel = formData.get('model');
+        const rawMechanics = formData.get('mechanics');
 
         const parsedYear = rawYear ? parseInt(rawYear, 10) : null;
 
@@ -1744,9 +1735,8 @@
           model: rawModel?.trim() ? rawModel.trim() : null,
           name: formData.get('name'),
           description: formData.get('description'),
-          mechanics: formData.get('mechanics') || null,
+          mechanics: rawMechanics?.trim() ? rawMechanics.trim() : null,
           status: formData.get('status'),
-          featured: formData.has('featured'),
           mainImage: formData.get('mainImage') || null,
           gallery: gallery
         };
@@ -1784,7 +1774,6 @@
             
             // Reset form
             form.reset();
-            document.getElementById('car-featured').checked = true;
             
             // Reset image uploads
             this.resetImageUploads();
@@ -1913,7 +1902,6 @@
         document.getElementById('car-description').value = car.description || '';
         document.getElementById('car-mechanics').value = car.mechanics || '';
         document.getElementById('car-status').value = car.status || 'IN PROGRESS';
-        document.getElementById('car-featured').checked = car.featured || false;
         
         // Handle existing main image
         const resolvedMainImage = this.resolveMediaUrl(car.mainImage);

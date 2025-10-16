@@ -125,6 +125,35 @@
                 <p>Explore our portfolio of customer builds and flagship shop creations.</p>
             </div>
 
+            <!-- Filter Controls -->
+            <div class="filters-panel" id="filters-panel">
+                <div class="filter-field">
+                    <label for="filter-search">Search</label>
+                    <input type="search" id="filter-search" placeholder="Search builds by name, make, or description">
+                </div>
+                <div class="filter-field">
+                    <label for="filter-status">Status</label>
+                    <select id="filter-status">
+                        <option value="all">All statuses</option>
+                    </select>
+                </div>
+                <div class="filter-field">
+                    <label for="filter-make">Make</label>
+                    <select id="filter-make">
+                        <option value="all">All makes</option>
+                    </select>
+                </div>
+                <div class="filter-field">
+                    <label for="filter-year">Year</label>
+                    <select id="filter-year">
+                        <option value="all">All years</option>
+                    </select>
+                </div>
+                <div class="filter-actions">
+                    <button type="button" id="filter-reset" class="filter-reset">Reset Filters</button>
+                </div>
+            </div>
+
             <!-- Loading State -->
             <div id="loading-state" class="loading-state">
                 <div class="spinner"></div>
@@ -138,10 +167,11 @@
 
             <!-- Empty State -->
             <div id="empty-state" class="empty-state" style="display: none;">
-                <div class="empty-icon">�</div>
-                <h3>No Projects Yet</h3>
-                <p>Check back soon for new builds and showcase highlights!</p>
-                <a href="index.html" class="btn btn-primary">Back to Home</a>
+                <div class="empty-icon" id="empty-state-icon">🏁</div>
+                <h3 id="empty-state-title">No Projects Yet</h3>
+                <p id="empty-state-message">Check back soon for new builds and showcase highlights!</p>
+                <button type="button" id="empty-state-reset" class="btn btn-secondary" style="display: none;">Clear Filters</button>
+                <a href="../../index.html" class="btn btn-primary">Back to Home</a>
             </div>
         </div>
     </section>

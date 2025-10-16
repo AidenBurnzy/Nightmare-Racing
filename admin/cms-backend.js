@@ -104,8 +104,7 @@ class DatabaseBackend {
             basic_info: {
                 name: car.name,
                 description: car.description,
-                status: car.status,
-                featured: car.featured
+                status: car.status
             },
             photos: {
                 mainImage: car.mainImage,
@@ -229,8 +228,7 @@ class DatabaseBackend {
             gallery: sanitizeGallery(cmsData.photos?.gallery),
             videos: sanitizeVideos(cmsData.videos),
             specs: cmsData.specs || {},
-            status: cmsData.basic_info?.status || 'COMPLETED',
-            featured: cmsData.basic_info?.featured || true
+            status: cmsData.basic_info?.status || 'COMPLETED'
         };
     }
 }
