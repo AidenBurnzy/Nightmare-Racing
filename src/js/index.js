@@ -1381,17 +1381,23 @@ document.addEventListener('DOMContentLoaded', function() {
         // Hero button interactions
         const heroButtons = document.querySelectorAll('.hero-buttons .btn');
         heroButtons.forEach(button => {
-            button.addEventListener('click', function() {
+            button.addEventListener('click', function(event) {
+                const href = this.getAttribute('href') || '';
                 const buttonText = this.textContent.toLowerCase();
-                
-                if (buttonText.includes('service')) {
-                    // Mark interaction and allow scrolling
+
+                // Only trigger custom scroll if the button is meant to scroll on-page
+                if (buttonText.includes('service') && href.startsWith('#')) {
                     hasUserInteracted = true;
                     isInitialLoad = false;
-                    smoothScroll('#contact');
-                } else if (buttonText.includes('parts')) {
-                    // Redirect to external parts website
-                    window.open('https://nmrauto.com', '_blank');
+                    event.preventDefault();
+                    smoothScroll(href);
+                    return;
+                }
+
+                // Respect explicit link destinations; only force external window when href is external
+                if (buttonText.includes('parts') && href.startsWith('http')) {
+                    event.preventDefault();
+                    window.open(href, '_blank');
                 }
             });
         });
