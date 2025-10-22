@@ -11,16 +11,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- CSS Files -->
-    <link rel="stylesheet" href="../indexStyles.css">
-    <link rel="stylesheet" href="../navStyles.css">
+    <link rel="stylesheet" href="../src/css/indexStyles.css">
+    <link rel="stylesheet" href="../src/css/navStyles.css">
     <link rel="stylesheet" href="collection.css">
-    <link rel="stylesheet" href="../footer.css">
+    <link rel="stylesheet" href="../src/css/footer.css">
 </head>
 <body>
     <!-- Video Background -->
     <video autoplay muted loop playsinline preload="auto" id="bg-video"
         style="position: fixed; right: 0; bottom: 0; min-width: 100vw; min-height: 100vh; z-index: -1; object-fit: cover; pointer-events: none; opacity: 0.3;">
-        <source src="../bg-video.mp4" type="video/mp4">
+    <source src="../assets/bg-video.mp4" type="video/mp4">
         Your browser does not support the video tag.
     </video>
 
@@ -28,21 +28,17 @@
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-logo">
-                <a href="../index.html"><img src="../pictures/logoImage1.png" alt="Nightmare Racing Logo"></a>
+                <a href="../index.html"><img src="../assets/logoImage1.png" alt="Nightmare Racing Logo"></a>
                 <h2>NIGHTMARE<span class="text-accent">RACING</span></h2>
             </div>
 
             <ul class="nav-menu">
                 <li><a href="../index.html">Home</a></li>
                 <li><a href="../index.html#services">Services</a></li>
-                <li><a href="../featured-cars.html">Our Projects</a></li>
-                <li><a href="../shopParts.html" class="active">Shop Parts</a></li>
+                <li><a href="../src/pages/featured-cars.html">Our Projects</a></li>
+                <li><a href="../src/pages/shopParts.html" class="active">Shop Parts</a></li>
                 <li><a href="../index.html#contact">Contact</a></li>
             </ul>
-
-            <div class="nav-actions">
-                <a href="/admin" target="_blank" class="admin-btn">Admin</a>
-            </div>
 
             <div class="hamburger">
                 <span></span>
@@ -64,11 +60,10 @@
             </div>
 
             <ul class="mobile-nav-links">
-                <li><a href="/admin" target="_blank">Admin Portal</a></li>
                 <li><a href="../index.html">Home</a></li>
                 <li><a href="../index.html#services">Services</a></li>
-                <li><a href="../featured-cars.html">Our Projects</a></li>
-                <li><a href="../shopParts.html" class="active">Shop Parts</a></li>
+                <li><a href="../src/pages/featured-cars.html">Our Projects</a></li>
+                <li><a href="../src/pages/shopParts.html" class="active">Shop Parts</a></li>
                 <li><a href="../index.html#contact">Contact</a></li>
             </ul>
 
@@ -120,7 +115,7 @@
                     <div class="empty-icon">📦</div>
                     <h3>No Products Found</h3>
                     <p>Check back soon for new accessories!</p>
-                    <a href="../shopParts.html" class="btn-primary">Browse All Parts</a>
+                    <a href="../src/pages/shopParts.html" class="btn-primary">Browse All Parts</a>
                 </div>
 
                 <!-- Load More Button -->
@@ -138,7 +133,7 @@
     <script>
         async function loadFooter() {
             try {
-                const response = await fetch('../footer.html');
+                const response = await fetch('../src/pages/footer.html');
                 const html = await response.text();
                 document.getElementById('footer-section').innerHTML = html;
             } catch (error) {
@@ -149,7 +144,7 @@
     </script>
 
     <!-- Scripts -->
-    <script src="../index.js"></script>
+    <script src="../src/js/index.js"></script>
     <script>
         // Collection Configuration - CHANGE THIS FOR EACH COLLECTION
         const COLLECTION_HANDLE = 'nmr-merch'; // ← Change this for different collections
