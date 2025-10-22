@@ -11,50 +11,99 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- CSS Files -->
-    <link rel="stylesheet" href="../indexStyles.css">
-    <link rel="stylesheet" href="../navStyles.css">
+    <link rel="stylesheet" href="../src/css/indexStyles.css">
+    <link rel="stylesheet" href="../src/css/navStyles.css">
     <link rel="stylesheet" href="collection.css">
-    <link rel="stylesheet" href="../footer.css">
+    <link rel="stylesheet" href="../src/css/footer.css">
 </head>
 <body>
     <video autoplay muted loop playsinline preload="auto" id="bg-video" style="position: fixed; right: 0; bottom: 0; min-width: 100vw; min-height: 100vh; z-index: -1; object-fit: cover; pointer-events: none; opacity: 0.3;">
-        <source src="../bg-video.mp4" type="video/mp4">
+        <source src="../assets/bg-video.mp4" type="video/mp4">
     </video>
+    
+    <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-logo">
-                <a href="../index.html"><img src="../pictures/logoImage1.png" alt="Nightmare Racing Logo"></a>
+                <a href="../index.html">
+                    <img src="../assets/logoImage1.png" alt="Nightmare Racing Logo" class="nav-logo" data-logo-target="#home">
+                </a>
                 <h2>NIGHTMARE<span class="text-accent">RACING</span></h2>
             </div>
+
             <ul class="nav-menu">
                 <li><a href="../index.html">Home</a></li>
-                <li><a href="../index.html#services">Services</a></li>
-                <li><a href="../featured-cars.html">Our Projects</a></li>
-                <li><a href="../shopParts.html" class="active">Shop Parts</a></li>
+                <li class="has-dropdown">
+                    <button type="button" class="dropdown-trigger" aria-haspopup="true" aria-expanded="false">Services</button>
+                    <div class="dropdown-menu" role="menu" aria-label="Services">
+                        <a class="dropdown-link" href="../services/coilover-installation.html" role="menuitem">Coilover Installation</a>
+                        <a class="dropdown-link" href="../services/wiring-electrical-repair.html" role="menuitem">Wiring &amp; Electrical Repair</a>
+                        <a class="dropdown-link" href="../services/engine-repair-modification.html" role="menuitem">Engine Repair &amp; Modification</a>
+                        <a class="dropdown-link" href="../services/engine-swaps.html" role="menuitem">Engine Swaps</a>
+                        <a class="dropdown-link" href="../services/aftermarket-components.html" role="menuitem">Aftermarket Components</a>
+                        <a class="dropdown-link" href="../services/brake-system-upgrades.html" role="menuitem">Brake System Upgrades</a>
+                        <a class="dropdown-link" href="../services/lift-kits.html" role="menuitem">Lift Kits</a>
+                        <a class="dropdown-link" href="../services/exhaust-fabrication.html" role="menuitem">Exhaust Fabrication</a>
+                        <a class="dropdown-link" href="../services/intake-valve-carbon-cleaning.html" role="menuitem">Intake Valve Carbon Cleaning</a>
+                        <a class="dropdown-link" href="../services/suspension-repair-tuning.html" role="menuitem">Suspension Repair &amp; Tuning</a>
+                        <a class="dropdown-link" href="../services/fluid-service.html" role="menuitem">Fluid Service</a>
+                        <a class="dropdown-link" href="../services/camshaft-swaps-upgrades.html" role="menuitem">Camshaft Swaps &amp; Upgrades</a>
+                    </div>
+                </li>
+                <li><a href="../src/pages/featured-cars.html">Our Projects</a></li>
+                <li><a href="../src/pages/shopParts.html" class="active">Shop Parts</a></li>
                 <li><a href="../index.html#contact">Contact</a></li>
             </ul>
-            <div class="hamburger"><span></span><span></span><span></span></div>
+
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
         </div>
     </nav>
+
+    <!-- Mobile Menu Overlay -->
     <div class="mobile-menu-overlay"></div>
+
+    <!-- Mobile Menu -->
     <div class="mobile-menu">
         <div class="mobile-menu-content">
             <div class="mobile-menu-header">
                 <h2>NIGHTMARE<span class="text-accent">RACING</span></h2>
                 <button class="mobile-menu-close">&times;</button>
             </div>
+
             <ul class="mobile-nav-links">
                 <li><a href="../index.html">Home</a></li>
                 <li><a href="../index.html#services">Services</a></li>
-                <li><a href="../featured-cars.html">Our Projects</a></li>
-                <li><a href="../shopParts.html" class="active">Shop Parts</a></li>
+                <li class="mobile-submenu-heading">Shop Our Expertise</li>
+                <li><a class="mobile-sub-link" href="../services/coilover-installation.html">Coilover Installation</a></li>
+                <li><a class="mobile-sub-link" href="../services/wiring-electrical-repair.html">Wiring &amp; Electrical Repair</a></li>
+                <li><a class="mobile-sub-link" href="../services/engine-repair-modification.html">Engine Repair &amp; Modification</a></li>
+                <li><a class="mobile-sub-link" href="../services/engine-swaps.html">Engine Swaps</a></li>
+                <li><a class="mobile-sub-link" href="../services/aftermarket-components.html">Aftermarket Components</a></li>
+                <li><a class="mobile-sub-link" href="../services/brake-system-upgrades.html">Brake System Upgrades</a></li>
+                <li><a class="mobile-sub-link" href="../services/lift-kits.html">Lift Kits</a></li>
+                <li><a class="mobile-sub-link" href="../services/exhaust-fabrication.html">Exhaust Fabrication</a></li>
+                <li><a class="mobile-sub-link" href="../services/intake-valve-carbon-cleaning.html">Intake Valve Carbon Cleaning</a></li>
+                <li><a class="mobile-sub-link" href="../services/suspension-repair-tuning.html">Suspension Repair &amp; Tuning</a></li>
+                <li><a class="mobile-sub-link" href="../services/fluid-service.html">Fluid Service</a></li>
+                <li><a class="mobile-sub-link" href="../services/camshaft-swaps-upgrades.html">Camshaft Swaps &amp; Upgrades</a></li>
+                <li><a href="../src/pages/featured-cars.html">Our Projects</a></li>
+                <li><a href="../src/pages/shopParts.html" class="active">Shop Parts</a></li>
                 <li><a href="../index.html#contact">Contact</a></li>
             </ul>
-            <div class="mobile-menu-footer"><p>© 2025 Nightmare Racing</p><p>Premium Auto Services</p></div>
+
+            <div class="mobile-menu-footer">
+                <p>© 2025 Nightmare Racing</p>
+                <p>Premium Auto Services</p>
+            </div>
         </div>
     </div>
 
-    <section class="collection-page">
+    <!-- Collection Page -->
+<section class="collection-page">
         <div class="container">
             <div class="collection-header">
                 <h1 id="collection-title">COOLING</h1>
@@ -71,15 +120,15 @@
             <div class="products-section">
                 <div id="products-loading" class="loading-state"><div class="spinner"></div><p>Loading products...</p></div>
                 <div id="products-grid" class="products-grid hidden"></div>
-                <div id="empty-state" class="empty-state hidden"><h3>No Products Found</h3><a href="../shopParts.html" class="btn-primary">Browse All Parts</a></div>
+                <div id="empty-state" class="empty-state hidden"><h3>No Products Found</h3><a href="../src/pages/shopParts.html" class="btn-primary">Browse All Parts</a></div>
                 <div class="load-more-section hidden" id="load-more-section"><button class="btn btn-primary" id="load-more-btn">Load More Products</button></div>
             </div>
         </div>
     </section>
 
     <div id="footer-section"></div>
-    <script>async function loadFooter(){try{const r=await fetch('../footer.html');document.getElementById('footer-section').innerHTML=await r.text();}catch(e){console.error('Error loading footer',e);}}loadFooter();</script>
-    <script src="../index.js"></script>
+    <script>async function loadFooter(){try{const r=await fetch('../src/pages/footer.html');document.getElementById('footer-section').innerHTML=await r.text();}catch(e){console.error('Error loading footer',e);}}loadFooter();</script>
+    <script src="../src/js/index.js"></script>
     <script>
         const COLLECTION_HANDLE = 'cooling';
         const SHOPIFY_DOMAIN = 'nightmareracing.myshopify.com';

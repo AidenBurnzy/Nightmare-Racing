@@ -251,6 +251,9 @@
     border-radius: 12px;
     transition: all 0.3s ease;
     border: 1px solid transparent;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
 }
 
 .service-item:hover {
