@@ -425,7 +425,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         <li><a class="mobile-sub-link" href="services/fluid-service.html">Fluid Service</a></li>
                         <li><a class="mobile-sub-link" href="services/camshaft-swaps-upgrades.html">Camshaft Swaps & Upgrades</a></li>
                         <li><a href="src/pages/featured-cars.html">Our Projects</a></li>
-                        <li><a href="src/pages/shopParts.html">Shop Parts</a></li>
+                        <li>
+                            <a href="#" class="coming-soon-link" aria-disabled="true" tabindex="-1" data-coming-soon="true" aria-label="Shop Parts (Coming Soon)">
+                                <span class="coming-soon-label">Shop Parts</span>
+                                <span class="coming-soon-hover" aria-hidden="true">Coming Soon</span>
+                            </a>
+                        </li>
                         <li><a href="#contact">Contact</a></li>
                     </ul>
 
@@ -1566,6 +1571,17 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Start initialization
     initialize();
+
+    // ================================
+    // COMING SOON INTERACTIONS
+    // ================================
+
+    document.addEventListener('click', (event) => {
+        const anchor = event.target.closest('a[data-coming-soon="true"]');
+        if (anchor) {
+            event.preventDefault();
+        }
+    });
     
     // ================================
     // ERROR HANDLING
