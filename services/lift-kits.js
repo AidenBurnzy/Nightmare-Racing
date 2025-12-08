@@ -26,7 +26,7 @@
                 ]
             },
             {
-                heading: 'The Nightmare Racing difference',
+                heading: 'The NMR Automotive difference',
                 type: 'paragraph',
                 body: 'We use premium components, relocate or extend critical lines, and torque-map every fastener. The result is a lift that looks right, drives right, and holds alignment even after you put it through its paces.'
             }
@@ -48,7 +48,7 @@
             }
         };
 
-        document.title = `${data.title} | Nightmare Racing`;
+        document.title = `${data.title} | NMR Automotive`;
         setText('service-title', data.title);
         setText('service-tagline', data.tagline);
         setText('service-visual', data.visual);

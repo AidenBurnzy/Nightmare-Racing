@@ -1,7 +1,7 @@
 {
   "name": "nightmare-racing",
   "version": "1.0.0",
-  "description": "Nightmare Racing - Premium Auto Services & Parts",
+  "description": "NMR Automotive - Premium Auto Services & Parts",
   "main": "index.js",
   "scripts": {
     "dev": "netlify dev",
@@ -24,7 +24,7 @@
     "cars",
     "tuning"
   ],
-  "author": "Nightmare Racing",
+  "author": "NMR Automotive",
   "license": "MIT",
   "repository": {
     "type": "git",

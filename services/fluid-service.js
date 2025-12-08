@@ -48,7 +48,7 @@
             }
         };
 
-        document.title = `${data.title} | Nightmare Racing`;
+        document.title = `${data.title} | NMR Automotive`;
         setText('service-title', data.title);
         setText('service-tagline', data.tagline);
         setText('service-visual', data.visual);

@@ -48,7 +48,7 @@
             }
         };
 
-        document.title = `${data.title} | Nightmare Racing`;
+        document.title = `${data.title} | NMR Automotive`;
         setText('service-title', data.title);
         setText('service-tagline', data.tagline);
         setText('service-visual', data.visual);
@@ -97,7 +97,7 @@
         const ctaActions = document.getElementById('cta-actions');
 
         if (ctaTitle) setText('cta-title', data.cta?.title || 'Let’s build together');
-        if (ctaDescription) setText('cta-description', data.cta?.description || 'Connect with the Nightmare Racing crew for tailored recommendations.');
+        if (ctaDescription) setText('cta-description', data.cta?.description || 'Connect with the NMR Automotive crew for tailored recommendations.');
 
         if (ctaActions) {
             ctaActions.innerHTML = '';

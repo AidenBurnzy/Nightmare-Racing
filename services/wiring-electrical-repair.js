@@ -26,7 +26,7 @@
                 ]
             },
             {
-                heading: 'Why Nightmare Racing',
+                heading: 'Why NMR Automotive',
                 type: 'paragraph',
                 body: 'Electrical failures derail builds. Our team blends OEM-level diagnostic discipline with motorsport fabrication standards so your wiring stays transparent, serviceable, and future-proof as you keep evolving the car.'
             }
@@ -48,7 +48,7 @@
             }
         };
 
-        document.title = `${data.title} | Nightmare Racing`;
+        document.title = `${data.title} | NMR Automotive`;
         setText('service-title', data.title);
         setText('service-tagline', data.tagline);
         setText('service-visual', data.visual);

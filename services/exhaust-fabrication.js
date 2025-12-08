@@ -28,7 +28,7 @@
             {
                 heading: 'Craftsmanship that lasts',
                 type: 'paragraph',
-                body: 'Every Nightmare Racing exhaust is designed around your chassis and goals. Expect perfect fitment, motorsport-grade welds, and documentation of materials, hardware, and maintenance tips.'
+                body: 'Every NMR Automotive exhaust is designed around your chassis and goals. Expect perfect fitment, motorsport-grade welds, and documentation of materials, hardware, and maintenance tips.'
             }
         ],
         cta: {
@@ -48,7 +48,7 @@
             }
         };
 
-        document.title = `${data.title} | Nightmare Racing`;
+        document.title = `${data.title} | NMR Automotive`;
         setText('service-title', data.title);
         setText('service-tagline', data.tagline);
         setText('service-visual', data.visual);
