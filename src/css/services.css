@@ -113,17 +113,21 @@
 
 .image-badge {
     position: absolute;
-    bottom: 30px;
-    left: 30px;
-    right: 30px;
-    background: rgba(229, 0, 0, 0.95);
-    backdrop-filter: blur(10px);
-    padding: 20px 25px;
-    border-radius: 15px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(135deg, rgba(229, 0, 0, 0.85), rgba(180, 0, 0, 0.85));
+    backdrop-filter: blur(12px);
+    padding: 24px 28px;
+    border-radius: 0;
     display: flex;
     align-items: center;
-    gap: 15px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    gap: 16px;
+    box-shadow: 
+        0 12px 40px rgba(229, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
 }
 
 .badge-icon {

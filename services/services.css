@@ -37,7 +37,34 @@ a:focus {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    padding-top: 90px;
+    padding-top: 108px; /* Adjusted for info bar (38px) + navbar (70px) */
+    position: relative;
+    z-index: 0;
+}
+
+/* Full-page backdrop with gradient blur - clear at top, blurred at bottom */
+.service-page::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: url('../assets/servicesImage.jpg') center / cover no-repeat;
+    filter: blur(3px);
+    opacity: 0.35;
+    z-index: -2;
+    pointer-events: none;
+}
+
+.service-page::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: url('../assets/servicesImage.jpg') center / cover no-repeat;
+    filter: blur(18px);
+    mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.3) 30%, rgba(0,0,0,0.8) 60%, black 100%);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.3) 30%, rgba(0,0,0,0.8) 60%, black 100%);
+    opacity: 0.35;
+    z-index: -1;
+    pointer-events: none;
 }
 
 .service-header {
@@ -83,6 +110,7 @@ a:focus {
 .service-nav a:focus {
     background: rgba(229, 0, 0, 0.12);
     transform: translateY(-2px);
+    text-decoration: none;
 }
 
 .service-main {
@@ -97,11 +125,13 @@ a:focus {
 }
 
 .service-hero {
-    padding: 32px 24px 20px;
+    padding: 48px 24px 32px;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 32px;
+    grid-template-columns: 1fr;
+    gap: 24px;
     align-items: center;
+    justify-items: center;
+    text-align: center;
 }
 
 .service-hero h1 {
@@ -109,6 +139,38 @@ a:focus {
     margin: 0 0 12px;
     text-transform: uppercase;
     letter-spacing: 3px;
+}
+
+/* Title + blurred backdrop wrapper */
+.hero-title-wrap {
+    position: relative;
+    isolation: isolate;
+    max-width: 960px;
+    width: 100%;
+}
+
+.hero-backdrop {
+    display: none;
+}
+
+.hero-backdrop::after {
+    display: none;
+}
+
+.hero-backdrop-image {
+    display: none;
+}
+
+.hero-backdrop-image.in-view {
+    display: none;
+}
+
+/* Title blur ease-in */
+[data-reveal].title-animate {
+    filter: blur(2px);
+}
+[data-reveal].title-animate.in-view {
+    filter: blur(0px);
 }
 
 .service-hero .hero-tagline {
@@ -123,6 +185,7 @@ a:focus {
     flex-wrap: wrap;
     gap: 14px;
     margin-bottom: 24px;
+    justify-content: center;
 }
 
 .hero-meta span {
@@ -134,14 +197,7 @@ a:focus {
 }
 
 .hero-visual {
-    position: relative;
-    background: linear-gradient(160deg, rgba(229, 0, 0, 0.15), rgba(10, 10, 10, 0.9));
-    border-radius: 20px;
-    padding: 24px;
-    min-height: 280px;
-    display: flex;
-    align-items: flex-end;
-    border: 1px solid var(--border);
+    display: none;
 }
 
 .hero-visual p {
@@ -268,6 +324,68 @@ a:focus {
 .service-page #footer-section {
     width: 100%;
     margin-top: auto;
+}
+
+/* -------- Scroll Reveal Animations -------- */
+[data-reveal] {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 600ms ease, transform 600ms ease;
+    transition-delay: var(--reveal-delay, 0ms);
+    will-change: opacity, transform;
+}
+
+[data-reveal].in-view {
+    opacity: 1;
+    transform: none;
+}
+
+[data-reveal="fade"] {
+    transform: none;
+}
+
+[data-reveal="up"] {
+    transform: translateY(18px);
+}
+
+[data-reveal="left"] {
+    transform: translateX(-18px);
+}
+
+[data-reveal="right"] {
+    transform: translateX(18px);
+}
+
+[data-reveal="scale"] {
+    transform: scale(0.96);
+}
+
+/* Stagger helpers */
+.reveal-stagger > * {
+    --reveal-delay: 0ms;
+}
+.reveal-stagger > *:nth-child(1) { --reveal-delay: 0ms; }
+.reveal-stagger > *:nth-child(2) { --reveal-delay: 80ms; }
+.reveal-stagger > *:nth-child(3) { --reveal-delay: 160ms; }
+.reveal-stagger > *:nth-child(4) { --reveal-delay: 240ms; }
+.reveal-stagger > *:nth-child(5) { --reveal-delay: 320ms; }
+.reveal-stagger > *:nth-child(6) { --reveal-delay: 400ms; }
+.reveal-stagger > *:nth-child(7) { --reveal-delay: 480ms; }
+.reveal-stagger > *:nth-child(8) { --reveal-delay: 560ms; }
+
+/* Subtle parallax on hero visual */
+.hero-visual {
+    overflow: hidden;
+    background-position: center;
+}
+.hero-visual::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(120% 80% at 80% 20%, rgba(229,0,0,0.25), transparent 60%);
+    transform: translateY(var(--parallax-y, 0px));
+    transition: transform 80ms linear;
 }
 
 @media (max-width: 640px) {

@@ -1,0 +1,627 @@
+/* ==================== About Shop Page Styles ==================== */
+
+:root {
+    --primary-color: #ff1744;
+    --accent-color: #ff006e;
+    --dark-bg: #0a0a0a;
+    --card-bg: #1a1a1a;
+    --text-primary: #ffffff;
+    --text-secondary: #b0b0b0;
+    --border-color: rgba(255, 23, 68, 0.2);
+}
+
+/* ==================== Shop Hero ==================== */
+
+.shop-hero {
+    position: relative;
+    padding: 80px 0;
+    text-align: center;
+    overflow: hidden;
+}
+
+.shop-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 50% 0%, rgba(255, 23, 68, 0.1) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 1;
+}
+
+.hero-title {
+    font-size: 4rem;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: 20px;
+    animation: titleFadeUp 0.8s ease-out;
+}
+
+.hero-title .text-accent {
+    color: var(--primary-color);
+    text-shadow: 0 0 20px rgba(255, 23, 68, 0.6);
+}
+
+.hero-subtitle {
+    font-size: 1.3rem;
+    color: var(--text-secondary);
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    animation: fadeIn 1s ease-out 0.3s both;
+}
+
+/* ==================== Carousel Section ==================== */
+
+.carousel-section {
+    padding: 80px 0;
+    position: relative;
+}
+
+.carousel-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.carousel-main {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 0 60px rgba(255, 23, 68, 0.15);
+    animation: carouselFadeIn 0.8s ease-out;
+}
+
+.carousel-track {
+    display: flex;
+    height: 100%;
+    transition: transform 0.6s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+.carousel-slide {
+    flex: 0 0 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.carousel-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+}
+
+.carousel-slide.active img {
+    transform: scale(1.02);
+}
+
+.slide-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(255, 23, 68, 0.2) 0%, rgba(255, 0, 110, 0.1) 100%);
+    pointer-events: none;
+}
+
+/* ==================== Carousel Navigation ==================== */
+
+.carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 60px;
+    height: 60px;
+    border: 2px solid var(--primary-color);
+    background: rgba(10, 10, 10, 0.7);
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-color);
+    transition: all 0.3s ease;
+    z-index: 10;
+    backdrop-filter: blur(10px);
+}
+
+.carousel-btn:hover {
+    background: var(--primary-color);
+    color: var(--dark-bg);
+    box-shadow: 0 0 30px rgba(255, 23, 68, 0.6);
+}
+
+.carousel-btn svg {
+    width: 24px;
+    height: 24px;
+}
+
+.carousel-prev {
+    left: 20px;
+}
+
+.carousel-next {
+    right: 20px;
+}
+
+/* ==================== Carousel Indicators ==================== */
+
+.carousel-indicators {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 30px;
+    align-items: center;
+}
+
+.indicator-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255, 23, 68, 0.3);
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0;
+}
+
+.indicator-dot:hover {
+    background: rgba(255, 23, 68, 0.6);
+}
+
+.indicator-dot.active {
+    background: var(--primary-color);
+    width: 32px;
+    border-radius: 6px;
+    box-shadow: 0 0 15px rgba(255, 23, 68, 0.6);
+}
+
+/* ==================== About Content Section ==================== */
+
+.about-content {
+    padding: 60px 0 90px;
+    position: relative;
+}
+
+.about-content::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 900px;
+    height: 900px;
+    background: radial-gradient(circle, rgba(255, 23, 68, 0.02) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.why-card {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 28px;
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    background: linear-gradient(145deg, rgba(26, 26, 26, 0.9), rgba(16, 16, 16, 0.95));
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.35);
+    position: relative;
+    z-index: 1;
+    animation: fadeInUp 0.8s ease-out;
+}
+
+.why-header {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 18px;
+}
+
+.section-title {
+    font-size: 2rem;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin: 0;
+    color: var(--text-primary);
+}
+
+.section-title .text-accent {
+    color: var(--primary-color);
+    text-shadow: 0 0 12px rgba(255, 23, 68, 0.35);
+}
+
+.section-caption {
+    font-size: 0.95rem;
+    font-family: 'Rajdhani', sans-serif;
+    color: var(--text-secondary);
+    letter-spacing: 0.02em;
+    margin: 0;
+}
+
+.why-badges {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 12px;
+}
+
+.why-badge {
+    padding: 14px 16px;
+    border: 1px solid rgba(255, 23, 68, 0.25);
+    border-radius: 10px;
+    background: rgba(255, 23, 68, 0.04);
+    color: var(--text-secondary);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1rem;
+    line-height: 1.5;
+    transition: all 0.25s ease;
+}
+
+.why-badge:hover {
+    color: var(--text-primary);
+    border-color: var(--primary-color);
+    background: rgba(255, 23, 68, 0.08);
+    transform: translateY(-2px);
+}
+
+/* ==================== Values Section ==================== */
+
+.values-section {
+    padding: 100px 0;
+    position: relative;
+    background: linear-gradient(180deg, transparent 0%, rgba(255, 23, 68, 0.03) 50%, transparent 100%);
+}
+
+.values-title {
+    font-size: 3.5rem;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    text-align: center;
+    margin-bottom: 80px;
+    animation: titleFadeUp 0.8s ease-out;
+}
+
+.values-title .text-accent {
+    color: var(--primary-color);
+    text-shadow: 0 0 20px rgba(255, 23, 68, 0.6);
+}
+
+.values-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.value-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 50px 30px;
+    text-align: center;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    animation: cardFadeIn 0.8s ease-out backwards;
+    position: relative;
+    overflow: hidden;
+}
+
+.value-card:nth-child(1) { animation-delay: 0.1s; }
+.value-card:nth-child(2) { animation-delay: 0.2s; }
+.value-card:nth-child(3) { animation-delay: 0.3s; }
+.value-card:nth-child(4) { animation-delay: 0.4s; }
+
+.value-card::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    border-radius: 12px;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.value-card:hover {
+    border-color: var(--primary-color);
+    transform: translateY(-15px);
+    box-shadow: 0 20px 50px rgba(255, 23, 68, 0.2);
+}
+
+.value-card:hover::before {
+    opacity: 0.1;
+}
+
+.value-icon {
+    font-size: 3.5rem;
+    margin-bottom: 20px;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.value-card:hover .value-icon {
+    transform: scale(1.15) rotate(10deg);
+}
+
+.value-name {
+    font-size: 1.5rem;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-primary);
+    margin-bottom: 15px;
+    letter-spacing: 0.1em;
+    transition: color 0.3s ease;
+}
+
+.value-card:hover .value-name {
+    color: var(--primary-color);
+}
+
+.value-description {
+    font-size: 1rem;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 400;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin: 0;
+}
+
+/* ==================== Animations ==================== */
+
+@keyframes titleFadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes carouselFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes cardFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ==================== Container ==================== */
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* ==================== Text Utility ==================== */
+
+.text-accent {
+    color: var(--primary-color);
+}
+
+/* ==================== Responsive Design ==================== */
+
+@media (max-width: 1024px) {
+    .content-grid {
+        gap: 60px;
+    }
+
+    .carousel-main {
+        aspect-ratio: 16 / 10;
+    }
+
+    .carousel-btn {
+        width: 50px;
+        height: 50px;
+    }
+
+    .carousel-btn svg {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2.5rem;
+        letter-spacing: 0.1em;
+    }
+
+    .hero-subtitle {
+        font-size: 1rem;
+    }
+
+    .carousel-section {
+        padding: 60px 0;
+    }
+
+    .carousel-main {
+        aspect-ratio: 16 / 12;
+        border-radius: 12px;
+    }
+
+    .carousel-prev {
+        left: 10px;
+    }
+
+    .carousel-next {
+        right: 10px;
+    }
+
+    .carousel-btn {
+        width: 45px;
+        height: 45px;
+    }
+
+    .about-content {
+        padding: 60px 0;
+    }
+
+    .content-grid {
+        grid-template-columns: 1fr;
+        gap: 50px;
+    }
+
+    .section-title {
+        font-size: 2rem;
+    }
+
+    .values-section {
+        padding: 60px 0;
+    }
+
+    .values-title {
+        font-size: 2.5rem;
+        margin-bottom: 50px;
+    }
+
+    .values-grid {
+        gap: 30px;
+    }
+
+    .value-card {
+        padding: 40px 25px;
+    }
+
+    .value-icon {
+        font-size: 2.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-title {
+        font-size: 2rem;
+    }
+
+    .hero-subtitle {
+        font-size: 0.9rem;
+    }
+
+    .carousel-section {
+        padding: 40px 0;
+    }
+
+    .carousel-main {
+        aspect-ratio: 4 / 5;
+        border-radius: 10px;
+    }
+
+    .carousel-prev,
+    .carousel-next {
+        width: 40px;
+        height: 40px;
+        font-size: 14px;
+    }
+
+    .carousel-indicators {
+        gap: 8px;
+        margin-top: 20px;
+    }
+
+    .indicator-dot {
+        width: 10px;
+        height: 10px;
+    }
+
+    .indicator-dot.active {
+        width: 28px;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+    }
+
+    .section-text {
+        font-size: 1rem;
+    }
+
+    .feature-item {
+        padding: 12px;
+        gap: 12px;
+    }
+
+    .feature-text {
+        font-size: 0.95rem;
+    }
+
+    .values-title {
+        font-size: 2rem;
+        margin-bottom: 40px;
+    }
+
+    .values-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .value-card {
+        padding: 30px 20px;
+    }
+
+    .value-icon {
+        font-size: 2rem;
+        margin-bottom: 15px;
+    }
+
+    .value-name {
+        font-size: 1.2rem;
+    }
+
+    .value-description {
+        font-size: 0.9rem;
+    }
+}

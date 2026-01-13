@@ -760,97 +760,126 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function setupDropdownAccessibility() {
-        const dropdown = document.querySelector('.nav-menu .has-dropdown');
-        if (!dropdown) return;
+        const dropdowns = document.querySelectorAll('.nav-menu .has-dropdown');
+        if (!dropdowns.length) return;
 
-        const trigger = dropdown.querySelector('.dropdown-trigger');
-        const submenu = dropdown.querySelector('.dropdown-menu');
+        dropdowns.forEach(dropdown => {
+            const trigger = dropdown.querySelector('.dropdown-trigger');
+            const submenu = dropdown.querySelector('.dropdown-menu');
 
-        if (!trigger || !submenu) return;
+            if (!trigger || !submenu) return;
 
-        const firstMenuItem = submenu.querySelector('a, button');
+            const firstMenuItem = submenu.querySelector('a, button');
+            let closeTimeout;
 
-        const openDropdown = () => {
-            if (dropdown.classList.contains('open')) return;
-            dropdown.classList.add('open');
-            trigger.setAttribute('aria-expanded', 'true');
-        };
+            const openDropdown = () => {
+                if (dropdown.classList.contains('open')) return;
+                clearTimeout(closeTimeout);
+                dropdown.classList.add('open');
+                trigger.setAttribute('aria-expanded', 'true');
+            };
 
-        const closeDropdown = () => {
-            if (!dropdown.classList.contains('open')) return;
-            dropdown.classList.remove('open');
-            trigger.setAttribute('aria-expanded', 'false');
-        };
+            const closeDropdown = () => {
+                if (!dropdown.classList.contains('open')) return;
+                dropdown.classList.remove('open');
+                trigger.setAttribute('aria-expanded', 'false');
+            };
 
-        const toggleDropdown = () => {
-            if (dropdown.classList.contains('open')) {
-                closeDropdown();
-            } else {
-                openDropdown();
-            }
-        };
+            const closeDropdownDelayed = () => {
+                closeTimeout = setTimeout(() => {
+                    closeDropdown();
+                }, 200);
+            };
 
-        trigger.addEventListener('click', (event) => {
-            event.stopPropagation();
-            toggleDropdown();
-        });
-
-        submenu.querySelectorAll('a, button').forEach(item => {
-            item.addEventListener('click', () => {
-                closeDropdown();
-            });
-        });
-
-        trigger.addEventListener('keydown', (event) => {
-            if (event.key === 'ArrowDown') {
-                openDropdown();
-                if (firstMenuItem) {
-                    event.preventDefault();
-                    firstMenuItem.focus();
+            const toggleDropdown = () => {
+                if (dropdown.classList.contains('open')) {
+                    closeDropdown();
+                } else {
+                    openDropdown();
                 }
-            }
+            };
 
-            if (event.key === 'Escape') {
-                closeDropdown();
-            }
-        });
+            trigger.addEventListener('click', (event) => {
+                event.stopPropagation();
+                toggleDropdown();
+            });
 
-        submenu.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape') {
-                closeDropdown();
-                trigger.focus();
-            }
-        });
+            // Add hover functionality
+            dropdown.addEventListener('mouseenter', () => {
+                openDropdown();
+            });
 
-        const handleFocusOut = (event) => {
-            if (!dropdown.contains(event.relatedTarget)) {
-                closeDropdown();
-            }
-        };
+            dropdown.addEventListener('mouseleave', () => {
+                closeDropdownDelayed();
+            });
 
-        trigger.addEventListener('blur', handleFocusOut);
-        submenu.addEventListener('focusout', handleFocusOut);
+            submenu.querySelectorAll('a, button').forEach(item => {
 
-        document.addEventListener('click', (event) => {
-            if (!dropdown.contains(event.target)) {
-                closeDropdown();
-            }
-        });
+                            submenu.addEventListener('mouseenter', () => {
+                                clearTimeout(closeTimeout);
+                                openDropdown();
+                            });
 
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape') {
-                const activeElement = document.activeElement;
-                closeDropdown();
-                if (activeElement && dropdown.contains(activeElement)) {
+                            submenu.addEventListener('mouseleave', () => {
+                                closeDropdownDelayed();
+                            });
+
+                item.addEventListener('click', () => {
+                    closeDropdown();
+                });
+            });
+
+            trigger.addEventListener('keydown', (event) => {
+                if (event.key === 'ArrowDown') {
+                    openDropdown();
+                    if (firstMenuItem) {
+                        event.preventDefault();
+                        firstMenuItem.focus();
+                    }
+                }
+
+                if (event.key === 'Escape') {
+                    closeDropdown();
+                }
+            });
+
+            submenu.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape') {
+                    closeDropdown();
                     trigger.focus();
                 }
-            }
-        });
+            });
 
-        window.addEventListener('resize', () => {
-            if (window.innerWidth <= 900) {
-                closeDropdown();
-            }
+            const handleFocusOut = (event) => {
+                if (!dropdown.contains(event.relatedTarget)) {
+                    closeDropdown();
+                }
+            };
+
+            trigger.addEventListener('blur', handleFocusOut);
+            submenu.addEventListener('focusout', handleFocusOut);
+
+            document.addEventListener('click', (event) => {
+                if (!dropdown.contains(event.target)) {
+                    closeDropdown();
+                }
+            });
+
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape') {
+                    const activeElement = document.activeElement;
+                    closeDropdown();
+                    if (activeElement && dropdown.contains(activeElement)) {
+                        trigger.focus();
+                    }
+                }
+            });
+
+            window.addEventListener('resize', () => {
+                if (window.innerWidth <= 900) {
+                    closeDropdown();
+                }
+            });
         });
     }
 

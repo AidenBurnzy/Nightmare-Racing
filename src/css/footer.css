@@ -1,48 +1,52 @@
 /* Footer */
 .footer {
     background: var(--secondary-black);
-    padding: 3rem 0 1rem;
+    padding: 2.5rem 0 1rem;
     border-top: 1px solid var(--dark-gray);
 }
 
 .footer-content {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
-    gap: 3rem;
+    grid-template-columns: 1.5fr 2fr 1.2fr 1fr;
+    gap: 2.5rem;
     margin-bottom: 2rem;
 }
 
 .footer-section h3 {
-    margin-bottom: 1rem;
+    margin-bottom: 0.8rem;
     font-size: clamp(1.2rem, 3vw, 1.5rem);
 }
 
 .footer-section h4 {
-    margin-bottom: 1rem;
+    margin-bottom: 0.8rem;
     color: var(--accent-red);
     font-family: var(--font-secondary);
-    font-size: clamp(1rem, 2.5vw, 1.2rem);
+    font-size: clamp(0.95rem, 2.5vw, 1.1rem);
 }
 
 .footer-section p {
     color: var(--medium-gray);
     max-width: 300px;
-    font-size: clamp(0.9rem, 2vw, 1rem);
+    font-size: clamp(0.85rem, 2vw, 0.95rem);
+    line-height: 1.4;
 }
 
 .footer-section ul {
     list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
 .footer-section ul li {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.4rem;
 }
 
 .footer-section ul li a {
     color: var(--medium-gray);
     text-decoration: none;
     transition: color 0.3s ease;
-    font-size: clamp(0.9rem, 2vw, 1rem);
+    font-size: clamp(0.8rem, 1.8vw, 0.95rem);
+    display: block;
 }
 
 .footer-section ul li a:hover {
@@ -50,6 +54,19 @@
 }
 
 /* Contact info links (phone and email) styling */
+.contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.contact-info p {
+    margin: 0;
+    color: var(--medium-gray);
+    font-size: clamp(0.8rem, 1.8vw, 0.95rem);
+    line-height: 1.4;
+}
+
 .contact-info a {
     color: var(--medium-gray) !important;
     text-decoration: none !important;
@@ -68,13 +85,15 @@
     display: flex;
     gap: 1rem;
     flex-wrap: wrap;
+    flex-direction: column;
 }
 
 .social-links a {
     color: var(--medium-gray);
     text-decoration: none;
     transition: color 0.3s ease;
-    font-size: clamp(0.9rem, 2vw, 1rem);
+    font-size: clamp(0.85rem, 1.8vw, 0.95rem);
+    display: block;
 }
 
 .social-links a:hover {
@@ -83,7 +102,7 @@
 
 .footer-bottom {
     text-align: center;
-    padding-top: 2rem;
+    padding-top: 1.5rem;
     border-top: 1px solid var(--dark-gray);
     color: var(--medium-gray);
     font-size: clamp(0.8rem, 1.5vw, 0.9rem);
@@ -95,7 +114,7 @@
 @media (min-width: 641px) and (max-width: 768px) {
     .footer-content {
         grid-template-columns: 1fr 1fr;
-        gap: 2rem;
+        gap: 1.5rem;
     }
 }
 
