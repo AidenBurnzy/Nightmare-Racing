@@ -568,9 +568,22 @@
     padding-left: 0;
 }
 
-.mobile-nav-links .mobile-submenu-heading,
+.mobile-services-submenu .mobile-submenu-heading,
+.mobile-services-submenu .mobile-sub-link {
+    display: block;
+}
+
 .mobile-nav-links > li > a.mobile-sub-link {
     display: none;
+}
+
+/* Show About Us section items */
+.mobile-nav-links .mobile-about-link {
+    display: block;
+}
+
+.mobile-nav-links > li.mobile-submenu-heading {
+    display: block;
 }
 
 .mobile-services {
@@ -809,6 +822,14 @@
     
     .hamburger {
         display: flex;
+    }
+    
+    .info-bar {
+        display: none !important;
+    }
+    
+    .navbar {
+        top: 0;
     }
 }
 

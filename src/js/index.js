@@ -401,56 +401,84 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!mobileMenu) {
             mobileMenu = document.createElement('div');
             mobileMenu.className = 'mobile-menu';
-            mobileMenu.innerHTML = `
-                <div class="mobile-menu-content">
-                    <div class="mobile-menu-header">
-                        <h2>NIGHTMARE<span class="text-accent">RACING</span></h2>
-                        <button class="mobile-menu-close" aria-label="Close menu">&times;</button>
-                    </div>
-
-                    <ul class="mobile-nav-links">
-                        <li><a href="/">Home</a></li>
-                        <li><a href="#services">Services</a></li>
-                        <li class="mobile-submenu-heading">Shop Our Expertise</li>
-                        <li><a class="mobile-sub-link" href="services/coilover-installation.html">Coilover Installation</a></li>
-                        <li><a class="mobile-sub-link" href="services/wiring-electrical-repair.html">Wiring & Electrical Repair</a></li>
-                        <li><a class="mobile-sub-link" href="services/engine-repair-modification.html">Engine Repair & Modification</a></li>
-                        <li><a class="mobile-sub-link" href="services/engine-swaps.html">Engine Swaps</a></li>
-                        <li><a class="mobile-sub-link" href="services/aftermarket-components.html">Aftermarket Components</a></li>
-                        <li><a class="mobile-sub-link" href="services/brake-system-upgrades.html">Brake System Upgrades</a></li>
-                        <li><a class="mobile-sub-link" href="services/lift-kits.html">Lift Kits</a></li>
-                        <li><a class="mobile-sub-link" href="services/exhaust-fabrication.html">Exhaust Fabrication</a></li>
-                        <li><a class="mobile-sub-link" href="services/intake-valve-carbon-cleaning.html">Intake Valve Carbon Cleaning</a></li>
-                        <li><a class="mobile-sub-link" href="services/suspension-repair-tuning.html">Suspension Repair & Tuning</a></li>
-                        <li><a class="mobile-sub-link" href="services/fluid-service.html">Fluid Service</a></li>
-                        <li><a class="mobile-sub-link" href="services/camshaft-swaps-upgrades.html">Camshaft Swaps & Upgrades</a></li>
-                        <li><a href="src/pages/featured-cars.html">Our Projects</a></li>
-                        <li>
-                            <a href="#" class="coming-soon-link" aria-disabled="true" tabindex="-1" data-coming-soon="true" aria-label="Shop Parts (Coming Soon)">
-                                <span class="coming-soon-label">Shop Parts</span>
-                                <span class="coming-soon-hover" aria-hidden="true">Coming Soon</span>
-                            </a>
-                        </li>
-                        <li><a href="#contact">Contact</a></li>
-                    </ul>
-
-                    <div class="mobile-menu-footer">
-                        <p>© 2025 Nightmare Racing</p>
-                        <p>Premium Auto Services</p>
-                    </div>
-                </div>
-            `;
             document.body.appendChild(mobileMenu);
         }
 
-        const navList = mobileMenu.querySelector('.mobile-nav-links');
-        enhanceMobileServicesMenu(navList);
+        const path = window.location.pathname;
+        const needsParent = path.includes('/about/') || path.includes('/services/') || path.includes('/src/pages/') || path.includes('/services');
+        const base = needsParent ? '..' : '.';
+
+        const servicesLinks = [
+            { label: 'Brake System Repairs and Upgrades', href: `${base}/services/brake-system-repairs-upgrades.html` },
+            { label: 'Oil Change, Fluid and Filter Services', href: `${base}/services/oil-change-fluid-filter.html` },
+            { label: 'Tire Repair and Replacement', href: `${base}/services/tire-repair-replacement.html` },
+            { label: 'Heating and Air Conditioning Repair', href: `${base}/services/heating-air-conditioning.html` },
+            { label: 'Suspension Repair and Upgrades', href: `${base}/services/suspension-repair-upgrades.html` },
+            { label: 'Engine Repair and Replacement', href: `${base}/services/engine-repair-replacement.html` },
+            { label: 'Check Engine Light Repairs', href: `${base}/services/check-engine-light.html` },
+            { label: 'Intake Valve Carbon Cleaning', href: `${base}/services/intake-valve-carbon-cleaning.html` },
+            { label: 'Wiring and Electrical Repair', href: `${base}/services/wiring-electrical-repair.html` },
+            { label: 'Engine Diagnostics and Performance', href: `${base}/services/engine-diagnostics-performance.html` }
+        ];
+
+        const aboutLinks = [
+            { label: 'About the Shop', href: `${base}/about/about-the-shop.html` },
+            { label: 'Meet the Team', href: `${base}/about/meet-the-team.html` },
+            { label: 'Financing', href: `${base}/about/financing.html` },
+            { label: 'Sunbit', href: `${base}/about/sunbit.html` }
+        ];
+
+        const projectsHref = `${base}/src/pages/featured-cars.html`;
+        const vehiclesHref = `${base}/src/pages/vehicles.html`;
+        const contactHref = needsParent ? `${base}/index.html#contact` : '#contact';
+        const homeHref = needsParent ? `${base}/index.html` : 'index.html';
+
+        const servicesList = servicesLinks.map(link => `<li><a class="mobile-sub-link" href="${link.href}">${link.label}</a></li>`).join('');
+        const aboutList = aboutLinks.map(link => `<li><a class="mobile-sub-link" href="${link.href}">${link.label}</a></li>`).join('');
+
+        mobileMenu.innerHTML = `
+            <div class="mobile-menu-content">
+                <div class="mobile-menu-header">
+                    <h2>NMR<span class="text-accent">AUTOMOTIVE</span></h2>
+                    <button class="mobile-menu-close" aria-label="Close menu">&times;</button>
+                </div>
+
+                <ul class="mobile-nav-links" data-services-enhanced="true">
+                    <li><a href="${homeHref}">Home</a></li>
+                    <li class="mobile-services">
+                        <button type="button" class="mobile-services-toggle" aria-expanded="false">
+                            <span>Services</span>
+                            <span class="toggle-icon" aria-hidden="true">+</span>
+                        </button>
+                        <ul class="mobile-services-submenu" hidden>
+                            ${servicesList}
+                        </ul>
+                    </li>
+                    <li class="mobile-services">
+                        <button type="button" class="mobile-services-toggle" aria-expanded="false">
+                            <span>About Us</span>
+                            <span class="toggle-icon" aria-hidden="true">+</span>
+                        </button>
+                        <ul class="mobile-services-submenu" hidden>
+                            ${aboutList}
+                        </ul>
+                    </li>
+                    <li><a href="${vehiclesHref}">Vehicles</a></li>
+                    <li><a href="${projectsHref}">Our Projects</a></li>
+                    <li><a href="${contactHref}">Contact</a></li>
+                </ul>
+
+                <div class="mobile-menu-footer">
+                    <p>© 2025 NMR Automotive</p>
+                    <p>Premium Auto Services</p>
+                </div>
+            </div>
+        `;
 
         mobileMenuClose = mobileMenu.querySelector('.mobile-menu-close');
         mobileNavLinks = mobileMenu.querySelectorAll('.mobile-nav-links a');
 
         setupMobileServicesAccordion();
-
         setupMobileMenuEvents();
     }
 
@@ -465,6 +493,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         const items = Array.from(menuList.children);
+        
+        // Handle Services section
         const serviceLinkItem = items.find((item) => {
             const anchor = item.querySelector('a');
             if (!anchor) return false;
@@ -472,18 +502,20 @@ document.addEventListener('DOMContentLoaded', function() {
             return href.includes('#services');
         });
 
-        if (!serviceLinkItem) {
-            menuList.dataset.servicesEnhanced = 'true';
-            return;
+        if (serviceLinkItem) {
+            enhanceMenuSection(menuList, serviceLinkItem, 'Services', 'services');
         }
 
-        const serviceAnchor = serviceLinkItem.querySelector('a');
-        const serviceHref = serviceAnchor?.getAttribute('href') || '#services';
-        const serviceLabel = serviceAnchor?.textContent?.trim() || 'Services';
+        menuList.dataset.servicesEnhanced = 'true';
+    }
+
+    function enhanceMenuSection(menuList, linkItem, label, type) {
+        const anchor = linkItem.querySelector('a');
+        const href = anchor?.getAttribute('href') || '#services';
 
         let headingItem = null;
         const submenuItems = [];
-        let next = serviceLinkItem.nextElementSibling;
+        let next = linkItem.nextElementSibling;
 
         while (next) {
             if (next.classList.contains('mobile-submenu-heading')) {
@@ -502,7 +534,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         if (submenuItems.length === 0) {
-            menuList.dataset.servicesEnhanced = 'true';
             return;
         }
 
@@ -518,7 +549,7 @@ document.addEventListener('DOMContentLoaded', function() {
         toggleButton.setAttribute('aria-expanded', 'false');
         toggleButton.setAttribute('aria-controls', submenuId);
         toggleButton.innerHTML = `
-            <span>${serviceLabel}</span>
+            <span>${label}</span>
             <span class="toggle-icon" aria-hidden="true">+</span>
         `;
 
@@ -530,8 +561,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const overviewItem = document.createElement('li');
         const overviewLink = document.createElement('a');
         overviewLink.className = 'mobile-sub-link mobile-sub-overview';
-        overviewLink.href = serviceHref;
-        overviewLink.textContent = 'Services Overview';
+        overviewLink.href = href;
+        overviewLink.textContent = label + ' Overview';
         overviewItem.appendChild(overviewLink);
         submenu.appendChild(overviewItem);
 
@@ -542,18 +573,17 @@ document.addEventListener('DOMContentLoaded', function() {
         servicesItem.appendChild(toggleButton);
         servicesItem.appendChild(submenu);
 
-        menuList.insertBefore(servicesItem, serviceLinkItem);
+        menuList.insertBefore(servicesItem, linkItem);
 
-        menuList.removeChild(serviceLinkItem);
+        menuList.removeChild(linkItem);
         if (headingItem) {
             menuList.removeChild(headingItem);
         }
         submenuItems.forEach((item) => {
             menuList.removeChild(item);
         });
-
-        menuList.dataset.servicesEnhanced = 'true';
     }
+
     
     function setupMobileMenuEvents() {
         if (hamburger) {
