@@ -116,6 +116,8 @@ a:focus {
 .service-main {
     flex: 1;
     width: 100%;
+    position: relative;
+    z-index: 2;
 }
 
 .section {
@@ -266,6 +268,7 @@ a:focus {
 .service-cta {
     padding: 40px 24px 64px;
     text-align: center;
+    position: relative;
 }
 
 .service-cta h2 {
@@ -324,6 +327,8 @@ a:focus {
 .service-page #footer-section {
     width: 100%;
     margin-top: auto;
+    position: relative;
+    z-index: 3;
 }
 
 /* -------- Scroll Reveal Animations -------- */
@@ -386,6 +391,67 @@ a:focus {
     background: radial-gradient(120% 80% at 80% 20%, rgba(229,0,0,0.25), transparent 60%);
     transform: translateY(var(--parallax-y, 0px));
     transition: transform 80ms linear;
+}
+
+/* -------- Page-Specific Background Images -------- */
+.service-page.brake-system-repairs::before,
+.service-page.brake-system-repairs::after {
+    background-image: url('../serviceImages/IMG_7256_1.jpg');
+}
+
+.service-page.tire::before,
+.service-page.tire::after {
+    background-image: url('../serviceImages/IMG_7257.jpg');
+}
+
+.service-page.suspension-upgrades::before,
+.service-page.suspension-upgrades::after {
+    background-image: url('../serviceImages/IMG_7258.jpg');
+}
+
+.service-page.check-engine::before,
+.service-page.check-engine::after {
+    background-image: url('../serviceImages/IMG_7259.jpg');
+}
+
+.service-page.wiring::before,
+.service-page.wiring::after {
+    background-image: url('../serviceImages/IMG_7266.jpg');
+}
+
+.service-page.oil-change::before,
+.service-page.oil-change::after {
+    background-image: url('../serviceImages/IMG_7268.jpg');
+}
+
+.service-page.heating::before,
+.service-page.heating::after {
+    background-image: url('../serviceImages/IMG_7269.jpg');
+}
+
+.service-page.engine-repair-replace::before,
+.service-page.engine-repair-replace::after {
+    background-image: url('../serviceImages/IMG_7270.jpg');
+}
+
+.service-page.intake::before,
+.service-page.intake::after {
+    background-image: url('../serviceImages/IMG_7271.jpg');
+}
+
+.service-page.engine-diagnostics::before,
+.service-page.engine-diagnostics::after {
+    background-image: url('../serviceImages/IMG_7272.jpg');
+}
+
+.service-page.coilover::before,
+.service-page.coilover::after {
+    background-image: url('../serviceImages/IMG_7256_1.jpg');
+}
+
+.service-page.exhaust::before,
+.service-page.exhaust::after {
+    background-image: url('../serviceImages/IMG_7257.jpg');
 }
 
 @media (max-width: 640px) {
