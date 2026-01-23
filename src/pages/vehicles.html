@@ -174,7 +174,6 @@
                         <a class="dropdown-link" href="vehicles.html?make=Dodge" role="menuitem">Dodge</a>
                         <a class="dropdown-link" href="vehicles.html?make=Fiat" role="menuitem">Fiat</a>
                         <a class="dropdown-link" href="vehicles.html?make=Ford" role="menuitem">Ford</a>
-                        <a class="dropdown-link" href="vehicles.html?make=GM" role="menuitem">GM</a>
                         <a class="dropdown-link" href="vehicles.html?make=GMC" role="menuitem">GMC</a>
                         <a class="dropdown-link" href="vehicles.html?make=Honda" role="menuitem">Honda</a>
                         <a class="dropdown-link" href="vehicles.html?make=Hummer" role="menuitem">Hummer</a>
@@ -240,8 +239,8 @@
                 <li><a class="mobile-sub-link mobile-about-link" href="../../about/sunbit.html">Sunbit</a></li>
                 <li><a href="featured-cars.html">Our Projects</a></li>
                 <li class="mobile-submenu-heading">Shop Our Vehicles</li>
-                <li><a class="mobile-sub-link" href="vehicles/acura.html">Acura</a></li>
                 <li><a class="mobile-sub-link" href="vehicles/alfa-romeo.html">Alfa Romeo</a></li>
+                <li><a class="mobile-sub-link" href="vehicles/acura.html">Acura</a></li>
                 <li><a class="mobile-sub-link" href="vehicles/audi.html">Audi</a></li>
                 <li><a class="mobile-sub-link" href="vehicles/bmw.html">BMW</a></li>
                 <li><a class="mobile-sub-link" href="vehicles/buick.html">Buick</a></li>
@@ -251,7 +250,6 @@
                 <li><a class="mobile-sub-link" href="vehicles/dodge.html">Dodge</a></li>
                 <li><a class="mobile-sub-link" href="vehicles/fiat.html">Fiat</a></li>
                 <li><a class="mobile-sub-link" href="vehicles/ford.html">Ford</a></li>
-                <li><a class="mobile-sub-link" href="vehicles/gm.html">GM</a></li>
                 <li><a class="mobile-sub-link" href="vehicles/gmc.html">GMC</a></li>
                 <li><a class="mobile-sub-link" href="vehicles/honda.html">Honda</a></li>
                 <li><a class="mobile-sub-link" href="vehicles/hummer.html">Hummer</a></li>
@@ -302,6 +300,7 @@
         <div class="filter-bar">
             <select id="vehicle-filter" class="filter-select" aria-label="Filter vehicles by make">
                 <option value="all">All Makes</option>
+                <option value="Alfa Romeo">Alfa Romeo</option>
                 <option value="Acura">Acura</option>
                 <option value="Audi">Audi</option>
                 <option value="BMW">BMW</option>
@@ -312,7 +311,6 @@
                 <option value="Dodge">Dodge</option>
                 <option value="Fiat">Fiat</option>
                 <option value="Ford">Ford</option>
-                <option value="GM">GM</option>
                 <option value="GMC">GMC</option>
                 <option value="Honda">Honda</option>
                 <option value="Hummer">Hummer</option>
@@ -369,7 +367,7 @@
     <script src="../js/index.js"></script>
     <script>
         const vehicleData = [
-            'Acura','Audi','BMW','Buick','Cadillac','Chevrolet','Chrysler','Dodge','Fiat','Ford','GM','GMC','Honda','Hummer','Hyundai','Infiniti','Isuzu','Jaguar','Jeep','Kia','Land Rover','Lexus','Lincoln','Mazda','Mercedes-Benz','Mercury','Mini','Mitsubishi','Nissan','Plymouth','Pontiac','Porsche','Saab','Saturn','Scion','Smart','Subaru','Suzuki','Toyota','Volkswagen','Volvo','Other Makes'
+            'Alfa Romeo','Acura','Audi','BMW','Buick','Cadillac','Chevrolet','Chrysler','Dodge','Fiat','Ford','GMC','Honda','Hummer','Hyundai','Infiniti','Isuzu','Jaguar','Jeep','Kia','Land Rover','Lexus','Lincoln','Mazda','Mercedes-Benz','Mercury','Mini','Mitsubishi','Nissan','Plymouth','Pontiac','Porsche','Saab','Saturn','Scion','Smart','Subaru','Suzuki','Toyota','Volkswagen','Volvo','Other Makes'
         ];
 
         function getInitialFilter() {
