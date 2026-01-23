@@ -404,34 +404,35 @@ document.addEventListener('DOMContentLoaded', function() {
             document.body.appendChild(mobileMenu);
         }
 
-        const path = window.location.pathname;
-        const needsParent = path.includes('/about/') || path.includes('/services/') || path.includes('/src/pages/') || path.includes('/services');
-        const base = needsParent ? '..' : '.';
+        const pathSegments = window.location.pathname.split('/').filter(Boolean);
+        const depth = Math.max(pathSegments.length - 1, 0);
+        const base = depth > 0 ? '../'.repeat(depth) : './';
+        const isHomePage = pathSegments.length === 0 || pathSegments[pathSegments.length - 1] === 'index.html';
 
         const servicesLinks = [
-            { label: 'Brake System Repairs and Upgrades', href: `${base}/services/brake-system-repairs-upgrades.html` },
-            { label: 'Oil Change, Fluid and Filter Services', href: `${base}/services/oil-change-fluid-filter.html` },
-            { label: 'Tire Repair and Replacement', href: `${base}/services/tire-repair-replacement.html` },
-            { label: 'Heating and Air Conditioning Repair', href: `${base}/services/heating-air-conditioning.html` },
-            { label: 'Suspension Repair and Upgrades', href: `${base}/services/suspension-repair-upgrades.html` },
-            { label: 'Engine Repair and Replacement', href: `${base}/services/engine-repair-replacement.html` },
-            { label: 'Check Engine Light Repairs', href: `${base}/services/check-engine-light.html` },
-            { label: 'Intake Valve Carbon Cleaning', href: `${base}/services/intake-valve-carbon-cleaning.html` },
-            { label: 'Wiring and Electrical Repair', href: `${base}/services/wiring-electrical-repair.html` },
-            { label: 'Engine Diagnostics and Performance', href: `${base}/services/engine-diagnostics-performance.html` }
+            { label: 'Brake System Repairs and Upgrades', href: `${base}services/brake-system-repairs-upgrades.html` },
+            { label: 'Oil Change, Fluid and Filter Services', href: `${base}services/oil-change-fluid-filter.html` },
+            { label: 'Tire Repair and Replacement', href: `${base}services/tire-repair-replacement.html` },
+            { label: 'Heating and Air Conditioning Repair', href: `${base}services/heating-air-conditioning.html` },
+            { label: 'Suspension Repair and Upgrades', href: `${base}services/suspension-repair-upgrades.html` },
+            { label: 'Engine Repair and Replacement', href: `${base}services/engine-repair-replacement.html` },
+            { label: 'Check Engine Light Repairs', href: `${base}services/check-engine-light.html` },
+            { label: 'Intake Valve Carbon Cleaning', href: `${base}services/intake-valve-carbon-cleaning.html` },
+            { label: 'Wiring and Electrical Repair', href: `${base}services/wiring-electrical-repair.html` },
+            { label: 'Engine Diagnostics and Performance', href: `${base}services/engine-diagnostics-performance.html` }
         ];
 
         const aboutLinks = [
-            { label: 'About the Shop', href: `${base}/about/about-the-shop.html` },
-            { label: 'Meet the Team', href: `${base}/about/meet-the-team.html` },
-            { label: 'Financing', href: `${base}/about/financing.html` },
-            { label: 'Sunbit', href: `${base}/about/sunbit.html` }
+            { label: 'About the Shop', href: `${base}about/about-the-shop.html` },
+            { label: 'Meet the Team', href: `${base}about/meet-the-team.html` },
+            { label: 'Financing', href: `${base}about/financing.html` },
+            { label: 'Sunbit', href: `${base}about/sunbit.html` }
         ];
 
-        const projectsHref = `${base}/src/pages/featured-cars.html`;
-        const vehiclesHref = `${base}/src/pages/vehicles.html`;
-        const contactHref = needsParent ? `${base}/index.html#contact` : '#contact';
-        const homeHref = needsParent ? `${base}/index.html` : 'index.html';
+        const projectsHref = `${base}src/pages/featured-cars.html`;
+        const vehiclesHref = `${base}src/pages/vehicles.html`;
+        const contactHref = isHomePage ? '#contact' : `${base}index.html#contact`;
+        const homeHref = isHomePage ? '#home' : `${base}index.html`;
 
         const servicesList = servicesLinks.map(link => `<li><a class="mobile-sub-link" href="${link.href}">${link.label}</a></li>`).join('');
         const aboutList = aboutLinks.map(link => `<li><a class="mobile-sub-link" href="${link.href}">${link.label}</a></li>`).join('');

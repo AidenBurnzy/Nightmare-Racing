@@ -435,56 +435,195 @@
         </div>
     </section>
 
-    <!-- Parts & Merch Section -->
+    <!-- Shop Story Section -->
     <section id="parts" class="parts-merch-section">
         <div class="section-container">
             <div class="section-header">
                 <div class="header-accent"></div>
-                <h2 class="section-title">Fuel Your Passion</h2>
-                <p class="section-subtitle">Premium performance parts and exclusive NMR Automotive merch, curated for enthusiasts who demand more from their build.</p>
+                <h2 class="section-title">Get to know NMR</h2>
+                <p class="section-subtitle">Explore financing, meet the crew, and see what makes our Hudsonville shop different before you book.</p>
             </div>
 
-            <div class="cards-container">
-                <a href="#" class="product-card parts-card" aria-disabled="true" tabindex="-1" data-coming-soon="true">
+            <div class="cards-container info-cards">
+                <div class="info-card">
                     <div class="card-background"></div>
                     <div class="card-content">
                         <div class="card-icon">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-                                <path d="M2 17l10 5 10-5"/>
-                                <path d="M2 12l10 5 10-5"/>
+                                <circle cx="8" cy="8" r="3"/>
+                                <circle cx="16" cy="8" r="3"/>
+                                <path d="M2 20c0-3.333 3.333-6 6-6s6 2.667 6 6"/>
+                                <path d="M14 14.5c1-.333 2-.5 3-.5 2.667 0 5 2.667 5 6"/>
                             </svg>
                         </div>
-                        <h3 class="card-title">Performance Parts</h3>
-                        <p class="card-description">Intakes, forced induction, suspension, and braking packages selected to help your setup outperform the competition.</p>
-                        <span class="card-link">Coming Soon</span>
+                        <h3 class="card-title">Meet the team</h3>
+                        <p class="card-description">Get acquainted with the technicians and fabricators who will be wrenching on your car and keeping you informed.</p>
+                        <div class="card-cta-row">
+                            <a class="card-link primary" href="about/meet-the-team.html">Meet the crew</a>
+                        </div>
                     </div>
                     <div class="card-shine"></div>
-                </a>
+                </div>
 
-                <a href="#" class="product-card merch-card" aria-disabled="true" tabindex="-1" data-coming-soon="true">
+                <div class="info-card">
                     <div class="card-background"></div>
                     <div class="card-content">
                         <div class="card-icon">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                                <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
-                                <line x1="7" y1="7" x2="7.01" y2="7"/>
+                                <path d="M3 21h18"/>
+                                <path d="M6 21V7l6-4 6 4v14"/>
+                                <path d="M9 21v-6h6v6"/>
                             </svg>
                         </div>
-                        <h3 class="card-title">Exclusive Merch</h3>
-                        <p class="card-description">Made-for-fans apparel, hats, and accessories so you can rep NMR Automotive in the shop, at the track, or on the street.</p>
-                        <span class="card-link">Coming Soon</span>
+                        <h3 class="card-title">About the shop</h3>
+                        <p class="card-description">See our standards, tooling, and approach to diagnostics, fabrication, and customer communication before you book.</p>
+                        <div class="card-cta-row">
+                            <a class="card-link primary" href="about/about-the-shop.html">Tour the shop</a>
+                        </div>
                     </div>
                     <div class="card-shine"></div>
-                </a>
+                </div>
+
+                <div class="info-card">
+                    <div class="card-background"></div>
+                    <div class="card-content">
+                        <div class="card-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                <path d="M12 6v12"/>
+                                <path d="M5 12h14"/>
+                                <circle cx="12" cy="12" r="9"/>
+                            </svg>
+                        </div>
+                        <h3 class="card-title">Financing options</h3>
+                        <p class="card-description">Plan larger repairs or upgrades with flexible payments. We offer Sunbit plus additional options to keep projects moving.</p>
+                        <div class="card-cta-row">
+                            <a class="card-link primary" href="about/financing.html">See financing</a>
+                            <a class="card-link subtle" href="about/sunbit.html">Explore Sunbit</a>
+                        </div>
+                    </div>
+                    <div class="card-shine"></div>
+                </div>
             </div>
 
             <div class="shipping-banner">
                 <div class="banner-icon" aria-hidden="true">⚡</div>
-                <p class="banner-text"><strong>Online Store Launch</strong> — Our parts and merch catalog is launching soon! Check back for the updated experience.</p>
+                <p class="banner-text"><strong>Ready to start?</strong> Tell us about your car, goals, and budget—we’ll line up the right tech and schedule.</p>
+                <a class="banner-button" href="src/pages/request-quote.html">Request a quote</a>
             </div>
         </div>
     </section>
+
+    <!-- Project Highlights Section -->
+    <section class="project-highlights">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="header-accent"></div>
+                <h2 class="section-title">Recent Projects</h2>
+                <p class="section-subtitle">A quick look at what’s been in the bay. Tap through for full galleries and build details.</p>
+            </div>
+
+            <div class="project-cards" data-project-cards>
+                <!-- Cards populated by script; shows graceful fallbacks if data is unavailable. -->
+            </div>
+
+            <div class="projects-cta-row">
+                <a class="banner-button" href="src/pages/featured-cars.html">View all projects</a>
+                <a class="card-link subtle" href="src/pages/request-quote.html">Start your build</a>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        (function() {
+            const container = document.querySelector('[data-project-cards]');
+            if (!container) return;
+
+            function pickTwoNewest(items) {
+                if (!Array.isArray(items) || items.length === 0) return [];
+                const sorted = [...items].sort((a, b) => {
+                    const timeA = new Date(a.dateAdded || a.created_at || 0).getTime();
+                    const timeB = new Date(b.dateAdded || b.created_at || 0).getTime();
+                    if (!Number.isNaN(timeA) && !Number.isNaN(timeB)) return timeB - timeA;
+                    return (Number(b.year) || 0) - (Number(a.year) || 0);
+                });
+                return sorted.slice(0, 2);
+            }
+
+            function buildImage(car) {
+                if (car.mainImage && typeof car.mainImage === 'string') return car.mainImage;
+                if (Array.isArray(car.gallery) && car.gallery.length) {
+                    const first = car.gallery.find(Boolean);
+                    if (typeof first === 'string') return first;
+                    if (first && typeof first === 'object') {
+                        return first.url || first.image || '';
+                    }
+                }
+                return '';
+            }
+
+            function truncate(text, max = 150) {
+                if (!text) return 'Build details coming soon.';
+                const clean = String(text).trim();
+                if (clean.length <= max) return clean;
+                return `${clean.slice(0, max - 3)}...`;
+            }
+
+            function buildMeta(car) {
+                const parts = [];
+                if (car.status) parts.push(car.status.toUpperCase());
+                const label = [car.year, car.make, car.model].filter(Boolean).join(' ');
+                if (label) parts.push(label);
+                return parts.join(' • ');
+            }
+
+            function renderCards(projects) {
+                if (!projects || projects.length === 0) {
+                    container.innerHTML = '<p class="project-empty">Projects will appear here once loaded.</p>';
+                    return;
+                }
+                const cardsHTML = projects.map((car) => {
+                    const image = buildImage(car);
+                    const meta = buildMeta(car);
+                    const detailTarget = car.name ? `src/pages/featured-cars.html#${encodeURIComponent(car.name)}` : 'src/pages/featured-cars.html';
+                    return `
+                        <article class="project-card">
+                            <div class="project-image" style="background-image: url('${image}')"></div>
+                            <div class="project-body">
+                                <p class="project-meta">${meta || 'Featured build'}</p>
+                                <h3 class="project-title">${car.name || 'Project build'}</h3>
+                                <p class="project-description">${truncate(car.description)}</p>
+                                <div class="card-cta-row">
+                                    <a class="card-link primary" href="${detailTarget}">View project</a>
+                                    <a class="card-link subtle" href="src/pages/featured-cars.html">All projects</a>
+                                </div>
+                            </div>
+                        </article>
+                    `;
+                }).join('');
+
+                container.innerHTML = cardsHTML;
+            }
+
+            async function loadProjects() {
+                try {
+                    const res = await fetch('/.netlify/functions/api-cars');
+                    if (!res.ok) throw new Error('API not available');
+                    const data = await res.json();
+                    if (!Array.isArray(data) || data.length === 0) {
+                        renderCards([]);
+                        return;
+                    }
+                    const selected = pickTwoNewest(data);
+                    renderCards(selected);
+                } catch (err) {
+                    console.warn('Projects API unavailable:', err.message);
+                    renderCards([]);
+                }
+            }
+
+            loadProjects();
+        })();
+    </script>
 
     <!-- Contact Section -->
     <section id="contact" class="contact-section">
