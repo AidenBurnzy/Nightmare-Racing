@@ -177,19 +177,27 @@
                 <div class="carousel-main">
                     <div class="carousel-track" id="carousel-track">
                         <div class="carousel-slide active">
-                            <img src="../assets/placeholder-shop-1.jpg" alt="Shop Interior 1">
+                            <img src="../shopImages/shopImage1.jpg" alt="Shop Interior 1">
                             <div class="slide-overlay"></div>
                         </div>
                         <div class="carousel-slide">
-                            <img src="../assets/placeholder-shop-2.jpg" alt="Shop Interior 2">
+                            <img src="../shopImages/shopImage2.jpg" alt="Shop Interior 2">
                             <div class="slide-overlay"></div>
                         </div>
                         <div class="carousel-slide">
-                            <img src="../assets/placeholder-shop-3.jpg" alt="Shop Interior 3">
+                            <img src="../shopImages/shopImage3.jpg" alt="Shop Interior 3">
                             <div class="slide-overlay"></div>
                         </div>
                         <div class="carousel-slide">
-                            <img src="../assets/placeholder-shop-4.jpg" alt="Shop Interior 4">
+                            <img src="../shopImages/shopImage4.jpg" alt="Shop Interior 4">
+                            <div class="slide-overlay"></div>
+                        </div>
+                        <div class="carousel-slide">
+                            <img src="../shopImages/shopImage5.jpg" alt="Shop Interior 5">
+                            <div class="slide-overlay"></div>
+                        </div>
+                        <div class="carousel-slide">
+                            <img src="../shopImages/shopImage6.jpg" alt="Shop Interior 6">
                             <div class="slide-overlay"></div>
                         </div>
                     </div>
@@ -205,6 +213,9 @@
                             <path d="M9 18L15 12L9 6" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </button>
+                    
+                    <!-- Loading Bar -->
+                    <div class="carousel-loading-bar" id="carousel-loading-bar"></div>
                 </div>
 
                 <!-- Slide Indicators -->
@@ -256,9 +267,13 @@
         const prevBtn = document.getElementById('carousel-prev');
         const nextBtn = document.getElementById('carousel-next');
         const indicatorsContainer = document.getElementById('carousel-indicators');
+        const loadingBar = document.getElementById('carousel-loading-bar');
 
         let currentIndex = 0;
         const slideCount = slides.length;
+        let autoAdvanceInterval;
+        let progressInterval;
+        const AUTO_ADVANCE_TIME = 8000;
 
         // Create indicators
         function createIndicators() {
@@ -282,22 +297,58 @@
             });
         }
 
+        // Reset loading bar and restart auto-advance
+        function resetLoadingBar() {
+            // Clear existing intervals
+            clearInterval(progressInterval);
+            clearInterval(autoAdvanceInterval);
+            
+            // Reset bar to 0
+            loadingBar.style.width = '0%';
+            
+            let progress = 0;
+            const incrementTime = 30; // Update every 30ms
+            const totalSteps = AUTO_ADVANCE_TIME / incrementTime;
+            const incrementAmount = 100 / totalSteps;
+            
+            // Animate progress bar
+            progressInterval = setInterval(() => {
+                progress += incrementAmount;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(progressInterval);
+                } else {
+                    loadingBar.style.width = progress + '%';
+                }
+            }, incrementTime);
+            
+            // Auto-advance after time
+            autoAdvanceInterval = setTimeout(() => {
+                currentIndex = (currentIndex + 1) % slideCount;
+                updateCarousel();
+                resetLoadingBar();
+            }, AUTO_ADVANCE_TIME);
+        }
+
         // Go to specific slide
         function goToSlide(index) {
             currentIndex = (index + slideCount) % slideCount;
             updateCarousel();
+            resetLoadingBar();
         }
 
         // Next slide
         nextBtn.addEventListener('click', () => {
             currentIndex = (currentIndex + 1) % slideCount;
             updateCarousel();
+            resetLoadingBar();
         });
 
         // Previous slide
         prevBtn.addEventListener('click', () => {
             currentIndex = (currentIndex - 1 + slideCount) % slideCount;
             updateCarousel();
+            resetLoadingBar();
         });
 
         // Keyboard navigation
@@ -309,11 +360,7 @@
         // Initialize
         createIndicators();
         updateCarousel();
-
-        // Auto-advance carousel every 8 seconds
-        setInterval(() => {
-            nextBtn.click();
-        }, 8000);
+        resetLoadingBar();
     </script>
 </body>
 </html>
