@@ -25,6 +25,7 @@
     justify-content: center;
     align-items: center;
     gap: 24px;
+    flex-wrap: wrap;
 }
 
 .info-item {
@@ -35,6 +36,7 @@
     color: rgba(245, 245, 245, 0.7);
     padding: 0 24px;
     border-right: 1px solid rgba(255, 255, 255, 0.15);
+    white-space: nowrap;
 }
 
 .info-item:last-child {
@@ -810,6 +812,41 @@
     
     .sign-in-btn {
         padding: 8px 12px;
+    }
+}
+
+/* Tablet Landscape to Small Desktop (1024px - 1199px) - Info bar adjustments */
+@media (min-width: 1024px) and (max-width: 1199px) {
+    .info-bar-container {
+        gap: 16px;
+    }
+    
+    .info-item {
+        padding: 0 16px;
+        font-size: 0.8rem;
+    }
+}
+
+/* Tablet (901px - 1023px) - Info bar adjustments */
+@media (min-width: 901px) and (max-width: 1023px) {
+    .info-bar {
+        height: auto;
+        min-height: 40px;
+        padding: 8px 0;
+    }
+    
+    .info-bar-container {
+        gap: 12px;
+        padding: 0 15px;
+    }
+    
+    .info-item {
+        padding: 0 12px;
+        font-size: 0.75rem;
+    }
+    
+    .info-item strong {
+        font-size: 0.75rem;
     }
 }
 

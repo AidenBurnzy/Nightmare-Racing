@@ -425,8 +425,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const aboutLinks = [
             { label: 'About the Shop', href: `${base}about/about-the-shop.html` },
             { label: 'Meet the Team', href: `${base}about/meet-the-team.html` },
-            { label: 'Financing', href: `${base}about/financing.html` },
-            { label: 'Sunbit', href: `${base}about/sunbit.html` }
+            { label: 'Financing', href: `${base}about/financing.html` }
         ];
 
         const projectsHref = `${base}src/pages/featured-cars.html`;
